@@ -1168,6 +1168,12 @@ function renderLookupResult(user) {
   const avatarWrap = document.getElementById('lookup-res-avatar-wrap');
 
   if (userEl) userEl.innerText = `@${user.username}`;
+  const renewUserEl = document.getElementById('renew-plan-target-user');
+  if (renewUserEl) renewUserEl.innerText = user.username;
+  const renewBox = document.getElementById('lookup-renew-box');
+  if (renewBox) renewBox.style.display = 'none';
+  const pinBox = document.getElementById('lookup-set-pin-box');
+  if (pinBox) pinBox.style.display = 'none';
 
   // Phân loại gói 1:1 chuẩn xác
   const isLifetime = (user.currentPlan === 'LIFETIME' || user.expiresAt === 'Vĩnh Viễn' || (user.expiresAt && new Date(user.expiresAt).getFullYear() >= 2050));
@@ -1324,28 +1330,68 @@ function copyLookupDnsLink() {
   copyText(linkToCopy, 'Đã sao chép link cấu hình DNS! Mở Safari dán link để cài đặt.');
 }
 
-// Bấm nút Gia Hạn từ bảng tra cứu: Đưa về quy trình chuyển khoản Bước 2
+// Bật/tắt box chọn gói gia hạn
+function toggleRenewBox() {
+  const box = document.getElementById('lookup-renew-box');
+  const pinBox = document.getElementById('lookup-set-pin-box');
+  const targetUserEl = document.getElementById('renew-plan-target-user');
+  if (pinBox) pinBox.style.display = 'none';
+
+  if (box) {
+    const isShowing = (box.style.display === 'block');
+    box.style.display = isShowing ? 'none' : 'block';
+    if (!isShowing) {
+      if (targetUserEl && currentLookupData) {
+        targetUserEl.innerText = currentLookupData.username;
+      }
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+}
+
+// Bấm nút Gia Hạn: Mở menu chọn gói trực quan
 function renewFromLookup() {
-  if (!currentLookupData) return;
+  toggleRenewBox();
+}
+
+// Khách hàng bấm chọn một gói cụ thể (Test / 1 Năm / Vĩnh Viễn) để gia hạn
+function executeRenewPlan(planCode) {
+  if (!currentLookupData) {
+    alert('Vui lòng tra cứu tài khoản trước khi chọn gói gia hạn.');
+    return;
+  }
   const username = currentLookupData.username;
   closeLookupModal();
 
-  // Điền vào ô username ở Bước 1
+  // 1. Điền vào ô username ở Bước 1
   const uInput = document.getElementById('username-input');
   if (uInput) uInput.value = username;
   currentUsername = username;
 
-  // Đặt lại cờ thanh toán và reset session timestamp để KHÔNG bị bypass thanh toán
+  // 2. Chọn đúng gói gia hạn mà khách đã bấm
+  if (planCode === 'TEST') {
+    selectPlan(null, 'Gói Test (1 Ngày)', 5000, '5.000đ', 'TEST');
+  } else if (planCode === 'YEARLY') {
+    selectPlan(null, 'Gói 1 Năm', 69000, '69.000đ', 'YEARLY');
+  } else {
+    selectPlan(null, 'Gói Vĩnh Viễn', 119000, '119.000đ', 'LIFETIME');
+  }
+
+  // 3. Đặt lại cờ thanh toán và reset session timestamp để bảo mật
   isPaymentVerified = false;
   paymentSessionStartTime = Date.now();
 
-  // Chuyển sang Bước 2 để bắt đầu phiên chuyển khoản gia hạn MỚI
-  alert(`⚡ Bắt đầu gia hạn cho tài khoản @${username}.\nVui lòng chuyển khoản theo thông tin ở Bước 2 để gia hạn!`);
+  // 4. Cập nhật QR code và thông tin chuyển khoản chuẩn của gói vừa chọn
+  updatePaymentInfo();
+
+  // 5. Chuyển sang Bước 2 để hiển thị mã QR và số tiền đúng của gói vừa chọn
   goToStep(2);
 }
 
 function toggleSetPinBox() {
   const box = document.getElementById('lookup-set-pin-box');
+  const renewBox = document.getElementById('lookup-renew-box');
+  if (renewBox) renewBox.style.display = 'none';
   if (box) {
     box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
   }

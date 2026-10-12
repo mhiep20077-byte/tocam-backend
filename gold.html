@@ -644,6 +644,71 @@
             </button>
           </div>
 
+          <!-- Box chọn gói gia hạn trực quan -->
+          <div id="lookup-renew-box"
+            style="display:none; margin-top:12px; padding:12px; background:rgba(255,160,51,0.08); border:1px solid rgba(255,160,51,0.3); border-radius:14px;">
+            <div style="color:#FFA033; font-size:12px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+              <span><i class="fa-solid fa-cart-shopping"></i> Chọn gói muốn gia hạn cho @<b id="renew-plan-target-user" style="color:#fff;">username</b>:</span>
+              <button type="button" onclick="toggleRenewBox()" style="background:none; border:none; color:#94A3B8; font-size:16px; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Gói Test 1 Ngày -->
+              <button type="button" onclick="executeRenewPlan('TEST')"
+                style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:rgba(168,85,247,0.12); border:1.5px solid rgba(168,85,247,0.4); color:#fff; cursor:pointer; text-align:left; transition:all 0.2s;"
+                onmouseover="this.style.borderColor='#A855F7'; this.style.background='rgba(168,85,247,0.2)';"
+                onmouseout="this.style.borderColor='rgba(168,85,247,0.4)'; this.style.background='rgba(168,85,247,0.12)';">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:20px;">⚡</span>
+                  <div>
+                    <div style="font-size:13px; font-weight:800; color:#C084FC;">Gói Test (1 Ngày)</div>
+                    <div style="font-size:11px; color:#94A3B8;">Kích hoạt trải nghiệm 24h</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:14px; font-weight:800; color:#10B981;">5.000đ</div>
+                  <span style="font-size:10px; color:#A855F7; font-weight:700;">Gia hạn &rarr;</span>
+                </div>
+              </button>
+
+              <!-- Gói 1 Năm -->
+              <button type="button" onclick="executeRenewPlan('YEARLY')"
+                style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:rgba(56,189,248,0.12); border:1.5px solid rgba(56,189,248,0.4); color:#fff; cursor:pointer; text-align:left; transition:all 0.2s;"
+                onmouseover="this.style.borderColor='#38BDF8'; this.style.background='rgba(56,189,248,0.2)';"
+                onmouseout="this.style.borderColor='rgba(56,189,248,0.4)'; this.style.background='rgba(56,189,248,0.12)';">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:20px;">📅</span>
+                  <div>
+                    <div style="font-size:13px; font-weight:800; color:#38BDF8;">Gói 1 Năm (Tiết kiệm)</div>
+                    <div style="font-size:11px; color:#94A3B8;">Sử dụng trọn vẹn 365 ngày</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:14px; font-weight:800; color:#10B981;">69.000đ</div>
+                  <span style="font-size:10px; color:#38BDF8; font-weight:700;">Gia hạn &rarr;</span>
+                </div>
+              </button>
+
+              <!-- Gói Vĩnh Viễn -->
+              <button type="button" onclick="executeRenewPlan('LIFETIME')"
+                style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:rgba(255,160,51,0.14); border:1.5px solid #FFA033; color:#fff; cursor:pointer; text-align:left; transition:all 0.2s;"
+                onmouseover="this.style.borderColor='#FFA033'; this.style.background='rgba(255,160,51,0.25)';"
+                onmouseout="this.style.borderColor='#FFA033'; this.style.background='rgba(255,160,51,0.14)';">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:20px;">👑</span>
+                  <div>
+                    <div style="font-size:13px; font-weight:800; color:#FFA033;">Gói Vĩnh Viễn (Hot)</div>
+                    <div style="font-size:11px; color:#94A3B8;">Bảo hành trọn đời, dùng mãi mãi</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:14px; font-weight:800; color:#10B981;">119.000đ</div>
+                  <span style="font-size:10px; color:#FFA033; font-weight:700;">Gia hạn &rarr;</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
           <!-- Box cài / đổi PIN -->
           <div id="lookup-set-pin-box"
             style="display:none; margin-top:12px; padding:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:12px;">
