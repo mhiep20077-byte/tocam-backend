@@ -50,8 +50,8 @@ const CONFIG = {
   // API Key từ SePay (Tùy chọn xác thực bảo mật)
   SEPAY_API_KEY: process.env.SEPAY_API_KEY || '',
 
-  // Thông tin ngân hàng Techcombank / VPBank
-  ACCOUNT_NUMBER: process.env.ACCOUNT_NUMBER || '2027022007',
+  // Thông tin ngân hàng VPBank (Khớp 100% với js/config.js)
+  ACCOUNT_NUMBER: process.env.ACCOUNT_NUMBER || '643391953',
 
   // Giá các gói (đơn vị: VNĐ)
   PLAN_PRICES: {
@@ -1056,52 +1056,6 @@ app.post('/api/user/lookup', async (req, res) => {
     }
   }
 
-  // TỰ ĐỘNG TRA CỨU TRỰC TIẾP TỪ CỤ CAM NẾU CHƯA CÓ TRONG HỆ THỐNG
-  if (!user && CONFIG.LOCKET_SECRET_KEY) {
-    try {
-      console.log(`[LOOKUP] Đang tra cứu trực tiếp từ Cụ Cam cho @${u}...`);
-      const checkResult = await locketRequest('GET', `/api/uid/check?username=${encodeURIComponent(u)}`);
-      if (checkResult.statusCode === 200 && checkResult.data?.data) {
-        const d = checkResult.data.data;
-        const uid = d.uid || d.uidString;
-        const rawExpiresAt = d.expiresAt || null;
-        
-        // TỰ ĐỘNG PHÂN LOẠI CHUẨN XÁC 1:1 THEO HẠN CỦA CỤ CAM
-        let plan = 'YEARLY';
-        let expiresAt = rawExpiresAt;
-        if (rawExpiresAt) {
-          const expYear = new Date(rawExpiresAt).getFullYear();
-          if (expYear >= 2050) {
-            plan = 'LIFETIME';
-            expiresAt = 'Vĩnh Viễn';
-          } else if (new Date(rawExpiresAt).getTime() - Date.now() < 3 * 86400000) {
-            plan = 'TEST';
-            expiresAt = rawExpiresAt;
-          }
-        }
-
-        user = saveUser({
-          username: u,
-          uid: uid,
-          currentPlan: plan,
-          status: 'ACTIVE',
-          avatarUrl: d.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`,
-          expiresAt: expiresAt,
-          lastRenewedAt: new Date().toISOString(),
-          newHistoryItem: {
-            txId: `cam_${uid || Date.now()}`,
-            plan: plan,
-            amount: CONFIG.PLAN_PRICES[plan] || (plan === 'LIFETIME' ? 119000 : (plan === 'YEARLY' ? 69000 : 5000)),
-            time: new Date().toISOString(),
-            status: 'success'
-          }
-        });
-        console.log(`[LOOKUP] ✅ Đã tìm thấy và lưu khách hàng @${u} từ Cụ Cam: UID=${uid}, Gói=${plan}`);
-      }
-    } catch (err) {
-      console.warn(`[LOOKUP] Lỗi tra cứu Cụ Cam cho @${u}:`, err.message);
-    }
-  }
 
   if (!user) {
     return res.status(404).json({
@@ -1243,21 +1197,31 @@ app.post('/api/user/set-pin', (req, res) => {
 
 // =============================================
 // (TÙY CHỌN) API MANUAL - Xác nhận thủ công để test
-// POST /manual-confirm { username, plan, secret }
 // =============================================
-app.post('/manual-confirm', async (req, res) => {
-  const { username, plan, secret } = req.body;
+// (TÙY CHỌN) API MANUAL - Xác nhận thủ công để test
+// GET/POST /manual-confirm?username=abc&plan=TEST&secret=tocam123
+// =============================================
+app.all('/manual-confirm', async (req, res) => {
+  const username = req.body?.username || req.query?.username;
+  const plan = req.body?.plan || req.query?.plan;
+  const secret = req.body?.secret || req.query?.secret;
 
-  if (secret !== CONFIG.CASSO_SECRET && secret !== 'test_tocam_2026') {
-    return res.status(401).json({ error: 'Sai mật khẩu xác nhận' });
+  if (secret !== CONFIG.CASSO_SECRET && secret !== 'test_tocam_2026' && secret !== 'tocam123') {
+    return res.status(401).json({ error: 'Sai mật khẩu xác nhận (dùng tocam123)' });
   }
 
-  const u = (username || '').toLowerCase().trim();
+  const u = (username || '').toLowerCase().trim().replace('@', '');
+  if (!u) return res.status(400).json({ error: 'Thiếu username' });
+
+  let p = (plan || 'TEST').toUpperCase();
+  let amount = CONFIG.PLAN_PRICES.TEST;
+  if (p === 'LIFETIME') amount = CONFIG.PLAN_PRICES.LIFETIME;
+  else if (p === 'YEARLY') amount = CONFIG.PLAN_PRICES.YEARLY;
 
   // Giả lập transaction để đi qua đúng luồng (bao gồm gọi Locket API)
   const fakeTx = {
     id: `manual_${Date.now()}`,
-    amount: plan === 'YEARLY' ? CONFIG.PLAN_PRICES.YEARLY : CONFIG.PLAN_PRICES.LIFETIME,
+    amount,
     description: `${CONFIG.MEMO_PREFIX} ${u.toUpperCase()}`,
     when: new Date().toISOString()
   };
@@ -1265,8 +1229,8 @@ app.post('/manual-confirm', async (req, res) => {
   await processTransaction(fakeTx);
 
   const record = paymentStore.get(u);
-  console.log(`[MANUAL] ✅ Xác nhận thủ công: @${u} - Gói ${plan} - Locket: ${record?.locketStatus}`);
-  res.json({ success: true, username: u, locketStatus: record?.locketStatus, uid: record?.uid });
+  console.log(`[MANUAL] ✅ Xác nhận thủ công: @${u} - Gói ${p} - Locket: ${record?.locketStatus}`);
+  res.json({ success: true, username: u, plan: p, amount, locketStatus: record?.locketStatus, uid: record?.uid });
 });
 
 // =============================================
