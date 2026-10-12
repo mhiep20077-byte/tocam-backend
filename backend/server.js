@@ -592,6 +592,37 @@ async function processTransaction(tx) {
   // Cập nhật store với thông tin Locket
   paymentStore.set(username, record);
 
+  // Tính ngày hết hạn chuẩn xác
+  let calculatedExpiresAt = record.expiresAt;
+  const now = Date.now();
+  if (!calculatedExpiresAt || calculatedExpiresAt === 'Vĩnh Viễn') {
+    if (record.plan === 'LIFETIME') {
+      calculatedExpiresAt = 'Vĩnh Viễn';
+    } else if (record.plan === 'YEARLY') {
+      calculatedExpiresAt = new Date(now + 365 * 86400000).toISOString();
+    } else if (record.plan === 'TEST') {
+      calculatedExpiresAt = new Date(now + 24 * 3600000).toISOString();
+    }
+  }
+
+  // Tự động cập nhật hồ sơ người dùng trong users.json sang trạng thái ACTIVE và hạn dùng mới
+  saveUser({
+    username: username,
+    uid: record.uid || null,
+    currentPlan: record.plan,
+    status: 'ACTIVE',
+    expiresAt: calculatedExpiresAt,
+    lastRenewedAt: new Date().toISOString(),
+    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=${record.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`,
+    newHistoryItem: {
+      txId: id,
+      plan: record.plan,
+      amount: record.amount,
+      time: record.paidAt || new Date().toISOString(),
+      status: 'success'
+    }
+  });
+
   // Lưu vào danh sách lịch sử giao dịch file lâu dài
   saveTransactionToHistory({
     username: username,
@@ -1028,32 +1059,47 @@ app.post('/api/user/lookup', async (req, res) => {
   const users = loadUsers();
   let user = users[u];
 
-  // Nếu chưa có trong users.json nhưng đã có trong transactions.json hoặc paymentStore
-  if (!user) {
-    const stored = paymentStore.get(u);
-    const txList = loadSavedTransactions().filter(t => t.username.toLowerCase() === u);
+  const stored = paymentStore.get(u);
+  const txList = loadSavedTransactions().filter(t => t.username.toLowerCase() === u);
 
-    if (stored && (stored.paid || stored.uid)) {
+  // Nếu người dùng có thanh toán mới trong paymentStore (vừa mua/gia hạn)
+  if (stored && (stored.paid || stored.uid)) {
+    const isNewer = !user || !user.lastRenewedAt || (new Date(stored.paidAt || Date.now()) >= new Date(user.lastRenewedAt));
+    if (isNewer) {
+      let calculatedExp = stored.expiresAt;
+      const now = Date.now();
+      if (!calculatedExp || calculatedExp === 'Vĩnh Viễn') {
+        if (stored.plan === 'LIFETIME') calculatedExp = 'Vĩnh Viễn';
+        else if (stored.plan === 'YEARLY') calculatedExp = new Date(now + 365 * 86400000).toISOString();
+        else if (stored.plan === 'TEST') calculatedExp = new Date(now + 24 * 3600000).toISOString();
+      }
       user = saveUser({
         username: u,
-        uid: stored.uid || null,
-        currentPlan: stored.plan || 'LIFETIME',
+        uid: stored.uid || user?.uid || null,
+        currentPlan: stored.plan || 'TEST',
         status: 'ACTIVE',
-        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=FFA033&color=fff&size=128&bold=true`,
-        expiresAt: (stored.plan === 'LIFETIME' || !stored.plan) ? 'Vĩnh Viễn' : stored.expiresAt,
-        lastRenewedAt: stored.paidAt || new Date().toISOString()
-      });
-    } else if (txList.length > 0) {
-      user = saveUser({
-        username: u,
-        uid: null,
-        currentPlan: txList[0].plan || 'LIFETIME',
-        status: 'ACTIVE',
-        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=FFA033&color=fff&size=128&bold=true`,
-        expiresAt: (txList[0].plan === 'LIFETIME' || !txList[0].plan) ? 'Vĩnh Viễn' : null,
-        lastRenewedAt: txList[0].time
+        expiresAt: calculatedExp,
+        lastRenewedAt: stored.paidAt || new Date().toISOString(),
+        avatarUrl: user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${stored.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`,
+        newHistoryItem: {
+          txId: stored.txId || `tx_${Date.now()}`,
+          plan: stored.plan || 'TEST',
+          amount: stored.amount,
+          time: stored.paidAt || new Date().toISOString(),
+          status: 'success'
+        }
       });
     }
+  } else if (!user && txList.length > 0) {
+    user = saveUser({
+      username: u,
+      uid: null,
+      currentPlan: txList[0].plan || 'LIFETIME',
+      status: 'ACTIVE',
+      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=FFA033&color=fff&size=128&bold=true`,
+      expiresAt: (txList[0].plan === 'LIFETIME' || !txList[0].plan) ? 'Vĩnh Viễn' : null,
+      lastRenewedAt: txList[0].time
+    });
   }
 
 
