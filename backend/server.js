@@ -252,6 +252,17 @@ const DEFAULT_USERS = {
     "createdAt": "2026-10-09T14:22:25.000Z",
     "lastRenewedAt": "2026-10-12T13:53:46.000Z",
     "history": [{ "txId": "cam_2c7d1QuxUQUlKNrwGPcqsqLW0sK2", "plan": "YEARLY", "amount": 69000, "time": "2026-10-12T13:53:46.000Z", "status": "success" }]
+  },
+  "nguyendinhtuan00": {
+    "username": "nguyendinhtuan00",
+    "uid": "2kIObn7acAfhBLuovv4xeg5EChE3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3",
+    "expiresAt": "2026-10-13T17:48:24.751Z",
+    "createdAt": "2026-10-12T17:48:24.000Z",
+    "lastRenewedAt": "2026-10-12T17:48:24.000Z",
+    "history": [{ "txId": "cam_2kIObn7acAfhBLuovv4xeg5EChE3", "plan": "TEST", "amount": 5000, "time": "2026-10-12T17:48:24.000Z", "status": "success" }]
   }
 };
 
@@ -1144,7 +1155,58 @@ app.post('/api/user/lookup', async (req, res) => {
     });
   }
 
+  // NẾU CHƯA CÓ TRONG HỆ THỐNG NỘI BỘ, KIỂM TRA TRỰC TIẾP API CỤ CAM
+  // Nếu tài khoản đã mua qua CTV Cụ Cam (isMine = true, hoặc active = true, có package thật)
+  if (!user && CONFIG.LOCKET_SECRET_KEY) {
+    try {
+      const checkResult = await locketRequest('GET', `/api/uid/check?username=${encodeURIComponent(u)}`);
+      if (checkResult.statusCode === 200 && checkResult.data) {
+        const d = checkResult.data.data || checkResult.data;
+        // Chỉ chấp nhận nếu là khách hàng thật (found = true và có package hoặc isMine/active)
+        const isPaidCustomer = !!(d && d.found === true && (d.isMine === true || d.active === true || d.package));
+        if (isPaidCustomer) {
+          let matchedPlan = 'TEST';
+          const pkgCode = d.package?.code || '';
+          const pkgName = (d.package?.name || '').toLowerCase();
+          if (pkgCode === 'LKGVV' || pkgName.includes('vĩnh viễn')) {
+            matchedPlan = 'LIFETIME';
+          } else if (pkgCode === 'LKG1Y' || pkgName.includes('1 năm') || pkgName.includes('năm')) {
+            matchedPlan = 'YEARLY';
+          } else if (pkgCode === 'LKGT3D' || pkgName.includes('test')) {
+            matchedPlan = 'TEST';
+          } else if (d.expiresAt === 'Vĩnh Viễn') {
+            matchedPlan = 'LIFETIME';
+          }
 
+          let finalExp = d.expiresAt;
+          if (matchedPlan === 'LIFETIME') finalExp = 'Vĩnh Viễn';
+
+          user = saveUser({
+            username: u,
+            uid: d.uid || null,
+            currentPlan: matchedPlan,
+            status: d.active ? 'ACTIVE' : 'EXPIRED',
+            expiresAt: finalExp,
+            avatarUrl: d.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=FFA033&color=fff&size=128&bold=true`,
+            createdAt: new Date().toISOString(),
+            lastRenewedAt: new Date().toISOString(),
+            history: [{
+              txId: `cam_${d.uid || u}`,
+              plan: matchedPlan,
+              amount: CONFIG.PLAN_PRICES[matchedPlan] || 5000,
+              time: new Date().toISOString(),
+              status: 'success'
+            }]
+          });
+          console.log(`[LOOKUP] ✅ Đã kết nối khách hàng Cụ Cam @${u} (Gói ${matchedPlan}, UID: ${d.uid})`);
+        }
+      }
+    } catch (err) {
+      console.warn(`[LOOKUP] Lỗi kết nối Cụ Cam kiểm tra tài khoản @${u}:`, err.message);
+    }
+  }
+
+  // NẾU VẪN KHÔNG PHẢI LÀ NGƯỜI ĐÃ MUA (USER LẠ) -> BÁO 404 NGAY, TUYỆT ĐỐI KHÔNG HIỂN THỊ
   if (!user) {
     return res.status(404).json({
       ok: false,

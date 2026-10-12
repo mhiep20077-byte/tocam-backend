@@ -169,5 +169,24 @@
         "status": "success"
       }
     ]
+  },
+  "nguyendinhtuan00": {
+    "username": "nguyendinhtuan00",
+    "uid": "2kIObn7acAfhBLuovv4xeg5EChE3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3",
+    "expiresAt": "2026-10-13T17:48:24.751Z",
+    "createdAt": "2026-10-12T17:48:24.000Z",
+    "lastRenewedAt": "2026-10-12T17:48:24.000Z",
+    "history": [
+      {
+        "txId": "cam_2kIObn7acAfhBLuovv4xeg5EChE3",
+        "plan": "TEST",
+        "amount": 5000,
+        "time": "2026-10-12T17:48:24.000Z",
+        "status": "success"
+      }
+    ]
   }
 }
