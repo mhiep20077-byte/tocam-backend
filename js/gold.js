@@ -1215,11 +1215,6 @@ function renderLookupResult(user) {
       .catch(() => {});
   }
 
-  // Phân loại gói 1:1 chuẩn xác
-  const isLifetime = (user.currentPlan === 'LIFETIME' || user.expiresAt === 'Vĩnh Viễn' || (user.expiresAt && new Date(user.expiresAt).getFullYear() >= 2050));
-  const isYearly = (user.currentPlan === 'YEARLY');
-  const isTest = (user.currentPlan === 'TEST');
-
   let isExpired = false;
   if (!isLifetime && user.expiresAt) {
     const expDate = new Date(user.expiresAt);
