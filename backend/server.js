@@ -94,31 +94,60 @@ const paymentStore = new Map();
 const TX_FILE = path.join(__dirname, 'transactions.json');
 const USERS_FILE = path.join(__dirname, 'users.json');
 
+const KNOWN_AVATARS = {
+  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
+  'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
+  'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
+  'yn.nt': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FGrYho8R7FDPeEmQgy5aKMEYx9gl2%2Fpublic%2Fprofile_pic.webp?alt=media&token=4f447328-95e6-46fc-b19c-97dedd3c70ce',
+  'trunhmoi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Feg66l51dTvhc7zREzqTVVKIvABh2%2Fpublic%2Fprofile_pic.webp?alt=media&token=a09e7abc-0bb3-4e86-8167-7781e644d256',
+  'hi_embe': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FzKit3JlPVhdXK3ppE2PDRflNjP32%2Fpublic%2Fprofile_pic.webp?alt=media&token=477e2d02-3e84-48c6-a4bb-a78548ccf589',
+  'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
+  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3229122d-0f4c-4223-8805-888f8170d36d'
+};
+
 const DEFAULT_TRANSACTIONS = [
-  { username: 'mhhieuz', plan: 'LIFETIME', amount: 119000, time: new Date(Date.now() - 360000).toISOString(), status: 'success' },
-  { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 720000).toISOString(), status: 'success' },
-  { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1100000).toISOString(), status: 'success' },
-  { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), status: 'success' },
-  { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), status: 'success' },
-  { username: 'hi_embe', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2800000).toISOString(), status: 'success' },
-  { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), status: 'success' },
-  { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), status: 'success' }
+  { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
+  { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 420000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['ljaj'] },
+  { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 900000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['daothanh'] },
+  { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['yn.nt'] },
+  { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
+  { username: 'hi_embe', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2800000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hi_embe'] },
+  { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hieon0'] },
+  { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['mhhiep'] }
 ];
 
 function loadSavedTransactions() {
+  let list = [];
   try {
     if (fs.existsSync(TX_FILE)) {
       const content = fs.readFileSync(TX_FILE, 'utf-8');
       const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) list = parsed;
     }
   } catch (e) {
     console.error('[TX_STORE] Lỗi đọc file transactions.json:', e.message);
   }
-  try {
-    fs.writeFileSync(TX_FILE, JSON.stringify(DEFAULT_TRANSACTIONS, null, 2), 'utf-8');
-  } catch (e) {}
-  return [...DEFAULT_TRANSACTIONS];
+
+  if (list.length === 0) {
+    list = [...DEFAULT_TRANSACTIONS];
+    try {
+      fs.writeFileSync(TX_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (e) {}
+  }
+
+  // Luôn nạp avatar thật từ users.json hoặc KNOWN_AVATARS cho mọi giao dịch
+  const users = loadUsers();
+  return list.map(tx => {
+    const u = (tx.username || '').toLowerCase();
+    const uObj = users[u];
+    const realAvatar = (uObj && uObj.avatarUrl && uObj.avatarUrl.includes('locketcamera.com'))
+      ? uObj.avatarUrl
+      : (KNOWN_AVATARS[u] || tx.avatarUrl || null);
+    return {
+      ...tx,
+      avatarUrl: realAvatar
+    };
+  });
 }
 
 function saveTransactionToHistory(txItem) {
@@ -130,13 +159,15 @@ function saveTransactionToHistory(txItem) {
       (item.username.toLowerCase() === cleanUser && Math.abs(new Date(item.time) - new Date(txItem.time)) < 120000)
     );
     if (!exists) {
+      const avatar = txItem.avatarUrl || KNOWN_AVATARS[cleanUser] || null;
       list.unshift({
         username: cleanUser,
         plan: txItem.plan || 'LIFETIME',
         amount: Number(txItem.amount) || 119000,
         time: txItem.time || new Date().toISOString(),
         txId: txItem.txId || `tx_${Date.now()}`,
-        status: 'success'
+        status: 'success',
+        avatarUrl: avatar
       });
       if (list.length > 60) list.pop();
       fs.writeFileSync(TX_FILE, JSON.stringify(list, null, 2), 'utf-8');
@@ -154,6 +185,17 @@ function saveTransactionToHistory(txItem) {
 // Tự động liên kết danh sách khách hàng từ Cụ Cam (Locket Gold)
 // =============================================
 const DEFAULT_USERS = {
+  "nguyendinhtuan00": {
+    "username": "nguyendinhtuan00",
+    "uid": "2kIObn7acAfhBLuovv4xeg5EChE3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3",
+    "expiresAt": "2026-10-13T17:48:24.751Z",
+    "createdAt": "2026-10-12T17:48:24.000Z",
+    "lastRenewedAt": "2026-10-12T17:48:24.000Z",
+    "history": [{ "txId": "cam_2kIObn7acAfhBLuovv4xeg5EChE3", "plan": "TEST", "amount": 5000, "time": "2026-10-12T17:48:24.000Z", "status": "success" }]
+  },
   "ljaj": {
     "username": "ljaj",
     "uid": "qJ76CYeThgaDnQYipUGPsC5XeVt2",
@@ -663,7 +705,8 @@ async function processTransaction(tx) {
     amount: record.amount,
     time: record.paidAt,
     txId: id,
-    status: 'success'
+    status: 'success',
+    avatarUrl: finalAvatar
   });
 }
 
@@ -679,7 +722,9 @@ app.get('/api/recent-transactions', (req, res) => {
     const uObj = users[u];
     return {
       ...tx,
-      avatarUrl: uObj?.avatarUrl || tx.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${tx.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`
+      avatarUrl: (uObj && uObj.avatarUrl && uObj.avatarUrl.includes('locketcamera.com'))
+        ? uObj.avatarUrl
+        : (KNOWN_AVATARS[u] || tx.avatarUrl || null)
     };
   });
   res.json({

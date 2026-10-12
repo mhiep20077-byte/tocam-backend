@@ -28,6 +28,26 @@ const BACKEND_URL = (function() {
   return 'https://lockettocam.up.railway.app';
 })();
 
+// BẢNG ẢNH ĐẠI DIỆN LOCKET THẬT TỪ HỆ THỐNG
+const KNOWN_AVATARS = {
+  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
+  'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
+  'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
+  'yn.nt': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FGrYho8R7FDPeEmQgy5aKMEYx9gl2%2Fpublic%2Fprofile_pic.webp?alt=media&token=4f447328-95e6-46fc-b19c-97dedd3c70ce',
+  'trunhmoi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Feg66l51dTvhc7zREzqTVVKIvABh2%2Fpublic%2Fprofile_pic.webp?alt=media&token=a09e7abc-0bb3-4e86-8167-7781e644d256',
+  'hi_embe': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FzKit3JlPVhdXK3ppE2PDRflNjP32%2Fpublic%2Fprofile_pic.webp?alt=media&token=477e2d02-3e84-48c6-a4bb-a78548ccf589',
+  'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
+  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3229122d-0f4c-4223-8805-888f8170d36d'
+};
+
+// Tạo Avatar chữ SVG dự phòng siêu nhẹ không phụ thuộc bất kỳ API bên ngoài nào
+function getSvgAvatar(name, bgColor = '#FFA033') {
+  const initial = (name ? String(name).replace('@', '').charAt(0) : 'U').toUpperCase();
+  const hex = bgColor || '#FFA033';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="64" fill="${hex}"/><text x="50%" y="54%" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="58" font-weight="800" fill="#ffffff" dominant-baseline="middle" text-anchor="middle">${initial}</text></svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 // Khởi tạo theo config
 function initFromConfig() {
   if (typeof TO_CAM_CONFIG !== 'undefined') {
@@ -432,7 +452,11 @@ function markPaymentSuccessAndProceed(data) {
   const planColor = planCode === 'LIFETIME' ? '#FFA033' : (planCode === 'TEST' ? '#C084FC' : '#38BDF8');
   const formattedAmount = (selectedPlan ? selectedPlan.formattedPrice : '119.000đ');
 
-  const userAvatar = currentAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawU)}&background=${planCode === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+  const cleanKey = rawU.toLowerCase();
+  const svgFallback = getSvgAvatar(rawU, planColor);
+  const userAvatar = (currentAvatarUrl && currentAvatarUrl.trim()) 
+    ? currentAvatarUrl 
+    : (KNOWN_AVATARS[cleanKey] || svgFallback);
 
   if (recentContainer) {
     const newSuccessRow = document.createElement('div');
@@ -443,7 +467,7 @@ function markPaymentSuccessAndProceed(data) {
     newSuccessRow.innerHTML = `
       <div class="step2-tx-left">
         <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
-          <img src="${userAvatar}" alt="${rawU}" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid #10B981; display:block;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(rawU)}&background=FFA033&color=fff&size=128&bold=true';">
+          <img src="${userAvatar}" alt="${rawU}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid #10B981; display:block;" onerror="this.onerror=null; this.src='${svgFallback}';">
           <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
             <i class="fa-solid fa-check"></i>
           </span>
@@ -912,14 +936,24 @@ async function loadRecentTransactions() {
       localList = JSON.parse(localStorage.getItem('tocam_recent_transactions') || '[]');
     } catch (e) {}
 
-    // Hợp nhất danh sách: cả từ máy chủ và từ các phiên trước trên trình duyệt
-    const combined = [...localList, ...serverList];
+    // Hợp nhất danh sách: ƯU TIÊN serverList trước vì serverList có avatarUrl thật từ Locket CDN
+    const combined = [...serverList, ...localList];
     const uniqueMap = new Map();
     combined.forEach(item => {
       if (!item || !item.username) return;
-      const key = `${item.username.toLowerCase()}_${item.plan}`;
-      if (!uniqueMap.has(key)) {
-        uniqueMap.set(key, item);
+      const cleanKey = item.username.toLowerCase();
+      const key = `${cleanKey}_${item.plan}`;
+      const existing = uniqueMap.get(key);
+      const realAvatar = (item.avatarUrl && item.avatarUrl.includes('locketcamera.com'))
+        ? item.avatarUrl
+        : (KNOWN_AVATARS[cleanKey] || item.avatarUrl || null);
+
+      if (!existing) {
+        uniqueMap.set(key, { ...item, avatarUrl: realAvatar });
+      } else {
+        if (!existing.avatarUrl || !existing.avatarUrl.includes('locketcamera.com')) {
+          existing.avatarUrl = realAvatar || existing.avatarUrl;
+        }
       }
     });
 
@@ -928,14 +962,14 @@ async function loadRecentTransactions() {
     // Nếu chưa có giao dịch nào, hiển thị danh sách khách hàng thật từ hệ thống Cụ Cam / Tổ Cam
     if (list.length === 0) {
       list = [
-        { username: 'mhhieuz', plan: 'LIFETIME', amount: 119000, time: new Date(Date.now() - 360000).toISOString() },
-        { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 720000).toISOString() },
-        { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1100000).toISOString() },
-        { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString() },
-        { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString() },
-        { username: 'hi_embe', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2800000).toISOString() },
-        { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString() },
-        { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString() }
+        { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
+        { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 420000).toISOString(), avatarUrl: KNOWN_AVATARS['ljaj'] },
+        { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 900000).toISOString(), avatarUrl: KNOWN_AVATARS['daothanh'] },
+        { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), avatarUrl: KNOWN_AVATARS['yn.nt'] },
+        { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), avatarUrl: KNOWN_AVATARS['trunhmoi'] },
+        { username: 'hi_embe', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2800000).toISOString(), avatarUrl: KNOWN_AVATARS['hi_embe'] },
+        { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), avatarUrl: KNOWN_AVATARS['hieon0'] },
+        { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), avatarUrl: KNOWN_AVATARS['mhhiep'] }
       ];
     }
 
@@ -959,14 +993,14 @@ async function loadRecentTransactions() {
         masked = u.slice(0, 2) + '***' + u.slice(-2);
       }
 
-      const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${isLifetime ? 'FFA033' : (isTest ? 'A855F7' : '38BDF8')}&color=fff&size=128&bold=true`;
-      const avatarSrc = tx.avatarUrl || fallbackAvatar;
+      const fallbackAvatar = getSvgAvatar(u, planColor);
+      const avatarSrc = (tx.avatarUrl && tx.avatarUrl.trim()) ? tx.avatarUrl : (KNOWN_AVATARS[u] || fallbackAvatar);
 
       return `
         <div class="step2-tx-row completed">
           <div class="step2-tx-left">
             <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
-              <img src="${avatarSrc}" alt="${u}" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid ${planColor}; display:block;" onerror="this.src='${fallbackAvatar}';">
+              <img src="${avatarSrc}" alt="${u}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid ${planColor}; display:block;" onerror="this.onerror=null; this.src='${fallbackAvatar}';">
               <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
                 <i class="fa-solid fa-check"></i>
               </span>
@@ -1187,10 +1221,14 @@ function renderLookupResult(user) {
   }
 
   // Cập nhật Ảnh đại diện (Avatar)
-  const initialAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=${isLifetime ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+  const cleanLookupUser = (user.username || '').toLowerCase();
+  const initialAvatarUrl = (user.avatarUrl && user.avatarUrl.includes('locketcamera.com'))
+    ? user.avatarUrl
+    : (KNOWN_AVATARS[cleanLookupUser] || getSvgAvatar(user.username, isLifetime ? '#FFA033' : '#38BDF8'));
   const avatarUrl = user.avatarUrl || initialAvatarUrl;
   if (avatarImg) {
     avatarImg.src = avatarUrl;
+    avatarImg.setAttribute('referrerpolicy', 'no-referrer');
     avatarImg.style.display = 'block';
     if (avatarFallback) avatarFallback.style.display = 'none';
 
@@ -1295,7 +1333,12 @@ function renderLookupResult(user) {
         return `
           <tr>
             <td style="color:#94A3B8;">${timeStr}</td>
-            <td><b style="color:${planColor};">${planText}</b></td>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <img src="${avatarUrl}" alt="${user.username}" referrerpolicy="no-referrer" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid ${planColor}; display:block;" onerror="this.onerror=null; this.src='${initialAvatarUrl}';">
+                <b style="color:${planColor};">${planText}</b>
+              </div>
+            </td>
             <td style="color:#10B981; font-weight:700;">${amountText}</td>
             <td><span style="background:rgba(16,185,129,0.2); color:#10B981; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800;">${isExpired ? 'Hết hạn' : 'Hoàn tất'}</span></td>
           </tr>
@@ -1307,7 +1350,12 @@ function renderLookupResult(user) {
       tbody.innerHTML = `
         <tr>
           <td style="color:#94A3B8;">Gần đây</td>
-          <td><b style="color:#FFA033;">${defaultPlanText}</b></td>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${avatarUrl}" alt="${user.username}" referrerpolicy="no-referrer" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid #FFA033; display:block;" onerror="this.onerror=null; this.src='${initialAvatarUrl}';">
+              <b style="color:#FFA033;">${defaultPlanText}</b>
+            </div>
+          </td>
           <td style="color:#10B981; font-weight:700;">${defaultAmount}</td>
           <td><span style="background:rgba(16,185,129,0.2); color:#10B981; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800;">Hoàn tất</span></td>
         </tr>
