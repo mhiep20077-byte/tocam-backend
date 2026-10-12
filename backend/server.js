@@ -422,7 +422,7 @@ app.post('/webhook/casso', async (req, res) => {
 
 // =============================================
 // WEBHOOK SEPAY - Nhận thông báo tiền vào từ VPBank
-// URL: https://tocam-backend-production.up.railway.app/webhook/sepay
+// URL: https://lockettocam.up.railway.app/webhook/sepay
 // Cấu hình URL này trong SePay Dashboard > Tích hợp Webhooks
 // =============================================
 app.post('/webhook/sepay', async (req, res) => {

@@ -24,7 +24,7 @@ const BACKEND_URL = (function() {
       return window.location.origin;
     }
   }
-  return 'https://tocam-backend-production.up.railway.app';
+  return 'https://lockettocam.up.railway.app';
 })();
 
 // Khởi tạo theo config
