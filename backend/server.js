@@ -22,8 +22,12 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Phục vụ giao diện web tĩnh (index.html, gold.html, js, css, v.v.)
-app.use(express.static(path.join(__dirname, '..')));
+// Chống cache tĩnh trên trình duyệt điện thoại để luôn cập nhật giao diện mới nhất
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
+app.use(express.static(path.join(__dirname, '..'), { etag: false, maxAge: 0 }));
 
 // Middleware xử lý lỗi parse body nếu client gửi format đặc biệt
 app.use((err, req, res, next) => {

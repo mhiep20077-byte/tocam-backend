@@ -26,9 +26,135 @@
   <!-- Lenis Smooth Scroll -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
 
-  <!-- Custom Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=3.3">
-  <link rel="stylesheet" href="css/gold.css?v=3.3">
+  <!-- Custom Stylesheets (v5.0 phá triệt để cache điện thoại) -->
+  <link rel="stylesheet" href="css/style.css?v=5.0">
+  <link rel="stylesheet" href="css/gold.css?v=5.0">
+
+  <style>
+    .mobile-plans-hint {
+      display: none;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFA033;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-plans-hint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .index-plans-grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 12px !important;
+        padding: 8px 16px 20px 16px !important;
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+        scrollbar-width: none !important;
+      }
+
+      .index-plans-grid::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .index-plans-grid .plan-card {
+        flex: 0 0 78% !important;
+        max-width: 290px !important;
+        min-width: 260px !important;
+        scroll-snap-align: center !important;
+        padding: 16px 14px 16px 14px !important;
+        border-radius: 18px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+      }
+
+      .index-plans-grid .plan-card.active {
+        border-color: #FF7A00 !important;
+        box-shadow: 0 0 0 1.5px #FF7A00, 0 10px 28px rgba(0, 0, 0, 0.55) !important;
+      }
+
+      .index-plans-grid .plan-select-indicator {
+        top: 14px !important;
+        left: 14px !important;
+        transform: none !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 10px !important;
+      }
+
+      .index-plans-grid .plan-card.active .plan-select-indicator {
+        transform: scale(1.1) !important;
+      }
+
+      .index-plans-grid .plan-badge {
+        top: 12px !important;
+        right: 12px !important;
+        font-size: 9px !important;
+        padding: 2.5px 8px !important;
+      }
+
+      .index-plans-grid .plan-header {
+        font-size: 15px !important;
+        margin-top: 14px !important;
+        margin-bottom: 2px !important;
+        padding-right: 0 !important;
+      }
+
+      .index-plans-grid .plan-price {
+        font-size: 22px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .index-plans-grid .plan-price small {
+        font-size: 11px !important;
+      }
+
+      .index-plans-grid .plan-card p {
+        font-size: 11px !important;
+        margin-bottom: 10px !important;
+        line-height: 1.35 !important;
+        color: #94A3B8 !important;
+      }
+
+      /* 100% HIỂN THỊ ĐẦY ĐỦ TẤT CẢ CÁC TÍNH NĂNG */
+      .index-plans-grid .plan-features-mini {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        margin-bottom: 14px !important;
+      }
+
+      .index-plans-grid .plan-features-mini li {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        font-size: 11px !important;
+        line-height: 1.35 !important;
+        color: #CBD5E1 !important;
+      }
+
+      .index-plans-grid .plan-features-mini li i {
+        font-size: 10px !important;
+        min-width: 14px !important;
+        margin-top: 2px !important;
+        color: #10B981 !important;
+      }
+
+      .index-plans-grid .plan-card .btn-card-action {
+        padding: 9px 12px !important;
+        font-size: 12.5px !important;
+        border-radius: 11px !important;
+        margin-top: 6px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
