@@ -605,6 +605,28 @@ async function processTransaction(tx) {
     }
   }
 
+  // Lấy avatar hiện tại từ users.json để không bị đè mất ảnh Locket CDN thật
+  const existingUserObj = loadUsers()[username] || (cleanNormUser ? loadUsers()[cleanNormUser] : null);
+  let finalAvatar = (existingUserObj && existingUserObj.avatarUrl && existingUserObj.avatarUrl.includes('locketcamera.com'))
+    ? existingUserObj.avatarUrl
+    : null;
+
+  if (!finalAvatar && CONFIG.LOCKET_SECRET_KEY) {
+    try {
+      const checkRes = await locketRequest('GET', `/api/uid/check?username=${encodeURIComponent(username)}`);
+      if (checkRes.statusCode === 200 && checkRes.data) {
+        const cData = checkRes.data.data || checkRes.data;
+        if (cData?.avatarUrl && cData.avatarUrl.includes('locketcamera.com')) {
+          finalAvatar = cData.avatarUrl;
+        }
+      }
+    } catch (e) {}
+  }
+
+  if (!finalAvatar) {
+    finalAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=${record.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+  }
+
   // Tự động cập nhật hồ sơ người dùng trong users.json sang trạng thái ACTIVE và hạn dùng mới
   saveUser({
     username: username,
@@ -613,7 +635,7 @@ async function processTransaction(tx) {
     status: 'ACTIVE',
     expiresAt: calculatedExpiresAt,
     lastRenewedAt: new Date().toISOString(),
-    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=${record.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`,
+    avatarUrl: finalAvatar,
     newHistoryItem: {
       txId: id,
       plan: record.plan,
@@ -640,9 +662,18 @@ async function processTransaction(tx) {
 // =============================================
 app.get('/api/recent-transactions', (req, res) => {
   const list = loadSavedTransactions();
+  const users = loadUsers();
+  const enrichedList = list.map(tx => {
+    const u = (tx.username || '').toLowerCase();
+    const uObj = users[u];
+    return {
+      ...tx,
+      avatarUrl: uObj?.avatarUrl || tx.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${tx.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`
+    };
+  });
   res.json({
     ok: true,
-    data: list
+    data: enrichedList
   });
 });
 
@@ -651,7 +682,7 @@ app.get('/api/recent-transactions', (req, res) => {
 // POST /api/record-transaction { username, plan, amount, time, txId }
 // =============================================
 app.post('/api/record-transaction', (req, res) => {
-  const { username, plan, amount, time, txId } = req.body || {};
+  const { username, plan, amount, time, txId, avatarUrl } = req.body || {};
   if (!username) return res.status(400).json({ ok: false, message: 'Thiếu username' });
 
   const cleanUser = String(username).toLowerCase().trim().replace('@', '');
@@ -661,7 +692,18 @@ app.post('/api/record-transaction', (req, res) => {
     amount: Number(amount) || CONFIG.PLAN_PRICES[plan] || 119000,
     time: time || new Date().toISOString(),
     txId: txId || `tx_${Date.now()}`,
-    status: 'success'
+    status: 'success',
+    avatarUrl: avatarUrl
+  });
+
+  const existingU = loadUsers()[cleanUser];
+  const finalAv = (avatarUrl && avatarUrl.includes('locketcamera.com')) ? avatarUrl : (existingU?.avatarUrl || undefined);
+  saveUser({
+    username: cleanUser,
+    currentPlan: plan || 'LIFETIME',
+    status: 'ACTIVE',
+    avatarUrl: finalAv,
+    lastRenewedAt: time || new Date().toISOString()
   });
 
   res.json({ ok: true, data: updatedList });
@@ -1129,15 +1171,31 @@ app.post('/api/user/lookup', async (req, res) => {
     }
   }
 
-  // Tự động kiểm tra UID nếu tài khoản chưa có UID
-  if (!user.uid && CONFIG.LOCKET_SECRET_KEY) {
+  // Tự động kiểm tra UID và ảnh đại diện thật từ Locket CDN nếu tài khoản chưa có
+  if (CONFIG.LOCKET_SECRET_KEY && (!user.uid || !user.avatarUrl || !user.avatarUrl.includes('locketcamera.com'))) {
     try {
       const checkResult = await locketRequest('GET', `/api/uid/check?username=${encodeURIComponent(u)}`);
-      if (checkResult.statusCode === 200 && checkResult.data?.data?.uid) {
-        user.uid = checkResult.data.data.uid;
-        saveUser({ username: u, uid: user.uid });
+      if (checkResult.statusCode === 200 && checkResult.data) {
+        const d = checkResult.data.data || checkResult.data;
+        let changed = false;
+        const patch = { username: u };
+        if (d?.uid && !user.uid) {
+          user.uid = d.uid;
+          patch.uid = d.uid;
+          changed = true;
+        }
+        if (d?.avatarUrl && d.avatarUrl.includes('locketcamera.com')) {
+          user.avatarUrl = d.avatarUrl;
+          patch.avatarUrl = d.avatarUrl;
+          changed = true;
+        }
+        if (changed) {
+          user = saveUser(patch) || user;
+        }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn(`[LOOKUP] Không thể lấy avatar/uid Locket cho @${u}:`, e.message);
+    }
   }
 
   // QUY TẮC HIỂN THỊ GÓI VÀ HẠN DÙNG CHUẨN 1:1

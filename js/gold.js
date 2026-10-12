@@ -10,6 +10,7 @@ let currentUID = null; // UID Locket thật sau khi mua gói thành công
 let isAccountGoldActive = false; // Đánh dấu tài khoản đã kích hoạt Gold trên Cụ Cam chưa
 let isPaymentVerified = false; // Bắt buộc phải xác nhận thanh toán thành công mới sang bước 3
 let paymentSessionStartTime = Date.now(); // Timestamp phiên thanh toán hiện tại, chống bypass thanh toán
+let currentAvatarUrl = null; // Ảnh đại diện thật từ Locket CDN khi tra cứu username
 
 // ============================================
 // CẤU HÌNH BACKEND URL
@@ -129,6 +130,7 @@ function lookupUsername() {
 
         // Hiển thị ảnh đại diện thật từ Locket nếu có
         const finalAvatar = d.avatarUrl || initialAvatarUrl;
+        currentAvatarUrl = finalAvatar;
         avatarEl.innerHTML = `<img src="${finalAvatar}" alt="${d.username || rawUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerText='${(d.username || rawUsername).charAt(0).toUpperCase()}';">`;
         avatarEl.style.padding = '0';
         avatarEl.style.overflow = 'hidden';
@@ -430,6 +432,8 @@ function markPaymentSuccessAndProceed(data) {
   const planColor = planCode === 'LIFETIME' ? '#FFA033' : (planCode === 'TEST' ? '#C084FC' : '#38BDF8');
   const formattedAmount = (selectedPlan ? selectedPlan.formattedPrice : '119.000đ');
 
+  const userAvatar = currentAvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawU)}&background=${planCode === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+
   if (recentContainer) {
     const newSuccessRow = document.createElement('div');
     newSuccessRow.className = 'step2-tx-row completed';
@@ -438,8 +442,11 @@ function markPaymentSuccessAndProceed(data) {
     newSuccessRow.style.animation = 'successPop 0.5s ease-out forwards';
     newSuccessRow.innerHTML = `
       <div class="step2-tx-left">
-        <div class="step2-tx-icon completed" style="background:#10B981; color:#fff;">
-          <i class="fa-solid fa-check"></i>
+        <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
+          <img src="${userAvatar}" alt="${rawU}" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid #10B981; display:block;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(rawU)}&background=FFA033&color=fff&size=128&bold=true';">
+          <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
+            <i class="fa-solid fa-check"></i>
+          </span>
         </div>
         <div class="step2-tx-info">
           <div class="step2-tx-title">
@@ -466,7 +473,8 @@ function markPaymentSuccessAndProceed(data) {
     plan: planCode,
     amount: selectedPlan ? selectedPlan.price : 119000,
     time: new Date().toISOString(),
-    status: 'success'
+    status: 'success',
+    avatarUrl: currentAvatarUrl
   };
 
   try {
@@ -951,11 +959,17 @@ async function loadRecentTransactions() {
         masked = u.slice(0, 2) + '***' + u.slice(-2);
       }
 
+      const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(u)}&background=${isLifetime ? 'FFA033' : (isTest ? 'A855F7' : '38BDF8')}&color=fff&size=128&bold=true`;
+      const avatarSrc = tx.avatarUrl || fallbackAvatar;
+
       return `
         <div class="step2-tx-row completed">
           <div class="step2-tx-left">
-            <div class="step2-tx-icon completed">
-              <i class="fa-solid fa-check"></i>
+            <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
+              <img src="${avatarSrc}" alt="${u}" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid ${planColor}; display:block;" onerror="this.src='${fallbackAvatar}';">
+              <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
+                <i class="fa-solid fa-check"></i>
+              </span>
             </div>
             <div class="step2-tx-info">
               <div class="step2-tx-title">
@@ -1094,6 +1108,9 @@ async function submitUserLookup(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang tra cứu hệ thống...</span>';
   }
 
+  // Ẩn bảng kết quả cũ ngay lập tức để user lạ tuyệt đối không thấy bất kỳ thông tin nào
+  if (resultBox) resultBox.style.display = 'none';
+
   try {
     const res = await fetch(`${BACKEND_URL}/api/user/lookup`, {
       method: 'POST',
@@ -1148,19 +1165,54 @@ function renderLookupResult(user) {
   const tbody = document.getElementById('lookup-tx-tbody');
   const avatarImg = document.getElementById('lookup-res-avatar-img');
   const avatarFallback = document.getElementById('lookup-res-avatar-fallback');
+  const avatarWrap = document.getElementById('lookup-res-avatar-wrap');
 
   if (userEl) userEl.innerText = `@${user.username}`;
 
+  // Phân loại gói 1:1 chuẩn xác
+  const isLifetime = (user.currentPlan === 'LIFETIME' || user.expiresAt === 'Vĩnh Viễn' || (user.expiresAt && new Date(user.expiresAt).getFullYear() >= 2050));
+  const isYearly = (user.currentPlan === 'YEARLY');
+  const isTest = (user.currentPlan === 'TEST');
+
+  // Đổi viền avatar tương ứng với gói đã mua
+  if (avatarWrap) {
+    const borderColor = isLifetime ? '#FFA033' : (isYearly ? '#38BDF8' : (isTest ? '#A855F7' : '#FFA033'));
+    avatarWrap.style.border = `2.5px solid ${borderColor}`;
+  }
+
   // Cập nhật Ảnh đại diện (Avatar)
-  const avatarUrl = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=FFA033&color=fff&size=128&bold=true`;
+  const initialAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=${isLifetime ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+  const avatarUrl = user.avatarUrl || initialAvatarUrl;
   if (avatarImg) {
     avatarImg.src = avatarUrl;
     avatarImg.style.display = 'block';
-    avatarImg.onerror = function() {
-      this.style.display = 'none';
-      if (avatarFallback) avatarFallback.style.display = 'block';
-    };
     if (avatarFallback) avatarFallback.style.display = 'none';
+
+    avatarImg.onerror = function() {
+      if (this.src !== initialAvatarUrl) {
+        this.src = initialAvatarUrl;
+      } else {
+        this.style.display = 'none';
+        if (avatarFallback) avatarFallback.style.display = 'block';
+      }
+    };
+  }
+
+  // TÍCH HỢP ẢNH NHƯ Ở DƯỚI: Nếu avatar chưa phải là ảnh Locket CDN xịn, gọi thử uid/check để cập nhật ảnh thật ngay tức thì
+  if (!user.avatarUrl || !user.avatarUrl.includes('locketcamera.com')) {
+    fetch(`${BACKEND_URL}/api/locket/uid/check?username=${encodeURIComponent(user.username)}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.ok && json.data && json.data.avatarUrl && json.data.avatarUrl.includes('locketcamera.com')) {
+          if (avatarImg) {
+            avatarImg.src = json.data.avatarUrl;
+            avatarImg.style.display = 'block';
+            if (avatarFallback) avatarFallback.style.display = 'none';
+          }
+          user.avatarUrl = json.data.avatarUrl;
+        }
+      })
+      .catch(() => {});
   }
 
   // Phân loại gói 1:1 chuẩn xác
