@@ -452,12 +452,6 @@ function markPaymentSuccessAndProceed(data) {
   const planColor = planCode === 'LIFETIME' ? '#FFA033' : (planCode === 'TEST' ? '#C084FC' : '#38BDF8');
   const formattedAmount = (selectedPlan ? selectedPlan.formattedPrice : '119.000đ');
 
-  const cleanKey = rawU.toLowerCase();
-  const svgFallback = getSvgAvatar(rawU, planColor);
-  const userAvatar = (currentAvatarUrl && currentAvatarUrl.trim()) 
-    ? currentAvatarUrl 
-    : (KNOWN_AVATARS[cleanKey] || svgFallback);
-
   if (recentContainer) {
     const newSuccessRow = document.createElement('div');
     newSuccessRow.className = 'step2-tx-row completed';
@@ -466,11 +460,8 @@ function markPaymentSuccessAndProceed(data) {
     newSuccessRow.style.animation = 'successPop 0.5s ease-out forwards';
     newSuccessRow.innerHTML = `
       <div class="step2-tx-left">
-        <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
-          <img src="${userAvatar}" alt="${rawU}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid #10B981; display:block;" onerror="this.onerror=null; this.src='${svgFallback}';">
-          <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
-            <i class="fa-solid fa-check"></i>
-          </span>
+        <div class="step2-tx-icon completed" style="background:#10B981; color:#fff;">
+          <i class="fa-solid fa-check"></i>
         </div>
         <div class="step2-tx-info">
           <div class="step2-tx-title">
@@ -993,17 +984,11 @@ async function loadRecentTransactions() {
         masked = u.slice(0, 2) + '***' + u.slice(-2);
       }
 
-      const fallbackAvatar = getSvgAvatar(u, planColor);
-      const avatarSrc = (tx.avatarUrl && tx.avatarUrl.trim()) ? tx.avatarUrl : (KNOWN_AVATARS[u] || fallbackAvatar);
-
       return `
         <div class="step2-tx-row completed">
           <div class="step2-tx-left">
-            <div class="step2-tx-avatar-wrap" style="position:relative; width:38px; height:38px; flex-shrink:0;">
-              <img src="${avatarSrc}" alt="${u}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:1.5px solid ${planColor}; display:block;" onerror="this.onerror=null; this.src='${fallbackAvatar}';">
-              <span style="position:absolute; bottom:-1px; right:-1px; width:13px; height:13px; background:#10B981; border:1.5px solid #0F172A; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:7px;">
-                <i class="fa-solid fa-check"></i>
-              </span>
+            <div class="step2-tx-icon completed">
+              <i class="fa-solid fa-check"></i>
             </div>
             <div class="step2-tx-info">
               <div class="step2-tx-title">
@@ -1333,12 +1318,7 @@ function renderLookupResult(user) {
         return `
           <tr>
             <td style="color:#94A3B8;">${timeStr}</td>
-            <td>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <img src="${avatarUrl}" alt="${user.username}" referrerpolicy="no-referrer" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid ${planColor}; display:block;" onerror="this.onerror=null; this.src='${initialAvatarUrl}';">
-                <b style="color:${planColor};">${planText}</b>
-              </div>
-            </td>
+            <td><b style="color:${planColor};">${planText}</b></td>
             <td style="color:#10B981; font-weight:700;">${amountText}</td>
             <td><span style="background:rgba(16,185,129,0.2); color:#10B981; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800;">${isExpired ? 'Hết hạn' : 'Hoàn tất'}</span></td>
           </tr>
@@ -1350,12 +1330,7 @@ function renderLookupResult(user) {
       tbody.innerHTML = `
         <tr>
           <td style="color:#94A3B8;">Gần đây</td>
-          <td>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <img src="${avatarUrl}" alt="${user.username}" referrerpolicy="no-referrer" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid #FFA033; display:block;" onerror="this.onerror=null; this.src='${initialAvatarUrl}';">
-              <b style="color:#FFA033;">${defaultPlanText}</b>
-            </div>
-          </td>
+          <td><b style="color:#FFA033;">${defaultPlanText}</b></td>
           <td style="color:#10B981; font-weight:700;">${defaultAmount}</td>
           <td><span style="background:rgba(16,185,129,0.2); color:#10B981; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800;">Hoàn tất</span></td>
         </tr>
