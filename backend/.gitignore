@@ -1,0 +1,6 @@
+# Secret - không commit lên Git
+.env
+
+# Node modules
+node_modules/
+npm-debug.log*

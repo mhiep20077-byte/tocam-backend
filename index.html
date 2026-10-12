@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07090e">
+  <title>TỔ CAM · Cổng Dịch Vụ Locket Gold Độc Quyền Cao Cấp</title>
+  <meta name="description"
+    content="Tổ Cam - Hệ thống nâng cấp Locket Gold chính chủ cao cấp: quay video 30s, up ảnh/video từ thư viện, không quảng cáo, mở khoá bạn bè, caption hot trend.">
+  <meta property="og:title" content="TỔ CAM · Cổng Dịch Vụ Locket Gold Độc Quyền Cao Cấp">
+  <meta property="og:description"
+    content="Tổ Cam - Nâng cấp Locket Gold chính chủ qua DNS DoH: quay video 30s, mở khoá bạn bè, caption hot trend, giá từ 69k.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%8A%3C/text%3E%3C/svg%3E">
+
+  <!-- Web Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Space+Grotesk:wght@600;700;800&display=swap&subset=vietnamese"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=3.3">
+  <link rel="stylesheet" href="css/gold.css?v=3.3">
+</head>
+
+<body>
+
+  <!-- Mưa icon quả cam rơi xuống khi hoàn thành loading -->
+  <div id="rain"></div>
+
+  <!-- Nền WebGL Gradient Mesh chuyển động mềm -->
+  <canvas id="glbg"></canvas>
+
+  <!-- Background Grid Atmosphere -->
+  <div class="bg-ambient"></div>
+
+  <!-- ==================== 3D CLAYMORPHIC TỔ CAM SPLASH SCREEN ==================== -->
+  <div id="intro-screen">
+    <div class="intro-box">
+      <div class="intro-clay-icon">
+        <span class="orange-emoji">🍊</span>
+        <span class="intro-sparkle is-1"><i class="fa-solid fa-star"></i></span>
+        <span class="intro-sparkle is-2"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+        <span class="intro-sparkle is-3"><i class="fa-solid fa-star"></i></span>
+        <span class="intro-sparkle is-4"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+      </div>
+      <div class="intro-letters">
+        <span style="--i:1">T</span>
+        <span style="--i:2">Ổ</span>
+        <span style="--i:3">&nbsp;</span>
+        <span style="--i:4">C</span>
+        <span style="--i:5">A</span>
+        <span style="--i:6">M</span>
+      </div>
+      <div class="intro-clay-pill">LOCKET GOLD PRO</div>
+      <div class="intro-desc">CỔNG DỊCH VỤ LOCKET GOLD TỰ ĐỘNG 24/7</div>
+      <div class="intro-progress-wrap">
+        <div class="intro-progress-bar" id="intro-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN PAGE CONTAINER ==================== -->
+  <div class="page-container">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <span>🍊</span>
+        </div>
+        <div class="brand-name">
+          TỔ CAM<span class="highlight">.VIP</span>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="https://zalo.me/0386116104" target="_blank" class="btn-nav-chip chip-zalo cfg-zalo-link"
+          title="Zalo Hỗ Trợ">
+          <i class="fa-solid fa-comment-dots"></i>
+          <span>Zalo CSKH</span>
+        </a>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>Online 24/7</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Header -->
+    <section class="hero-sec">
+      <div class="hero-pill">
+        <i class="fa-solid fa-bolt"></i>
+        <span>HỆ THỐNG NÂNG CẤP TỰ ĐỘNG 24/7</span>
+      </div>
+      <h1 class="hero-title">
+        Nâng Cấp <span class="text-orange">Locket Gold</span> <span class="text-gold">Tổ Cam</span>
+      </h1>
+      <p class="hero-subtitle">
+        Trải nghiệm toàn bộ 9 đặc quyền VIP Locket Gold cao cấp. Kích hoạt chính chủ 1 chạm qua DNS DoH, bảo hành đến khi web còn.
+      </p>
+
+      <!-- Thanh đổi màu chủ đề -->
+      <div class="theme-strip">
+        <span>🎨 Màu chủ đề:</span>
+        <div class="color-dot active" style="background:#FF7A00; color:#FF7A00;" onclick="switchTheme('#FF7A00', this)"
+          title="Cam Tổ Cam Tươi Sáng"></div>
+        <div class="color-dot" style="background:#FFB000; color:#FFB000;" onclick="switchTheme('#FFB000', this)"
+          title="Vàng Gold Mật Ong"></div>
+        <div class="color-dot" style="background:#06B6D4; color:#06B6D4;" onclick="switchTheme('#06B6D4', this)"
+          title="Xanh Cyan Cyber"></div>
+        <div class="color-dot" style="background:#8B5CF6; color:#8B5CF6;" onclick="switchTheme('#8B5CF6', this)"
+          title="Tím Neon VIP"></div>
+        <div class="color-dot" style="background:#10B981; color:#10B981;" onclick="switchTheme('#10B981', this)"
+          title="Xanh Ngọc Bích"></div>
+      </div>
+    </section>
+
+    <!-- ==================== BẢNG GIÁ 3 GÓI NỔI BẬT (5K, 69K & 119K) ==================== -->
+    <section style="margin-bottom: 32px;">
+      <div style="text-align: center; margin-bottom: 16px;">
+        <span style="color:#FF7A00; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">⚡
+          BẢNG GIÁ SIÊU ƯU ĐÃI</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:24px; margin-top:4px;">Chọn Gói Nâng Cấp Ngay
+        </h2>
+      </div>
+
+      <div class="plans-grid">
+        <!-- Gói Test Dùng Thử - 5k -->
+        <div class="plan-card" id="index-plan-test" onclick="selectIndexPlan(this, 'test')">
+          <div class="plan-select-indicator"><i class="fa-solid fa-check"></i></div>
+          <div class="plan-badge badge-test"><i class="fa-solid fa-flask"></i> DÙNG THỬ</div>
+          <div class="plan-header" style="font-size:18px;">Gói Test 1 Ngày</div>
+          <div class="plan-price" style="font-size:28px;">5.000đ <small>/1 ngày</small></div>
+          <p style="font-size:12.5px; color:#94A3B8; margin-bottom:14px;">Trải nghiệm đầy đủ 8 tính năng VIP Locket Gold 24h &amp; lấy DNS DoH tức thì.</p>
+          <ul class="plan-features-mini" style="margin-bottom: 18px;">
+            <li><i class="fa-solid fa-check"></i> Mở khoá Locket Gold chính chủ</li>
+            <li><i class="fa-solid fa-check"></i> Không quảng cáo làm phiền</li>
+            <li><i class="fa-solid fa-check"></i> Upload ảnh / video từ thư viện</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-video">Quay video Locket 30 giây</span></li>
+            <li><i class="fa-solid fa-check"></i> Thay đổi icon Locket độc quyền</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-caption">Thêm caption hot trend, thú vị</span></li>
+            <li><i class="fa-solid fa-check"></i> Mở khoá giới hạn bạn bè &amp; Thêm âm thanh</li>
+            <li><i class="fa-solid fa-check"></i> <span style="color:#C084FC; font-weight:700;">Mở khoá Filter màu độc quyền</span></li>
+            <li><i class="fa-solid fa-clock" style="color:#FFA033;"></i> <b>Thời hạn sử dụng 1 ngày (24 giờ)</b></li>
+          </ul>
+          <a href="gold.html?plan=test" class="btn-card-action" style="background: rgba(168, 85, 247, 0.16); border-color: rgba(192, 132, 252, 0.5); color: #C084FC;">
+            <span>Nâng Cấp Gói 5.000đ</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Gói 1 Năm - 69k -->
+        <div class="plan-card" id="index-plan-yearly" onclick="selectIndexPlan(this, 'yearly')">
+          <div class="plan-select-indicator"><i class="fa-solid fa-check"></i></div>
+          <div class="plan-badge badge-yearly"><i class="fa-solid fa-bolt"></i> TIẾT KIỆM</div>
+          <div class="plan-header" style="font-size:18px;">Gói 1 Năm</div>
+          <div class="plan-price" style="font-size:28px;">69.000đ <small>/năm</small></div>
+          <p style="font-size:12.5px; color:#94A3B8; margin-bottom:14px;">Trải nghiệm Locket Gold trọn vẹn 365 ngày với
+            chi phí tiết kiệm nhất.</p>
+          <ul class="plan-features-mini" style="margin-bottom: 18px;">
+            <li><i class="fa-solid fa-check"></i> Mở khoá Locket Gold chính chủ</li>
+            <li><i class="fa-solid fa-check"></i> Không quảng cáo làm phiền</li>
+            <li><i class="fa-solid fa-check"></i> Upload ảnh / video từ thư viện</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-video">Quay video Locket 30 giây</span></li>
+            <li><i class="fa-solid fa-check"></i> Thay đổi icon Locket độc quyền</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-caption">Thêm caption hot trend, thú vị</span></li>
+            <li><i class="fa-solid fa-check"></i> Mở khoá giới hạn bạn bè &amp; Thêm âm thanh</li>
+            <li><i class="fa-solid fa-check"></i> <span style="color:#C084FC; font-weight:700;">Mở khoá Filter màu độc quyền</span></li>
+            <li><i class="fa-solid fa-calendar-check" style="color:#38BDF8;"></i> <b>Sử dụng trọn vẹn 365 ngày (1 Năm)</b></li>
+          </ul>
+          <a href="gold.html?plan=yearly" class="btn-card-action btn-card-yearly">
+            <span>Nâng Cấp Gói 69.000đ</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Gói Vĩnh Viễn - 119k -->
+        <div class="plan-card active" id="index-plan-lifetime" onclick="selectIndexPlan(this, 'lifetime')">
+          <div class="plan-select-indicator"><i class="fa-solid fa-check"></i></div>
+          <div class="plan-badge"><i class="fa-solid fa-crown"></i> KHUYÊN DÙNG</div>
+          <div class="plan-header" style="font-size:18px;">Gói Vĩnh Viễn</div>
+          <div class="plan-price" style="font-size:28px; color:#FF7A00;">119.000đ <small>/trọn đời</small></div>
+          <p style="font-size:12.5px; color:#F1D4A8; margin-bottom:14px;">Mở khoá toàn bộ tính năng VIP + bảo
+            hành đến khi web còn.</p>
+          <ul class="plan-features-mini" style="margin-bottom: 18px;">
+            <li><i class="fa-solid fa-check"></i> Mở khoá Locket Gold chính chủ</li>
+            <li><i class="fa-solid fa-check"></i> Không quảng cáo làm phiền</li>
+            <li><i class="fa-solid fa-check"></i> Upload ảnh / video từ thư viện</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-video">Quay video Locket 30 giây</span></li>
+            <li><i class="fa-solid fa-check"></i> Thay đổi icon Locket độc quyền</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-caption">Thêm caption hot trend, thú vị</span></li>
+            <li><i class="fa-solid fa-check"></i> Mở khoá giới hạn bạn bè &amp; Thêm âm thanh</li>
+            <li><i class="fa-solid fa-check"></i> <span style="color:#C084FC; font-weight:700;">Mở khoá Filter màu độc quyền</span></li>
+            <li><i class="fa-solid fa-shield-halved" style="color:#10B981;"></i> <b>Sử dụng Vĩnh Viễn + Bảo hành đến khi web còn</b></li>
+          </ul>
+          <a href="gold.html?plan=lifetime" class="btn-card-action btn-card-gold">
+            <span>Nâng Cấp Gói 119.000đ</span>
+            <i class="fa-solid fa-crown"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Nút Tiến Hành Nâng Cấp ở dưới danh sách gói -->
+      <div style="text-align: center; margin-top: 22px;">
+        <a href="gold.html?plan=lifetime" id="btn-index-proceed-upgrade" class="btn-card-action btn-card-gold"
+          style="max-width: 420px; margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; padding: 14px 28px; box-shadow: 0 8px 24px rgba(255,122,0,0.35); text-decoration: none;"
+          onclick="goToCurrentSelectedPlan(event)">
+          <span id="btn-index-proceed-text">Tiến Hành Nâng Cấp Gói Vĩnh Viễn (119K)</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== 9 TÍNH NĂNG VIP LOCKET GOLD ==================== -->
+    <section style="margin-bottom: 32px;">
+      <div style="text-align: center; margin-bottom: 18px;">
+        <span style="color:#FF7A00; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">✨
+          ĐẶC QUYỀN ĐỘC QUYỀN</span>
+        <h2 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:24px; margin-top:4px;">9 Tính Năng VIP Locket
+          Gold</h2>
+      </div>
+
+      <div class="features-grid-8">
+        <!-- 1. Mở khoá locket gold -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-orange">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Mở Khoá Locket Gold</h4>
+            <p>Huy hiệu VIP vàng chính chủ hiển thị trực tiếp trên tài khoản cá nhân.</p>
+          </div>
+        </div>
+
+        <!-- 2. Không quảng cáo -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-green">
+            <i class="fa-solid fa-ban"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Không Quảng Cáo</h4>
+            <p>Lướt khoảnh khắc mượt mà, loại bỏ 100% quảng cáo và phiền toái.</p>
+          </div>
+        </div>
+
+        <!-- 3. Upload ảnh/video từ thư viện -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-cyan">
+            <i class="fa-solid fa-images"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Upload Ảnh / Video Thư Viện</h4>
+            <p>Đăng ảnh và video chất lượng cao có sẵn trong cuộn camera mà không bị viền.</p>
+          </div>
+        </div>
+
+        <!-- 4. Quay video Locket 30 giây (MÀU CHỮ NỔI BẬT) -->
+        <div class="feat-item-card"
+          style="border-color: rgba(255, 176, 0, 0.45); background: linear-gradient(165deg, rgba(38, 30, 18, 0.9) 0%, rgba(18, 14, 10, 0.98) 100%);">
+          <div class="feat-icon-box f-gold">
+            <i class="fa-solid fa-video"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4 class="text-highlight-video">Quay Video Locket 30 Giây</h4>
+            <p>Thời lượng quay gấp nhiều lần bản thường, bắt trọn từng khoảnh khắc đáng nhớ.</p>
+          </div>
+        </div>
+
+        <!-- 5. Thay đổi icon Locket -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-purple">
+            <i class="fa-solid fa-icons"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Thay Đổi Icon Locket</h4>
+            <p>Tự do lựa chọn hàng chục biểu tượng ứng dụng độc quyền trên màn hình chính.</p>
+          </div>
+        </div>
+
+        <!-- 6. Thêm nhiều caption hot trend, thú vị (MÀU CHỮ NỔI BẬT) -->
+        <div class="feat-item-card"
+          style="border-color: rgba(251, 146, 60, 0.45); background: linear-gradient(165deg, rgba(38, 24, 18, 0.9) 0%, rgba(18, 12, 10, 0.98) 100%);">
+          <div class="feat-icon-box f-pink">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4 class="text-highlight-caption">Thêm Nhiều Caption Hot Trend, Thú Vị</h4>
+            <p>Kho câu nói, trích dẫn bắt trend độc lạ giúp bức ảnh của bạn hút mọi tương tác.</p>
+          </div>
+        </div>
+
+        <!-- 7. Mở khoá giới hạn bạn bè -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-cyan">
+            <i class="fa-solid fa-user-group"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Mở Khoá Giới Hạn Bạn Bè</h4>
+            <p>Thoải mái kết nối thêm nhiều người bạn mới mà không lo đầy danh sách.</p>
+          </div>
+        </div>
+
+        <!-- 8. Thêm âm thanh khi quay video -->
+        <div class="feat-item-card">
+          <div class="feat-icon-box f-orange">
+            <i class="fa-solid fa-music"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4>Thêm Âm Thanh Khi Quay Video</h4>
+            <p>Tùy chỉnh chèn âm thanh, nhạc nền sống động trực tiếp khi quay video.</p>
+          </div>
+        </div>
+
+        <!-- 9. Mở khoá Filter màu độc quyền -->
+        <div class="feat-item-card"
+          style="border-color: rgba(192, 132, 252, 0.45); background: linear-gradient(165deg, rgba(38, 20, 48, 0.9) 0%, rgba(18, 10, 24, 0.98) 100%);">
+          <div class="feat-icon-box f-purple">
+            <i class="fa-solid fa-wand-magic"></i>
+          </div>
+          <div class="feat-text-box">
+            <h4 style="color:#C084FC;">Mở Khoá Filter Màu Độc Quyền</h4>
+            <p>Tự do áp dụng các bộ lọc màu ảnh nghệ thuật Locket Gold tuyệt đẹp, bức ảnh thêm lung linh.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <a href="gold.html" id="btn-hero-upgrade" class="btn-card-action btn-card-gold"
+          style="max-width: 380px; margin: 0 auto;" onclick="goToCurrentSelectedPlan(event)">
+          <span>Bắt Đầu Nâng Cấp Locket Gold Ngay</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== VIP INTERACTIVE STUDIO LOCKET GOLD ==================== -->
+    <section class="interactive-section">
+      <div class="is-head">
+        <span class="vip-badge-pill"><i class="fa-solid fa-crown"></i> TRẢI NGHIỆM ĐẶC QUYỀN VIP TRỰC QUAN</span>
+        <h3>Locket Gold Simulator Studio</h3>
+        <p>Thao tác trực tiếp trên iPhone 16 Pro để cảm nhận toàn bộ 8 đặc quyền VIP mà bản thường không thể có!</p>
+      </div>
+
+      <div class="interactive-grid-vip">
+        <!-- Cột trái: Phone Mockup iPhone 16 Pro Luxury -->
+        <div class="phone-column">
+          <div class="iphone-16-pro">
+            <!-- Dynamic Island -->
+            <div class="dynamic-island" id="dynamic-island">
+              <div class="di-camera"></div>
+              <div class="di-content">
+                <span class="di-dot" id="di-dot"></span>
+                <span id="di-text"></span>
+                <span class="di-sound-bars" id="di-bars">
+                  <i></i><i></i><i></i><i></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- iOS Status Bar -->
+            <div class="ios-status-bar">
+              <span class="ios-time" id="ios-clock">09:41</span>
+              <div class="ios-icons">
+                <i class="fa-solid fa-signal"></i>
+                <span style="font-size:10px; font-weight:800;">5G</span>
+                <i class="fa-solid fa-battery-full" style="color:#10B981;"></i>
+              </div>
+            </div>
+
+            <!-- Màn hình Locket App Viewport -->
+            <div class="locket-viewport" id="locket-viewport">
+              <!-- Flash chụp màn hình -->
+              <div class="camera-flash" id="camera-flash"></div>
+
+              <!-- 1. Header Chế Độ Camera Thường & VIP (Ảnh 2) -->
+              <div class="locket-real-header" id="locket-real-header">
+                <button type="button" class="locket-nav-btn" title="Thông báo mới">
+                  <span class="badge-new">NEW</span>
+                  <i class="fa-solid fa-bullhorn"></i>
+                </button>
+                <div class="locket-friends-pill" id="locket-friends-pill" onclick="switchMockupView('send')"
+                  title="Danh sách bạn bè">
+                  <i class="fa-solid fa-user-group"></i>
+                  <span id="friends-pill-text">20 người bạn</span>
+                </div>
+                <div class="locket-user-avatar" title="Trang cá nhân">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                    alt="Avatar">
+                  <i class="fa-solid fa-crown user-crown-icon hidden" id="user-crown-icon"></i>
+                </div>
+              </div>
+
+              <!-- Header Chế Độ Gửi Ảnh (Ảnh 1) -->
+              <div class="locket-send-header" id="locket-send-header" style="display: none;">
+                <div style="width: 32px;"></div>
+                <h4>Gửi đến...</h4>
+                <button type="button" class="locket-download-btn" title="Tải ảnh về máy"
+                  onclick="mockupDownloadPhoto()">
+                  <i class="fa-solid fa-arrow-down-to-line"></i>
+                </button>
+              </div>
+
+              <!-- 2. Khung Ảnh Vuông Bo Góc Chuẩn Locket (Ảnh 1, 2 & 3) -->
+              <div class="locket-camera-box" id="locket-camera-box">
+                <!-- Nền Camera / Live Preview -->
+                <div class="box-media-bg" id="locket-bg-media"
+                  style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80');">
+                </div>
+                <!-- Camera Live Stream từ Webcam thật của máy -->
+                <video class="box-media-video" id="locket-live-webcam" autoplay muted playsinline></video>
+                <!-- Video Player Preview (Đặc Quyền Locket Gold VIP / Sau khi quay xong) -->
+                <video class="box-media-video" id="locket-bg-video" autoplay loop muted playsinline></video>
+
+                <!-- Grid lines overlay -->
+                <div class="camera-grid-lines" id="camera-grid-lines">
+                  <div class="grid-line horizontal h1"></div>
+                  <div class="grid-line horizontal h2"></div>
+                  <div class="grid-line vertical v1"></div>
+                  <div class="grid-line vertical v2"></div>
+                </div>
+
+                <!-- SVG Viền Tiến Trình Video Bo Quanh Khung Ảnh (Bắt đầu từ chính giữa mép trên) -->
+                <svg class="box-progress-svg" viewBox="0 0 252 252">
+                  <path class="box-rect-fill" id="box-rect-fill"
+                    d="M 126 3 H 207 A 42 42 0 0 1 249 45 V 207 A 42 42 0 0 1 207 249 H 45 A 42 42 0 0 1 3 207 V 45 A 42 42 0 0 1 45 3 H 126 Z" />
+                </svg>
+
+                <!-- Icon trong khung Camera (Top Controls) -->
+                <div class="box-inner-controls" id="box-inner-controls">
+                  <button type="button" class="box-flash-btn" id="btn-flash" onclick="toggleMockupFlash()"
+                    title="Bật/Tắt Flash">
+                    <i class="fa-solid fa-bolt"></i>
+                  </button>
+                  <button type="button" class="box-mic-btn" id="btn-mic" style="display: none;"
+                    onclick="toggleMockupMicOrSpeaker()" title="Bật/Tắt Micro hoặc Loa">
+                    <i class="fa-solid fa-microphone-slash" id="mic-speaker-icon"></i>
+                  </button>
+                  <span class="box-zoom-chip" id="btn-zoom" onclick="toggleMockupZoom()"
+                    title="Phóng to 2x/1x">1x</span>
+                </div>
+
+                <!-- Góc dưới trong khung Camera (Chỉ hiện ở bản VIP, Ảnh 1) -->
+                <div class="box-corner-controls" id="box-corner-controls" style="display: none;">
+                  <button type="button" class="box-icon-btn" id="btn-flash-corner" onclick="toggleMockupFlash()"
+                    title="Bật/Tắt Flash">
+                    <i class="fa-solid fa-bolt"></i>
+                  </button>
+                  <button type="button" class="box-icon-btn" id="btn-sparkle" onclick="openEffectsDrawer()"
+                    title="Tạo diện mạo & Hiệu ứng VIP">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  </button>
+                </div>
+
+                <!-- Pill Thêm Một Tin Nhắn / Caption Chuẩn Locket -->
+                <div class="box-caption-pill pill-dark" id="locket-caption-pill" style="display: none;"
+                  onclick="focusPhotoCaptionInput(event)">
+                  <span id="locket-caption-text" style="display: none;">Thêm một tin nhắn</span>
+                  <input type="text" id="photo-caption-input" class="photo-caption-input"
+                    placeholder="Thêm một tin nhắn" maxlength="50" oninput="handlePhotoCaptionInput(this.value)"
+                    autocomplete="off">
+                </div>
+              </div>
+
+              <!-- 3. Controls Dưới Khung Camera (Ảnh 2 & 3) -->
+              <div class="locket-camera-controls" id="locket-camera-controls">
+                <div class="locket-shutter-row">
+                  <!-- Mở Thư viện ảnh / video iOS chuẩn Locket -->
+                  <button type="button" class="locket-side-btn" id="btn-gallery-trigger"
+                    onclick="openGalleryPickerDrawer()" title="Thư viện ảnh & video">
+                    <i class="fa-regular fa-images"></i>
+                  </button>
+
+                  <!-- Nút Shutter tròn chuẩn Locket: Bấm Chụp • Nhấn Giữ để Quay Video -->
+                  <button type="button" class="locket-real-shutter" id="shutter-btn"
+                    title="Nhấn để Chụp Ảnh • Nhấn Giữ để Quay Video">
+                    <span class="shutter-core" id="shutter-core"></span>
+                  </button>
+
+                  <!-- Nút Lật camera -->
+                  <button type="button" class="locket-side-btn" onclick="flipCameraEffect()" title="Lật camera">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+
+                <!-- Hàng Lịch Sử Bạn Bè -->
+                <div class="locket-history-pill-row">
+                  <div class="history-pill" id="btn-history-pill" onclick="showHistoryDemo()"
+                    title="Xem lịch sử khoảnh khắc">
+                    <img class="history-thumb"
+                      src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format&fit=crop&q=80"
+                      alt="Lịch sử">
+                    <span>Lịch sử</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                  </div>
+                </div>
+
+                <!-- Dock 3 Tabs ở đáy iPhone -->
+                <div class="locket-bottom-dock">
+                  <button type="button" class="dock-tab" title="Lưới khoảnh khắc"><i
+                      class="fa-solid fa-braille"></i></button>
+                  <button type="button" class="dock-tab active" title="Trang chủ"><i
+                      class="fa-solid fa-house"></i></button>
+                  <button type="button" class="dock-tab" title="Tin nhắn bạn bè">
+                    <i class="fa-solid fa-comment"></i>
+                    <span class="dock-badge" id="dock-chat-badge">3</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4. Controls Màn Hình Gửi Đến (Ảnh 1 & 4) -->
+              <div class="locket-send-controls" id="locket-send-controls" style="display: none;">
+                <!-- Dãy dấu chấm lướt ảnh & caption (Vuốt màn hình để đổi caption) -->
+                <div class="locket-dots-row" id="locket-dots-row" title="Vuốt ngang màn hình để đổi caption">
+                  <span class="active"></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+
+                <!-- Các nút tác vụ Gửi (✕, ✈, Aa✨) -->
+                <div class="send-actions-row">
+                  <button type="button" class="btn-send-dismiss" id="btn-send-dismiss" onclick="cancelSendMode()"
+                    title="Huỷ / Quay lại">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                  <button type="button" class="btn-send-main" id="btn-send-main" onclick="confirmSendToFriends()"
+                    title="Gửi ngay lên Widget">
+                    <i class="fa-solid fa-paper-plane"></i>
+                  </button>
+                  <button type="button" class="btn-send-text" onclick="openCaptionDrawer()"
+                    title="Mở danh sách chú thích hot trend">
+                    <i class="fa-solid fa-font"></i><span style="font-size:9px;">✨</span>
+                  </button>
+                </div>
+
+                <!-- Dãy chọn bạn bè gửi ảnh -->
+                <div class="send-friends-row" id="send-friends-row">
+                  <!-- Tùy chọn Riêng Tư độc quyền VIP (Ảnh 4) -->
+                  <div class="friend-item-chip" id="friend-private-chip" style="display: none;"
+                    onclick="toggleFriendSelect(this)">
+                    <div class="friend-avatar-circle private-circle"><i class="fa-solid fa-lock"></i></div>
+                    <span>Riêng tư</span>
+                  </div>
+                  <div class="friend-item-chip active" id="friend-all-chip" onclick="toggleFriendSelect(this)">
+                    <div class="friend-avatar-circle all-circle"><i class="fa-solid fa-user-group"></i></div>
+                    <span id="friend-all-label">Tất cả</span>
+                  </div>
+                  <div class="friend-item-chip" onclick="toggleFriendSelect(this)">
+                    <div class="friend-avatar-circle"><img
+                        src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80"
+                        alt="Ngọn l..."></div>
+                    <span id="friend-name-1">Ngọn l...</span>
+                  </div>
+                  <div class="friend-item-chip" onclick="toggleFriendSelect(this)">
+                    <div class="friend-avatar-circle"><img
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
+                        alt="Nợn..."></div>
+                    <span id="friend-name-2">Nợn...</span>
+                  </div>
+                  <div class="friend-item-chip" id="friend-chip-extra" onclick="toggleFriendSelect(this)">
+                    <div class="friend-avatar-circle"><img
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
+                        alt="ki..."></div>
+                    <span id="friend-name-3">ki...</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5. Giao Diện Lướt Xem Bài Đăng Bạn Bè & Bài Của Mình (Feed/Timeline Mode) -->
+              <div class="locket-feed-view" id="locket-feed-view" style="display: none;">
+                <!-- Feed Header: Loa • Mọi người ⌵ • Avatar -->
+                <div class="locket-feed-header">
+                  <button type="button" class="locket-nav-btn feed-nav-btn" title="Thông báo">
+                    <i class="fa-solid fa-bullhorn"></i>
+                  </button>
+                  <div class="locket-feed-filter-pill" onclick="cycleFeedFilter()" title="Lọc người xem">
+                    <span id="feed-filter-text">Mọi người</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
+                  </div>
+                  <div class="locket-user-avatar" title="Trang cá nhân">
+                    <img
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                      alt="Avatar">
+                  </div>
+                </div>
+
+                <!-- Feed Main Card (Khung vuông bo góc chuẩn Locket) -->
+                <div class="feed-post-container" id="feed-post-container">
+                  <div class="feed-media-box" id="feed-media-box">
+                    <div class="feed-media-bg" id="feed-media-bg"
+                      style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=80');">
+                    </div>
+                    <video class="feed-media-video" id="feed-media-video" autoplay loop muted playsinline
+                      style="display: none;"></video>
+
+                    <button type="button" class="feed-sound-toggle-btn" id="feed-sound-btn" onclick="toggleFeedSound()"
+                      style="display: none;" title="Bật/Tắt âm thanh">
+                      <i class="fa-solid fa-volume-xmark" id="feed-sound-icon"></i>
+                    </button>
+
+                    <!-- Caption pill nằm trong đáy khung ảnh -->
+                    <div class="box-caption-pill feed-caption-pill" id="feed-caption-pill">
+                      <span id="feed-caption-text">cầu xin đi</span>
+                    </div>
+                  </div>
+
+                  <!-- Thông tin bài đăng: Đang gửi (khi upload) HOẶC Tên bạn bè + Thời gian (sau khi đăng) -->
+                  <div class="feed-meta-row" id="feed-meta-row">
+                    <!-- Trạng thái 1: Đang gửi (Ảnh 2 của user) -->
+                    <div class="feed-uploading-row" id="feed-uploading-row" style="display: none;">
+                      <i class="fa-solid fa-circle-notch fa-spin"></i>
+                      <span>Đang gửi...</span>
+                    </div>
+
+                    <!-- Trạng thái 2: Tác giả & Thời gian (Ảnh 1 của user) -->
+                    <div class="feed-author-row" id="feed-author-row">
+                      <img class="feed-author-avatar" id="feed-author-avatar"
+                        src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80"
+                        alt="Avatar">
+                      <span class="feed-author-name" id="feed-author-name">lhy</span>
+                      <span class="feed-post-time" id="feed-post-time">58ph</span>
+                    </div>
+                  </div>
+
+                  <!-- Hàng hoạt động / Phản hồi -->
+                  <div class="feed-activity-row" id="feed-activity-row">
+                    <!-- Khi đang tải: Chưa có hoạt động nào (Ảnh 2) -->
+                    <div class="feed-no-activity-pill" id="feed-no-activity-pill" style="display: none;">
+                      <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 11px;"></i>
+                      <span>Chưa có hoạt động nào!</span>
+                    </div>
+
+                    <!-- Khi đã đăng xong: Thanh tin nhắn & Thả cảm xúc (Ảnh 1) -->
+                    <div class="feed-reaction-bar" id="feed-reaction-bar">
+                      <span class="reaction-placeholder">Tin nhắn...</span>
+                      <div class="reaction-emojis">
+                        <span onclick="sendFeedReaction('💛')">💛</span>
+                        <span onclick="sendFeedReaction('🫶')">🫶</span>
+                        <span onclick="sendFeedReaction('😍')">😍</span>
+                        <span onclick="sendFeedReaction('🥰')">🥰</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Feed Bottom Dock (5 nút chuẩn Locket: Lưới • Lịch sử • Camera nút chụp viền hồng • Chat • Share) -->
+                <div class="locket-feed-dock" id="locket-feed-dock">
+                  <button type="button" class="dock-tab" onclick="cycleFeedPost(-1)" title="Bài trước">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                  </button>
+                  <button type="button" class="dock-tab" onclick="cycleFeedPost(1)" title="Bài tiếp">
+                    <i class="fa-regular fa-calendar-days"></i>
+                  </button>
+                  <!-- Nút Camera giữa: Nhấn để quay lại chụp ảnh mới -->
+                  <button type="button" class="feed-camera-btn" onclick="switchMockupView('camera'); if(!isWebcamActive) initLiveWebcam();"
+                    title="Chụp ảnh mới">
+                    <span class="feed-camera-inner"></span>
+                  </button>
+                  <button type="button" class="dock-tab" title="Tin nhắn">
+                    <i class="fa-solid fa-comment"></i>
+                    <span class="dock-badge">3</span>
+                  </button>
+                  <button type="button" class="dock-tab" id="btn-feed-share" onclick="openFeedActionSheet()"
+                    title="Lưu, Xóa & Chia sẻ">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  </button>
+                </div>
+
+                <!-- iOS Action Sheet: Lưu • Xóa • Chia sẻ (Khi bấm nút Share) -->
+                <div class="feed-action-sheet" id="feed-action-sheet" style="display: none;">
+                  <div class="feed-sheet-overlay" onclick="closeFeedActionSheet()"></div>
+                  <div class="feed-sheet-content">
+                    <div class="feed-sheet-actions-group">
+                      <button type="button" class="feed-sheet-btn" id="btn-action-save" onclick="feedActionSave()">
+                        <span id="feed-save-btn-text">Lưu ảnh vào Thư viện</span>
+                        <i class="fa-solid fa-arrow-down-to-bracket"></i>
+                      </button>
+                      <button type="button" class="feed-sheet-btn" id="btn-action-share" onclick="feedActionShare()">
+                        <span>Chia sẻ khoảnh khắc</span>
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                      </button>
+                      <button type="button" class="feed-sheet-btn text-danger" id="btn-action-delete"
+                        onclick="feedActionDelete()">
+                        <span>Xóa khoảnh khắc</span>
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                    <div class="feed-sheet-cancel-group">
+                      <button type="button" class="feed-sheet-btn cancel-btn"
+                        onclick="closeFeedActionSheet()">Hủy</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thanh Home Bar iOS -->
+              <div class="ios-home-bar"></div>
+            </div>
+
+            <!-- Backdrop phủ khi mở ngăn kéo Bottom Sheet -->
+            <div class="locket-sheet-backdrop" id="locket-sheet-backdrop" onclick="closeAllDrawers()"></div>
+
+            <!-- Drawer 1: Danh Sách Chú Thích Hot Trend VIP (Ảnh 5) -->
+            <div class="locket-sheet-drawer" id="vip-caption-drawer">
+              <div class="sheet-handle" onclick="closeAllDrawers()"></div>
+              <div class="caption-sheet-header">
+                <h4>Chú thích</h4>
+              </div>
+              <div class="caption-pills-list">
+                <!-- Group 1: General (Bản Thường Chuẩn Locket) -->
+                <div class="caption-group-title standard-title">General</div>
+                <div class="caption-group-pills standard-pills">
+                  <button type="button" class="vip-cap-pill pill-dark aa-text-pill" id="btn-cap-aa"
+                    onclick="selectTextMessageCaption(event)" title="Nhấn để gõ tin nhắn tùy ý">
+                    <span class="aa-prefix">Aa</span>
+                    <span>Văn bản</span>
+                  </button>
+                  <button type="button" class="vip-cap-pill pill-halloween"
+                    onclick="applyQuickCaption('🎃 Halloween')"><span>🎃 Halloween</span></button>
+                  <button type="button" class="vip-cap-pill pill-xmas-green"
+                    onclick="applyQuickCaption('🕯 Giáng sinh an lành')"><span>🕯 Giáng sinh an lành</span></button>
+                  <button type="button" class="vip-cap-pill pill-xmas-red"
+                    onclick="applyQuickCaption('🎄 Giáng sinh an lành')"><span>🎄 Giáng sinh an lành</span></button>
+                  <button type="button" class="vip-cap-pill pill-2027-gold"
+                    onclick="applyQuickCaption('🥂 Xin chào 2027!')"><span>🥂 Xin chào 2027!</span></button>
+                  <button type="button" class="vip-cap-pill pill-2027-purple"
+                    onclick="applyQuickCaption('💫 Xin chào 2027!')"><span>💫 Xin chào 2027!</span></button>
+                  <button type="button" class="vip-cap-pill pill-2027-red"
+                    onclick="applyQuickCaption('2027')"><span>2027</span></button>
+                  <button type="button" class="vip-cap-pill pill-dark" onclick="applyQuickCaption('⭐ Review')"><span>⭐
+                      Review</span></button>
+                  <button type="button" class="vip-cap-pill pill-dark"
+                    onclick="applyQuickCaption('🎵 Đang phát')"><span><i class="fa-solid fa-music"
+                        style="color:#22c55e;"></i> Đang phát</span></button>
+                  <button type="button" class="vip-cap-pill pill-dark" onclick="applyQuickCaption('📍 Vị trí')"><span><i
+                        class="fa-solid fa-location-dot" style="color:#9ca3af;"></i> Vị trí</span></button>
+                  <button type="button" class="vip-cap-pill pill-weather"
+                    onclick="applyQuickCaption('☀️ Thời tiết')"><span>☀️ Thời tiết</span></button>
+                  <button type="button" class="vip-cap-pill pill-dark" onclick="applyQuickCaption('⏰ 1:57 SA')"><span>⏰
+                      <span class="caption-time-text">1:57 SA</span></span></button>
+                  <button type="button" class="vip-cap-pill pill-streak" onclick="applyQuickCaption('🔥 4')"><span>🔥
+                      4</span></button>
+                </div>
+
+                <!-- Phân tách Kho Caption Độc Quyền VIP -->
+                <div class="caption-vip-divider">
+                  <i class="fa-solid fa-crown text-gold"></i>
+                  <span>KHO CAPTION HOT TREND LOCKET GOLD VIP</span>
+                </div>
+
+                <!-- Group Hot Trend Locket VIP Mới (25 Caption Chuẩn Ảnh iPhone Thật) -->
+                <div class="caption-group-title">🔥 Trend Cực Hot (Locket VIP) <span class="group-vip-tag">VIP</span>
+                </div>
+                <div class="caption-group-pills">
+                  <button type="button" class="vip-cap-pill pill-nho-anh"
+                    onclick="handleDrawerCaptionClick('🥺 Nho anh ch?')"><span>🥺 Nho anh ch?</span></button>
+                  <button type="button" class="vip-cap-pill pill-bien-oi"
+                    onclick="handleDrawerCaptionClick('🌊 Biển ơi húuuuuuu')"><span>🌊 Biển ơi húuuuuuu</span></button>
+                  <button type="button" class="vip-cap-pill pill-yeu-me"
+                    onclick="handleDrawerCaptionClick('❤️ Yêu Mẹ')"><span>❤️ Yêu Mẹ</span></button>
+                  <button type="button" class="vip-cap-pill pill-nho-ngy"
+                    onclick="handleDrawerCaptionClick('💔 nhớ ngy')"><span>💔 nhớ ngy</span></button>
+                  <button type="button" class="vip-cap-pill pill-oan-ta"
+                    onclick="handleDrawerCaptionClick('🌀 Oẳn tà là vằn')"><span>🌀 Oẳn tà là vằn</span></button>
+                  <button type="button" class="vip-cap-pill pill-kha-nang"
+                    onclick="handleDrawerCaptionClick('🤔 Khả Năng Cao')"><span>🤔 Khả Năng Cao</span></button>
+                  <button type="button" class="vip-cap-pill pill-qua-kieu"
+                    onclick="handleDrawerCaptionClick('💅 ơ quá kiêu')"><span>💅 ơ quá kiêu</span></button>
+                  <button type="button" class="vip-cap-pill pill-lanh-nho-ai"
+                    onclick="handleDrawerCaptionClick('❄️ lạnh nhớ ai')"><span>❄️ lạnh nhớ ai</span></button>
+                  <button type="button" class="vip-cap-pill pill-nhang-nhit"
+                    onclick="handleDrawerCaptionClick('🙅‍♂️ Đừng nhăng nhít')"><span>🙅‍♂️ Đừng nhăng
+                      nhít</span></button>
+                  <button type="button" class="vip-cap-pill pill-toi-buon"
+                    onclick="handleDrawerCaptionClick('🥀 hôm nay tôi buồn')"><span>🥀 hôm nay tôi buồn</span></button>
+                  <button type="button" class="vip-cap-pill pill-gap-nhau"
+                    onclick="handleDrawerCaptionClick('🍻 gặp nhau cái nhỉ')"><span>🍻 gặp nhau cái nhỉ</span></button>
+                  <button type="button" class="vip-cap-pill pill-ank-iu"
+                    onclick="handleDrawerCaptionClick('🥰 ank iu eim')"><span>🥰 ank iu eim</span></button>
+                  <button type="button" class="vip-cap-pill pill-sen"
+                    onclick="handleDrawerCaptionClick('🪷 Mong tôn hoa sen thấy cảnh')"><span>🪷 Mong tôn hoa sen thấy
+                      cảnh</span></button>
+                  <button type="button" class="vip-cap-pill pill-dam-nhau"
+                    onclick="handleDrawerCaptionClick('🥊 đấm nhau không')"><span>🥊 đấm nhau không</span></button>
+                  <button type="button" class="vip-cap-pill pill-ba-khi"
+                    onclick="handleDrawerCaptionClick('🐉 siêu cấp bá khí')"><span>🐉 siêu cấp bá khí</span></button>
+                  <button type="button" class="vip-cap-pill pill-du-an-ma"
+                    onclick="handleDrawerCaptionClick('👻 dự án ma')"><span>👻 dự án ma</span></button>
+                  <button type="button" class="vip-cap-pill pill-so-tk"
+                    onclick="handleDrawerCaptionClick('💳 đọc số tài khoản')"><span>💳 đọc số tài khoản</span></button>
+                  <button type="button" class="vip-cap-pill pill-ai-so"
+                    onclick="handleDrawerCaptionClick('🚶 ai sợ thì đi về')"><span>🚶 ai sợ thì đi về</span></button>
+                  <button type="button" class="vip-cap-pill pill-cai-nit"
+                    onclick="handleDrawerCaptionClick('🧶 còn cái nịt')"><span>🧶 còn cái nịt</span></button>
+                  <button type="button" class="vip-cap-pill pill-canh-bao"
+                    onclick="handleDrawerCaptionClick('🎤 cảnh báo có hát')"><span>🎤 cảnh báo có hát</span></button>
+                  <button type="button" class="vip-cap-pill pill-than-chua"
+                    onclick="handleDrawerCaptionClick('😒 Thân chưa mà dỡn')"><span>😒 Thân chưa mà dỡn</span></button>
+                  <button type="button" class="vip-cap-pill pill-ai-muon"
+                    onclick="handleDrawerCaptionClick('🤨 Ai mượn?')"><span>🤨 Ai mượn?</span></button>
+                  <button type="button" class="vip-cap-pill pill-hay-ra-de"
+                    onclick="handleDrawerCaptionClick('🙄 Hay ra dẻ quá à!')"><span>🙄 Hay ra dẻ quá à!</span></button>
+                  <button type="button" class="vip-cap-pill pill-giam-sm"
+                    onclick="handleDrawerCaptionClick('🎮 Giảm sức mạnh con tướng')"><span>🎮 Giảm sức mạnh con
+                      tướng</span></button>
+                  <button type="button" class="vip-cap-pill pill-mac-co"
+                    onclick="handleDrawerCaptionClick('🫣 Mắc cỡ quá hai ơi')"><span>🫣 Mắc cỡ quá hai
+                      ơi</span></button>
+                </div>
+
+                <!-- Group 2: Decorative (Ảnh 2) -->
+                <div class="caption-group-title">Decorative</div>
+                <div class="caption-group-pills">
+                  <button type="button" class="vip-cap-pill pill-party"
+                    onclick="applyQuickCaption('🪩 Party Time!')"><span>🪩 Party Time!</span></button>
+                  <button type="button" class="vip-cap-pill pill-morning"
+                    onclick="applyQuickCaption('☀️ Good morning')"><span>☀️ Good morning</span></button>
+                  <button type="button" class="vip-cap-pill pill-night"
+                    onclick="applyQuickCaption('🌙 Goodnight')"><span>🌙 Goodnight</span></button>
+                  <button type="button" class="vip-cap-pill pill-ootd" onclick="applyQuickCaption('🕶️ OOTD')"><span>🕶️
+                      OOTD</span></button>
+                  <button type="button" class="vip-cap-pill pill-missyou"
+                    onclick="applyQuickCaption('🥰 Miss you')"><span>🥰 Miss you</span></button>
+                </div>
+
+                <!-- Group 3: In Love 💘 (Ảnh 2 & 3) -->
+                <div class="caption-group-title">In Love 💘</div>
+                <div class="caption-group-pills">
+                  <button type="button" class="vip-cap-pill pill-pout"
+                    onclick="applyQuickCaption('😤 Dỗi rồi')"><span>😤 Dỗi rồi</span></button>
+                  <button type="button" class="vip-cap-pill pill-crush"
+                    onclick="applyQuickCaption('💭 Đang bận tương tư')"><span>💭 Đang bận tương tư</span></button>
+                  <button type="button" class="vip-cap-pill pill-rep"
+                    onclick="applyQuickCaption('📩 Rep tin nhắn đi')"><span>📩 Rep tin nhắn đi</span></button>
+                  <button type="button" class="vip-cap-pill pill-snark"
+                    onclick="applyQuickCaption('🐥 Mỏ hỗn nhưng tâm hiền')"><span>🐥 Mỏ hỗn nhưng tâm
+                      hiền</span></button>
+                  <button type="button" class="vip-cap-pill pill-hug"
+                    onclick="applyQuickCaption('🫂 Muốn được ôm')"><span>🫂 Muốn được ôm</span></button>
+                  <button type="button" class="vip-cap-pill pill-miss"
+                    onclick="applyQuickCaption('🫱 Hơi bị nhớ')"><span>🫱 Hơi bị nhớ</span></button>
+                  <button type="button" class="vip-cap-pill pill-jealous"
+                    onclick="applyQuickCaption('🔥 Đang ghen')"><span>🔥 Đang ghen</span></button>
+                  <button type="button" class="vip-cap-pill pill-sweetdream"
+                    onclick="applyQuickCaption('🌌 Ngủ ngon giấc mơ có em')"><span>🌌 Ngủ ngon giấc mơ có
+                      em</span></button>
+                </div>
+
+                <!-- Group 4: Gen Z Life 🩻 (Ảnh 3 & 4) -->
+                <div class="caption-group-title">Gen Z Life 🩻</div>
+                <div class="caption-group-pills">
+                  <button type="button" class="vip-cap-pill pill-hero"
+                    onclick="applyQuickCaption('🗡️ Hảo hán')"><span>🗡️ Hảo hán</span></button>
+                  <button type="button" class="vip-cap-pill pill-cold-sick"
+                    onclick="applyQuickCaption('🤧 Cảm lạnh')"><span>🤧 Cảm lạnh</span></button>
+                  <button type="button" class="vip-cap-pill pill-helpless"
+                    onclick="applyQuickCaption('🏳️ Bất lực')"><span>🏳️ Bất lực</span></button>
+                  <button type="button" class="vip-cap-pill pill-sorry"
+                    onclick="applyQuickCaption('🥺 Xin lũi được chưa')"><span>🥺 Xin lũi được chưa</span></button>
+                  <button type="button" class="vip-cap-pill pill-cry"
+                    onclick="applyQuickCaption('😭 Rớt nước mắt')"><span>😭 Rớt nước mắt</span></button>
+                  <button type="button" class="vip-cap-pill pill-fall"
+                    onclick="applyQuickCaption('📉 Gục ngã')"><span>📉 Gục ngã</span></button>
+                  <button type="button" class="vip-cap-pill pill-dizzy"
+                    onclick="applyQuickCaption('🌪️ Tiền đình')"><span>🌪️ Tiền đình</span></button>
+                  <button type="button" class="vip-cap-pill pill-dislike"
+                    onclick="applyQuickCaption('👎 Chê mạnh')"><span>👎 Chê mạnh</span></button>
+                  <button type="button" class="vip-cap-pill pill-pretty"
+                    onclick="applyQuickCaption('💅 Xinh gái ấn phím 1')"><span>💅 Xinh gái ấn phím 1</span></button>
+                  <button type="button" class="vip-cap-pill pill-clown"
+                    onclick="applyQuickCaption('🤡 Đi làm vì đam mê')"><span>🤡 Đi làm vì đam mê</span></button>
+                </div>
+
+                <!-- Group 5: Wordsmith 📖 (Ảnh 4 & 5) -->
+                <div class="caption-group-title">Wordsmith 📖</div>
+                <div class="caption-group-pills">
+                  <button type="button" class="vip-cap-pill pill-pink"
+                    onclick="applyQuickCaption('💖 Yeuu Emm')"><span>💖 Yeuu Emm</span></button>
+                  <button type="button" class="vip-cap-pill pill-blue"
+                    onclick="applyQuickCaption('💙 Yeuu Anhh')"><span>💙 Yeuu Anhh</span></button>
+                  <button type="button" class="vip-cap-pill pill-rain"
+                    onclick="applyQuickCaption('🌧️ Hồi chiều trời mưa')"><span>🌧️ Hồi chiều trời mưa</span></button>
+                  <button type="button" class="vip-cap-pill pill-autumn"
+                    onclick="applyQuickCaption('🍂 côn viên lá làn')"><span>🍂 côn viên lá làn</span></button>
+                  <button type="button" class="vip-cap-pill pill-pig"
+                    onclick="applyQuickCaption('🐷 aiiii hoiiii ?')"><span>🐷 aiiii hoiiii ?</span></button>
+                  <button type="button" class="vip-cap-pill pill-ear"
+                    onclick="applyQuickCaption('👂 Tai ông để ngoài đầu à')"><span>👂 Tai ông để ngoài đầu
+                      à</span></button>
+                  <button type="button" class="vip-cap-pill pill-angry"
+                    onclick="applyQuickCaption('🙄 Chan bố mày đi')"><span>🙄 Chan bố mày đi</span></button>
+                  <button type="button" class="vip-cap-pill pill-salad"
+                    onclick="applyQuickCaption('🥬 oách xà lách')"><span>🥬 oách xà lách</span></button>
+                  <button type="button" class="vip-cap-pill pill-giggle" onclick="applyQuickCaption('🤭 è hé')"><span>🤭
+                      è hé</span></button>
+                  <button type="button" class="vip-cap-pill pill-phone"
+                    onclick="applyQuickCaption('📞 Ủa alo')"><span>📞 Ủa alo</span></button>
+                  <button type="button" class="vip-cap-pill pill-leaf"
+                    onclick="applyQuickCaption('🍃 Máy chủ lá đu đủ')"><span>🍃 Máy chủ lá đu đủ</span></button>
+                  <button type="button" class="vip-cap-pill pill-cold"
+                    onclick="applyQuickCaption('🥶 lạnh thấy mẹ')"><span>🥶 lạnh thấy mẹ</span></button>
+                  <button type="button" class="vip-cap-pill pill-thatsthat"
+                    onclick="applyQuickCaption('🤷‍♂️ Đấy Là Cái Việc')"><span>🤷‍♂️ Đấy Là Cái Việc</span></button>
+                  <button type="button" class="vip-cap-pill pill-handsome"
+                    onclick="applyQuickCaption('📱 Đẹp trai ấn phím 2')"><span>📱 Đẹp trai ấn phím 2</span></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drawer 2: Tạo Diện Mạo & Hiệu Ứng VIP (Ảnh 2) -->
+            <div class="locket-sheet-drawer" id="vip-effects-drawer">
+              <div class="sheet-handle" onclick="closeAllDrawers()"></div>
+              <div class="effects-scroll-area">
+                <!-- Goofy Section -->
+                <div class="effects-section">
+                  <h5>Goofy</h5>
+                  <div class="effects-row">
+                    <div class="effect-item" onclick="applyFilterLook('wig', this)">
+                      <div class="effect-icon-circle">💇‍♀️</div>
+                      <span>Okay Wig</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('influencer', this)">
+                      <div class="effect-icon-circle">👄</div>
+                      <span>Influencer</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('looksmax', this)">
+                      <div class="effect-icon-circle">🗿</div>
+                      <span>Looks-Max</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('toothless', this)">
+                      <div class="effect-icon-circle">🦷</div>
+                      <span>Toothless</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Looks Section -->
+                <div class="effects-section">
+                  <h5>Looks</h5>
+                  <div class="effects-row">
+                    <div class="effect-item" onclick="applyFilterLook('bald', this)">
+                      <div class="effect-icon-circle">👨‍🦲</div>
+                      <span>Bowling</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('blonde', this)">
+                      <div class="effect-icon-circle">👱‍♂️</div>
+                      <span>Bleached</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('beard', this)">
+                      <div class="effect-icon-circle">🧔</div>
+                      <span>Beard</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('bobcut', this)">
+                      <div class="effect-icon-circle">💇</div>
+                      <span>Bob Cut</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Celebrate Section -->
+                <div class="effects-section">
+                  <h5>Celebrate</h5>
+                  <div class="effects-row">
+                    <div class="effect-item" onclick="applyFilterLook('slimed', this)">
+                      <div class="effect-icon-circle">🧪</div>
+                      <span>Slimed</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('princess', this)">
+                      <div class="effect-icon-circle">👑</div>
+                      <span>Princess</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('disco', this)">
+                      <div class="effect-icon-circle">🪩</div>
+                      <span>Disco</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('money', this)">
+                      <div class="effect-icon-circle">💵</div>
+                      <span>Ca$h</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Cute Section -->
+                <div class="effects-section">
+                  <h5>Cute</h5>
+                  <div class="effects-row">
+                    <div class="effect-item" onclick="applyFilterLook('cutesy', this)">
+                      <div class="effect-icon-circle">👧</div>
+                      <span>Cutesy</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('sticker', this)">
+                      <div class="effect-icon-circle">⭐</div>
+                      <span>Sticker</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('flower', this)">
+                      <div class="effect-icon-circle">🌸</div>
+                      <span>Flower</span>
+                    </div>
+                    <div class="effect-item" onclick="applyFilterLook('lovebug', this)">
+                      <div class="effect-icon-circle">💛</div>
+                      <span>Love Bug</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn-create-look" onclick="closeAllDrawers()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Tạo diện mạo
+              </button>
+            </div>
+
+            <!-- Drawer 3: Tab Chọn Ảnh & Video iOS Chuẩn Locket (Theo ảnh mẫu người dùng) -->
+            <div class="locket-sheet-drawer ios-picker-drawer" id="locket-gallery-drawer">
+              <!-- Top bar với nút Hủy và Segmented Control Ảnh / Album -->
+              <div class="ios-picker-header">
+                <button type="button" class="ios-picker-cancel-btn" onclick="closeAllDrawers()">Hủy</button>
+                <div class="ios-picker-segmented">
+                  <button type="button" class="ios-seg-btn active" id="picker-tab-photos"
+                    onclick="switchPickerSubTab('photos')">Ảnh</button>
+                  <button type="button" class="ios-seg-btn" id="picker-tab-albums"
+                    onclick="switchPickerSubTab('albums')">Album</button>
+                </div>
+                <div style="width: 36px;"></div>
+              </div>
+
+              <!-- Thanh tìm kiếm kiểu iOS -->
+              <div class="ios-picker-search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Ảnh, Người, Địa điểm..." readonly>
+              </div>
+
+              <!-- Grid cuộn danh sách Media -->
+              <div class="ios-picker-grid" id="ios-picker-grid">
+                <!-- Nút Tải Từ Máy (File picker) -->
+                <div class="ios-grid-item upload-box" onclick="triggerDeviceUpload()"
+                  title="Tải ảnh hoặc video từ máy của bạn">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <span>Tải Từ Máy</span>
+                </div>
+
+                <!-- CÁC VIDEO VIP (Chỉ hiển thị khi ở bản VIP, bản Thường ẩn hoàn toàn) -->
+                <div class="ios-grid-item picker-vip-item" onclick="selectPickerVideo(0)" title="Video 1 (0:30)">
+                  <img src="images/thumb-video-1.jpg" alt="Video VIP 1">
+                  <span class="ios-video-duration">0:30</span>
+                </div>
+                <div class="ios-grid-item picker-vip-item" onclick="selectPickerVideo(1)" title="Video 2 (0:10)">
+                  <img src="images/thumb-video-2.jpg" alt="Video VIP 2">
+                  <span class="ios-video-duration">0:10</span>
+                </div>
+                <div class="ios-grid-item picker-vip-item" onclick="selectPickerVideo(0)" title="Video VIP 3 (1:01)">
+                  <img src="images/thumb-video-1.jpg" alt="Video VIP 3">
+                  <span class="ios-video-duration">1:01</span>
+                </div>
+                <div class="ios-grid-item picker-vip-item" onclick="selectPickerVideo(1)" title="Video VIP 4 (0:03)">
+                  <img src="images/thumb-video-2.jpg" alt="Video VIP 4">
+                  <span class="ios-video-duration">0:03</span>
+                </div>
+                <div class="ios-grid-item picker-vip-item" onclick="selectPickerVideo(0)" title="Video VIP 5 (1:15)">
+                  <img src="images/thumb-video-1.jpg" alt="Video VIP 5">
+                  <span class="ios-video-duration">1:15</span>
+                </div>
+
+                <!-- Vùng chứa các video/ảnh đã tải lên từ IndexedDB trong Drawer -->
+                <div id="picker-user-uploaded-items" style="display: contents;"></div>
+
+                <!-- CÁC ẢNH MẪU CAMERA ROLL (Hiện ở cả bản Thường và VIP) -->
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(0)" title="Cà Phê Chill">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80"
+                    alt="Cà Phê Chill">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(1)" title="Hoàng Hôn">
+                  <img
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80"
+                    alt="Hoàng Hôn">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(2)" title="Nhóm Bạn">
+                  <img
+                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=240&auto=format&fit=crop&q=80"
+                    alt="Nhóm Bạn">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(3)" title="Trà Sữa Trân Châu">
+                  <img src="https://images.unsplash.com/photo-1558857563-b37cf5a73e6a?w=240&auto=format&fit=crop&q=80"
+                    alt="Trà Sữa">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(4)" title="Caramen Bánh Ngọt">
+                  <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=240&auto=format&fit=crop&q=80"
+                    alt="Caramen">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(5)" title="Bingsu Trái Cây">
+                  <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=240&auto=format&fit=crop&q=80"
+                    alt="Bingsu">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(6)" title="Hũ Sữa Chua">
+                  <img
+                    src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=240&auto=format&fit=crop&q=80"
+                    alt="Sữa Chua">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(7)" title="Chú Thích Hot Trend">
+                  <img
+                    src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=240&auto=format&fit=crop&q=80"
+                    alt="Chú Thích Hot Trend">
+                </div>
+                <div class="ios-grid-item photo-item" onclick="selectPickerPhoto(8)" title="Cấu Hình Locket">
+                  <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=240&auto=format&fit=crop&q=80"
+                    alt="Cấu Hình Locket">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Control Center VIP Interactive Dashboard -->
+        <div class="controls-column">
+          <!-- Widget 1: Công tắc VIP Gold vs Bản Thường -->
+          <div class="interactive-card">
+            <div class="ic-header">
+              <div class="ic-icon gold-aura"><i class="fa-solid fa-crown"></i></div>
+              <div>
+                <h4>Chế Độ Locket Gold VIP</h4>
+                <p>Bật/tắt để so sánh huy hiệu vàng và đặc quyền trực quan</p>
+              </div>
+            </div>
+            <div class="gold-toggle-switch">
+              <button type="button" class="gt-option active" id="btn-mode-free" onclick="setGoldMode(false)">
+                <i class="fa-solid fa-xmark"></i> Bản Thường
+              </button>
+              <button type="button" class="gt-option" id="btn-mode-gold" onclick="setGoldMode(true)">
+                <i class="fa-solid fa-crown"></i> Locket Gold VIP
+              </button>
+            </div>
+          </div>
+
+          <!-- Widget: Kho Lưu Trữ Video VIP & Ảnh Thư Viện (Nơi Bỏ Video Của VIP) -->
+          <div class="interactive-card" id="widget-card-media">
+            <div class="ic-header">
+              <div class="ic-icon cyan-aura"><i class="fa-solid fa-photo-film"></i></div>
+              <div>
+                <h4 id="widget-media-title">Kho Video VIP & Ảnh Thư Viện</h4>
+                <p id="widget-media-desc">Nơi lưu trữ video của bạn • Tải video không viền lên Locket</p>
+              </div>
+            </div>
+
+            <!-- Gợi ý thư mục lưu file video của người dùng (Chỉ hiện khi ở bản VIP) -->
+            <div class="video-folder-box" id="video-folder-box">
+              <div class="vfb-header">
+                <i class="fa-solid fa-folder-open"></i>
+                <span>Thư mục lưu video của bạn:</span>
+              </div>
+              <div class="vfb-path"><code>weblocket/videos/video-1.mp4</code> (Đã có sẵn video trong thư mục!)</div>
+            </div>
+
+            <!-- Hàng Video VIP Trong Kho (Chỉ hiện khi ở bản VIP) -->
+            <div class="section-micro-title text-gold" id="video-vip-title"
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div>
+                <i class="fa-solid fa-crown"></i> <span>Video VIP Trong Kho & Đã Tải Lên</span>
+              </div>
+              <span id="gallery-scroll-hint"
+                style="font-size: 10.5px; color: #94a3b8; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                <i class="fa-solid fa-arrows-up-down"></i> Lướt lên/xuống
+              </span>
+            </div>
+            <div class="photo-selector-row video-gallery-scroll" id="video-gallery-container"
+              style="margin-bottom: 12px;">
+              <div class="photo-thumb-card vip-item" id="thumb-video-1" onclick="handleVideoCardClick(0, this)"
+                title="Video 1 (video-1.mp4)">
+                <img src="images/thumb-video-1.jpg" alt="Video VIP 1">
+                <span id="title-video-1">🎬 video-1.mp4</span>
+              </div>
+              <div class="photo-thumb-card vip-item" id="thumb-video-2" onclick="handleVideoCardClick(1, this)"
+                title="Video 2 (video-2.mp4)">
+                <img src="images/thumb-video-2.jpg" alt="Video VIP 2">
+                <span id="title-video-2">🎬 video-2.mp4</span>
+              </div>
+              <div class="photo-thumb-card upload-trigger vip-item" id="thumb-video-upload"
+                onclick="triggerDeviceUpload()" title="Tải Video/Ảnh từ máy của bạn">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Tải Từ Máy</span>
+                <input type="file" id="user-media-upload-input" accept="image/*,video/*" style="display:none;"
+                  onchange="handleUserMediaUpload(event)">
+              </div>
+              <!-- Vùng chứa các video/ảnh đã tải lên được lưu trong IndexedDB -->
+              <div id="user-uploaded-items-list" style="display: contents;"></div>
+            </div>
+
+            <!-- Hàng Ảnh Thư Viện Camera Roll -->
+            <div class="section-micro-title text-muted">
+              <i class="fa-regular fa-image"></i> <span>Ảnh Thư Viện Camera Roll</span>
+            </div>
+            <div class="photo-selector-row" id="camera-roll-photos-container"
+              style="grid-template-columns: repeat(3, 1fr);">
+              <div class="photo-thumb-card photo-roll-card active" id="thumb-photo-0" onclick="setMockupPhoto(0, this)"
+                title="Ảnh Cà Phê Chill">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
+                  alt="Chân dung">
+                <span>Cà Phê Chill ☕</span>
+              </div>
+              <div class="photo-thumb-card photo-roll-card" id="thumb-photo-1" onclick="setMockupPhoto(1, this)"
+                title="Ảnh Hoàng Hôn">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80"
+                  alt="Hoàng hôn">
+                <span>Hoàng Hôn 🌇</span>
+              </div>
+              <div class="photo-thumb-card photo-roll-card" id="thumb-photo-2" onclick="setMockupPhoto(2, this)"
+                title="Ảnh Bạn Thân">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=200&auto=format&fit=crop&q=80"
+                  alt="Bạn thân">
+                <span>Nhóm Bạn 👭</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nút CTA VIP -->
+          <a href="gold.html" class="btn-card-action btn-card-gold" style="padding:15px; font-size:16px;">
+            <i class="fa-solid fa-crown"></i>
+            <span>Nâng Cấp Locket Gold Sở Hữu Toàn Bộ Đặc Quyền</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4 CAM KẾT UY TÍN BẢO MẬT ==================== -->
+    <section class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <div class="trust-text">
+          <h4>Không Tải App Lạ</h4>
+          <p>100% qua cấu hình DNS DoH</p>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="trust-text">
+          <h4>Không Đụng iCloud</h4>
+          <p>Tuyệt đối không đụng tài khoản</p>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <div class="trust-text">
+          <h4>Không Cần Mật Khẩu</h4>
+          <p>Chỉ cần Username công khai</p>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+        <div class="trust-text">
+          <h4>Chỉ Đúng 3 Bước</h4>
+          <p>Chọn gói &gt; Thanh toán &gt; Kích hoạt</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-sec">
+      <div class="footer-support-chips">
+        <a href="https://zalo.me/0386116104" target="_blank" class="support-chip cfg-zalo-link">
+          <i class="fa-solid fa-phone" style="color:#2563EB;"></i>
+          <span>Zalo CSKH: <span class="cfg-zalo-phone">0386.116.104</span></span>
+        </a>
+      </div>
+      <p class="footer-copy">
+        &copy; 2026 TỔ CAM &bull; Cổng Dịch Vụ Locket Gold Độc Quyền Cao Cấp
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Nút hỗ trợ nổi (Floating Contact Button) -->
+  <div class="contact-float-btn" onclick="openContactModal()" title="Hỗ Trợ Nhanh">
+    <i class="fa-solid fa-headset"></i>
+  </div>
+
+  <!-- Contact Modal -->
+  <div class="contact-modal-overlay" id="contact-modal" onclick="if(event.target === this) closeContactModal()">
+    <div class="contact-modal-card">
+      <div class="close-modal-btn" onclick="closeContactModal()"><i class="fa-solid fa-xmark"></i></div>
+      <h3 style="font-family:'Fredoka',sans-serif; color:#fff; font-size:20px; margin-bottom:6px;">Trung Tâm CSKH Tổ Cam
+        24/7</h3>
+      <p style="color:#94A3B8; font-size:12.5px; margin-bottom:18px;">Bạn cần hỗ trợ nâng cấp hoặc giải đáp thắc mắc?
+        Liên hệ ngay:</p>
+
+      <a href="https://zalo.me/0386116104" target="_blank" class="contact-item-row cfg-zalo-link">
+        <div class="contact-icon-badge" style="background:#2563eb; color:#fff;">
+          <i class="fa-solid fa-comment-dots"></i>
+        </div>
+        <div style="text-align:left;">
+          <div style="color:#fff;">Zalo Chăm Sóc Khách Hàng</div>
+          <small style="color:#60a5fa;" class="cfg-zalo-phone">0386.116.104 (Hỗ trợ 24/7)</small>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Toast Cảnh Báo Tính Năng VIP (Khi ở Bản Thường) -->
+  <div class="vip-toast" id="vip-toast">
+    <i class="fa-solid fa-lock"></i>
+    <span id="vip-toast-msg">Tính năng này độc quyền cho Locket Gold VIP!</span>
+  </div>
+
+  <!-- Nạp cấu hình config.js trước để đồng bộ thông tin liên hệ -->
+  <script src="js/config.js?v=4.6&ts=20261012_1537"></script>
+  <script src="js/main.js?v=4.6&ts=20261012_1537"></script>
+</body>
+
+</html>

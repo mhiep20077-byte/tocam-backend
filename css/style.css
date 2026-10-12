@@ -1,0 +1,3452 @@
+:root {
+  --bg: #07090e;
+  --bg-card: rgba(18, 22, 34, 0.88);
+  --bg-card-hover: rgba(26, 32, 48, 0.95);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-orange: rgba(255, 122, 0, 0.35);
+
+  /* Tone màu Tổ Cam rực rỡ, sang trọng */
+  --orange: #FF7A00;
+  --orange-hi: #FFA033;
+  --orange-light: #FFD8A8;
+  --orange-dark: #C2410C;
+  --orange-glow: rgba(255, 122, 0, 0.45);
+  
+  --gold: #FBBF24;
+  --cyan: #06B6D4;
+  --cyan-hi: #38BDF8;
+  --green: #10B981;
+  --purple: #A855F7;
+  --pink: #EC4899;
+
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, * {
+  touch-action: manipulation;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* WebGL Background Mesh canvas */
+#glbg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+/* Background Atmosphere Mesh Overlay */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  background-image: 
+    linear-gradient(rgba(255, 122, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 122, 0, 0.03) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+/* Mưa logo icon rơi từ trên xuống */
+#rain {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+.rain-icon {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  will-change: transform;
+  transform: translateY(-130vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  filter: drop-shadow(0 4px 12px rgba(255, 122, 0, 0.5));
+}
+
+@keyframes dropRain {
+  0% { transform: translateY(-100px) rotate(0deg) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  85% { transform: translateY(105vh) rotate(360deg) scale(1.1); opacity: 1; }
+  100% { transform: translateY(115vh) rotate(420deg) scale(0.8); opacity: 0; }
+}
+
+/* ==================== 3D CLAYMORPHIC TỔ CAM SPLASH SCREEN ==================== */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, #2a1505 0%, #150a02 45%, #080401 100%);
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.75s ease, visibility 0.75s;
+  overflow: hidden;
+}
+
+#intro-screen::before {
+  content: '';
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(255, 122, 0, 0.45) 0%, rgba(234, 88, 12, 0.2) 50%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(55px);
+  pointer-events: none;
+  animation: introGlowPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes introGlowPulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+#intro-screen.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-box {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+.intro-clay-icon {
+  width: 98px;
+  height: 98px;
+  border-radius: 34px;
+  background: linear-gradient(145deg, #FFA033, #EA580C);
+  box-shadow: 
+    inset 0 5px 8px rgba(255, 255, 255, 0.75),
+    inset 0 -8px 12px rgba(154, 52, 18, 0.5),
+    0 16px 36px rgba(234, 88, 12, 0.5),
+    0 0 50px rgba(255, 122, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: introFloatClay 3s ease-in-out infinite alternate;
+  border: 3.5px solid rgba(255, 255, 255, 0.6);
+  margin-bottom: 6px;
+}
+
+.intro-clay-icon span.orange-emoji {
+  font-size: 50px;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35));
+}
+
+@keyframes introFloatClay {
+  0% { transform: translateY(0px) rotate(-2deg) scale(0.98); }
+  100% { transform: translateY(-10px) rotate(2deg) scale(1.02); }
+}
+
+.intro-sparkle {
+  position: absolute;
+  color: #FED7AA;
+  filter: drop-shadow(0 0 8px rgba(255, 186, 115, 0.9));
+  pointer-events: none;
+  animation: introTwinkle 2.2s ease-in-out infinite;
+}
+
+.intro-sparkle.is-1 { top: -8px; left: -16px; font-size: 16px; animation-delay: 0.1s; }
+.intro-sparkle.is-2 { top: 22px; right: -24px; font-size: 14px; animation-delay: 1s; }
+.intro-sparkle.is-3 { bottom: -6px; right: -14px; font-size: 17px; animation-delay: 0.6s; }
+.intro-sparkle.is-4 { bottom: 14px; left: -22px; font-size: 13px; animation-delay: 1.5s; }
+
+@keyframes introTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.7) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.35) rotate(45deg); }
+}
+
+.intro-letters {
+  display: flex;
+  gap: 3px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: clamp(36px, 9vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.intro-letters span {
+  display: inline-block;
+  animation: waveLetter 1.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.08s);
+  text-shadow:
+    0 1px 0 #fed7aa,
+    0 2px 0 #fb923c,
+    0 4px 14px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(255, 122, 0, 0.6);
+}
+
+@keyframes waveLetter {
+  0%, 100% { transform: translateY(0); color: #fff; }
+  50% { transform: translateY(-9px); color: #FF7A00; }
+}
+
+.intro-clay-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 26px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #FED7AA 0%, #EA580C 100%);
+  color: #431407;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.8),
+    inset 0 -3px 4px rgba(154, 52, 18, 0.45),
+    0 6px 18px rgba(234, 88, 12, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.intro-desc {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #94A3B8;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.intro-progress-wrap {
+  width: 220px;
+  height: 8px;
+  background: rgba(15, 20, 32, 0.9);
+  border: 1.5px solid rgba(255, 122, 0, 0.4);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4);
+  margin-top: 6px;
+}
+
+.intro-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #EA580C, #FFA033, #FFFFFF);
+  border-radius: 99px;
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 16px rgba(255, 122, 0, 0.9);
+}
+
+/* ==================== PAGE LAYOUT ==================== */
+.page-container {
+  position: relative;
+  z-index: 10;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 16px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Navigation Bar */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  background: linear-gradient(165deg, rgba(28, 30, 44, 0.92) 0%, rgba(13, 15, 24, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+    0 10px 28px rgba(0, 0, 0, 0.4);
+  margin-bottom: 24px;
+  gap: 10px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(145deg, #FFA033, #EA580C);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(154, 52, 18, 0.4),
+    0 4px 12px rgba(234, 88, 12, 0.45);
+}
+
+.brand-name {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.brand-name .highlight { color: #FF7A00; }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.chip-tele {
+  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+  color: #fff;
+}
+
+.chip-tele:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45);
+}
+
+.chip-zalo {
+  background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+  color: #fff;
+}
+
+.chip-zalo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
+  border: 1.5px solid rgba(52, 211, 153, 0.4);
+  border-radius: 999px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #34D399;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: #10B981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10B981;
+  animation: blinkDot 1.8s infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* ==================== HERO SECTION ==================== */
+.hero-sec {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 20px;
+  background: linear-gradient(180deg, #FED7AA 0%, #EA580C 100%);
+  color: #431407;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.75),
+    inset 0 -2px 3px rgba(154, 52, 18, 0.4),
+    0 6px 18px rgba(234, 88, 12, 0.4);
+}
+
+.hero-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: clamp(30px, 6.8vw, 46px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+  text-shadow:
+    0 1px 0 #fed7aa,
+    0 2px 0 #fb923c,
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 122, 0, 0.45);
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.hero-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 122, 0, 0.9) 70%, transparent 90%);
+  mix-blend-mode: overlay;
+  animation: heroTitleSweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes heroTitleSweep {
+  0% { left: -130%; }
+  60%, 100% { left: 190%; }
+}
+
+.hero-title .text-orange {
+  color: #FF7A00;
+  text-shadow: 0 0 22px rgba(255, 122, 0, 0.7);
+  display: inline-block;
+}
+
+.hero-title .text-gold {
+  color: #FBBF24;
+  text-shadow: 0 0 20px rgba(245, 197, 24, 0.6);
+  display: inline-block;
+}
+
+.hero-subtitle {
+  font-size: clamp(14px, 3.4vw, 16px);
+  color: #94A3B8;
+  max-width: 620px;
+  margin: 0 auto;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ==================== THEME STRIP ==================== */
+.theme-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px auto 26px;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  max-width: 480px;
+  overflow-x: auto;
+}
+
+.theme-strip span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.color-dot:hover, .color-dot.active {
+  transform: scale(1.25);
+  box-shadow: 0 0 10px currentColor;
+  border-color: #fff;
+}
+
+/* ==================== 8 TÍNH NĂNG VIP LOCKET GOLD ĐỘC QUYỀN ==================== */
+.features-grid-8 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 640px) {
+  .features-grid-8 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (min-width: 641px) {
+  .features-grid-8 .feat-item-card:last-child:nth-child(odd) {
+    grid-column: span 2;
+  }
+}
+
+.feat-item-card {
+  background: linear-gradient(165deg, rgba(24, 28, 42, 0.85) 0%, rgba(14, 17, 26, 0.95) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.feat-item-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  border-color: var(--border-orange);
+  box-shadow: 0 10px 25px rgba(255, 122, 0, 0.15);
+}
+
+.feat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.f-orange {
+  background: linear-gradient(145deg, #FFA033, #EA580C);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.f-gold {
+  background: linear-gradient(145deg, #FDE68A, #F59E0B);
+  color: #78350F;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.f-purple {
+  background: linear-gradient(145deg, #C084FC, #7E22CE);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.f-green {
+  background: linear-gradient(145deg, #6EE7B7, #059669);
+  color: #064E3B;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.f-cyan {
+  background: linear-gradient(145deg, #38BDF8, #0284C7);
+  color: #082F49;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.f-pink {
+  background: linear-gradient(145deg, #F472B6, #DB2777);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+
+.feat-text-box h4 {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+
+.feat-text-box p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Các đoạn chữ nổi bật theo yêu cầu người dùng */
+.text-highlight-video {
+  color: #FFB000 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px rgba(255, 176, 0, 0.5);
+}
+
+.text-highlight-caption {
+  color: #FB923C !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px rgba(251, 146, 60, 0.5);
+}
+
+/* ==================== VIP INTERACTIVE STUDIO LOCKET GOLD ==================== */
+.interactive-section {
+  background: linear-gradient(165deg, rgba(22, 26, 42, 0.85) 0%, rgba(11, 14, 22, 0.98) 100%);
+  border: 1.5px solid rgba(255, 122, 0, 0.25);
+  border-radius: 28px;
+  padding: 32px 24px;
+  margin-bottom: 38px;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.65),
+    0 0 30px rgba(255, 122, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.interactive-section::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(255, 122, 0, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.vip-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 122, 0, 0.2) 0%, rgba(255, 176, 0, 0.2) 100%);
+  border: 1px solid rgba(255, 176, 0, 0.45);
+  color: #FFB000;
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 16px rgba(255, 176, 0, 0.2);
+}
+
+.is-head {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.is-head h3 {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+.is-head p {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Grid Layout */
+.interactive-grid-vip {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .interactive-grid-vip {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Phone Column */
+.phone-column {
+  display: flex;
+  justify-content: center;
+}
+
+/* iPhone 16 Pro Chassis */
+.iphone-16-pro {
+  width: 296px;
+  height: 605px;
+  background: #0c0e14;
+  border: 4px solid #33394a;
+  border-radius: 48px;
+  padding: 8px;
+  box-shadow: 
+    0 0 0 2px #161822,
+    0 26px 65px rgba(0, 0, 0, 0.85),
+    0 0 35px rgba(255, 122, 0, 0.12);
+  position: relative;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* Locket Real Viewport - Nền xám xanh đặc trưng của Locket */
+.locket-viewport {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 25%, #34404d 0%, #182028 100%);
+  border-radius: 40px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 42px 10px 10px;
+  box-sizing: border-box;
+  transition: background 0.4s ease;
+}
+
+.locket-viewport.vip-mode {
+  background: radial-gradient(ellipse at 50% 25%, #4a0d1b 0%, #170207 100%);
+}
+
+/* Dynamic Island */
+.dynamic-island {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 24px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
+}
+
+.dynamic-island.expanded {
+  width: auto;
+  min-width: 170px;
+  max-width: 260px;
+  height: 28px;
+  padding: 0 12px;
+  justify-content: space-between;
+}
+
+.di-camera {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #111827;
+  border: 1.5px solid #1f2937;
+  flex-shrink: 0;
+}
+
+.di-content {
+  display: none !important; /* Ẩn chữ hoàn toàn ở trạng thái bình thường chuẩn iPhone */
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dynamic-island.expanded .di-content {
+  display: flex !important; /* Chỉ hiện chữ khi đang mở rộng (quay video / thông báo) */
+}
+
+.dynamic-island.expanded .di-content span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 10px;
+}
+
+.di-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+
+.di-dot.rec {
+  background: #EF4444;
+  box-shadow: 0 0 8px #EF4444;
+  animation: pulseRec 1s infinite alternate;
+}
+
+/* iOS Status Bar */
+.ios-status-bar {
+  position: absolute;
+  top: 13px;
+  left: 0;
+  right: 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.ios-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+}
+
+/* ==================== 1. LOCKET HEADER CHUẨN ẢNH THẬT ==================== */
+.locket-real-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  z-index: 20;
+}
+
+.locket-nav-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.badge-new {
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  background: #38BDF8;
+  color: #03213a;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+
+.locket-friends-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.locket-friends-pill.gold {
+  background: linear-gradient(135deg, rgba(255, 176, 0, 0.25) 0%, rgba(255, 122, 0, 0.25) 100%);
+  border-color: rgba(255, 176, 0, 0.6);
+  color: #FFD278;
+  box-shadow: 0 0 12px rgba(255, 176, 0, 0.3);
+}
+
+.locket-user-avatar {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.locket-user-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+}
+
+.user-crown-icon {
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  font-size: 13px;
+  color: #FFB000;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 0, 0.9));
+  animation: crownBounce 2s ease-in-out infinite alternate;
+  transition: all 0.3s ease;
+}
+
+.user-crown-icon.hidden {
+  opacity: 0;
+  transform: scale(0.2);
+}
+
+/* Header cho Chế Độ Gửi Ảnh (Send Screen - Ảnh 1) */
+.locket-send-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  color: #fff;
+  z-index: 20;
+}
+
+.locket-send-header h4 {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.locket-download-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* ==================== 2. KHUNG CAMERA VUÔNG BO GÓC CHUẨN LOCKET ==================== */
+.locket-camera-box {
+  position: relative;
+  width: 252px;
+  height: 252px;
+  border-radius: 44px;
+  background: #000;
+  overflow: hidden;
+  margin: 6px auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Media Background */
+.box-media-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease, filter 0.25s ease;
+}
+
+/* Video Background (Đặc quyền VIP Locket Gold) */
+.box-media-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 44px;
+  z-index: 4;
+  display: none;
+  transition: transform 0.3s ease, filter 0.25s ease;
+}
+
+#locket-live-webcam {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 44px;
+  z-index: 2;
+  display: none;
+  transition: transform 0.3s ease;
+}
+
+.box-cam-btn {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.box-cam-btn:hover, .box-cam-btn.active {
+  background: rgba(245, 158, 11, 0.35);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+/* Flash overlay */
+.camera-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
+  transition: opacity 0.08s ease;
+}
+
+.camera-flash.flash-active { opacity: 0.95; }
+
+/* Grid lines inside box */
+.camera-grid-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.camera-grid-lines.active { opacity: 0.35; }
+.grid-line.horizontal { position: absolute; left: 0; right: 0; height: 1px; background: #fff; }
+.grid-line.horizontal.h1 { top: 33.3%; }
+.grid-line.horizontal.h2 { top: 66.6%; }
+.grid-line.vertical { position: absolute; top: 0; bottom: 0; width: 1px; background: #fff; }
+.grid-line.vertical.v1 { left: 33.3%; }
+.grid-line.vertical.v2 { left: 66.6%; }
+
+/* Icon Controls bên trong khung camera (Flash, Mic/Speaker & 1x) */
+.box-inner-controls {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 15;
+}
+
+.box-flash-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.box-flash-btn.active {
+  color: #FFB000;
+  filter: drop-shadow(0 0 6px #FFB000);
+}
+
+.box-mic-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.box-mic-btn:hover {
+  transform: scale(1.12);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+.box-mic-btn.active {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10B981;
+  color: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+/* Chế độ Nút Mở Loa khi upload / phát Video */
+.box-mic-btn.speaker-mode {
+  width: 32px;
+  height: 32px;
+  background: rgba(18, 22, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  color: #f1f5f9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.box-mic-btn.speaker-mode.unmuted {
+  background: rgba(245, 158, 11, 0.3);
+  border-color: #f59e0b;
+  color: #fbbf24;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  animation: pulseSpeaker 1.6s infinite ease-in-out;
+}
+
+@keyframes pulseSpeaker {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.box-zoom-chip {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Thanh Thêm một tin nhắn (Ảnh 1 & 4) */
+.box-caption-pill {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(18, 22, 28, 0.92);
+  backdrop-filter: blur(16px);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: 90%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65);
+  z-index: 25;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, border-color 0.2s ease;
+  cursor: grab;
+  display: none; /* Chỉ hiện khi chụp hoặc quay xong */
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.box-caption-pill:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  filter: brightness(1.08);
+}
+
+.box-caption-pill[class*="pill-"] {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+}
+
+.box-caption-pill.dragging {
+  cursor: grabbing !important;
+  transition: none !important;
+  border-color: rgba(255, 179, 0, 0.6) !important;
+}
+
+.box-caption-pill span {
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  display: inline-block;
+  cursor: grab;
+  line-height: 1.2;
+}
+
+.box-caption-pill.dragging span {
+  cursor: grabbing !important;
+}
+
+.photo-caption-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: #fff !important;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: center;
+  field-sizing: content;
+  min-width: 130px;
+  max-width: 220px;
+  padding: 0;
+  margin: 0;
+  cursor: text;
+  line-height: 1.2;
+  box-shadow: none !important;
+}
+
+.photo-caption-input::placeholder {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+.slide-in-right {
+  animation: capSlideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.slide-in-left {
+  animation: capSlideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes capSlideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes capSlideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.caption-arrow-btn {
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  color: #e2e8f0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.caption-arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.38);
+  color: #fff;
+  transform: scale(1.15);
+}
+
+/* SVG Thanh Chạy Video Bo Quanh Khung Ảnh (Chỉ hiện khi đang giữ quay video) */
+.box-progress-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+}
+
+.locket-camera-box.recording .box-progress-svg,
+.box-progress-svg.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.box-rect-fill {
+  fill: none;
+  stroke: #7dd3fc;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-dasharray: 920;
+  stroke-dashoffset: 920;
+  transition: none;
+}
+
+.box-rect-fill.gold {
+  stroke: #ff2d55;
+  filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.9));
+}
+
+/* Live Badge Video Recording (Đã ẩn theo yêu cầu) */
+.video-record-pill {
+  display: none !important;
+}
+
+.rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 8px #EF4444;
+  animation: pulseRec 1s infinite alternate;
+}
+
+@keyframes pulseRec {
+  from { opacity: 0.4; }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+.rec-limit {
+  color: #94A3B8;
+  font-size: 10px;
+}
+
+/* ==================== 3. CONTROLS DƯỚI KHUNG CAMERA (ẢNH 2 & 3) ==================== */
+.locket-camera-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 20;
+}
+
+/* Hàng Shutter chính */
+.locket-shutter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.locket-side-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.locket-side-btn:hover { transform: scale(1.1); }
+
+/* Nút Shutter tròn chuẩn Locket */
+.locket-real-shutter {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 3.5px solid #7dd3fc;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.locket-real-shutter.gold {
+  border-color: #ff2d55;
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.7);
+}
+
+.shutter-core {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.locket-real-shutter.recording .shutter-core {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #94A3B8;
+}
+
+.locket-real-shutter.recording.gold .shutter-core {
+  background: #ff2d55;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 0 14px rgba(255, 45, 85, 0.85);
+}
+
+/* Hàng Lịch Sử Bạn Bè */
+.locket-history-pill-row {
+  display: flex;
+  justify-content: center;
+}
+
+.history-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.history-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Dock 3 Tabs ở đáy điện thoại (Ảnh 2 & 1 VIP) */
+.locket-bottom-dock {
+  width: 168px;
+  height: 42px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dock-tab {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.dock-tab.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 14px;
+  width: 44px;
+}
+
+.dock-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #ff2d55;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #170207;
+}
+
+.vip-mode .dock-badge {
+  display: flex;
+}
+
+/* ==================== 4. CONTROLS MÀN HÌNH GỬI ĐẾN (ẢNH 1 & 4) ==================== */
+.locket-send-controls {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 25;
+}
+
+/* Dãy dấu chấm chỉ báo lướt ảnh & caption */
+.locket-dots-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.locket-dots-row span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+  cursor: pointer;
+}
+
+.locket-dots-row span:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(1.3);
+}
+
+.locket-dots-row span.active {
+  width: 15px;
+  border-radius: 5px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.65);
+}
+
+.vip-mode .locket-dots-row span.active {
+  background: #ff2d55;
+  box-shadow: 0 0 10px rgba(255, 45, 85, 0.8);
+}
+
+.send-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+}
+
+.btn-send-dismiss, .btn-send-text {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 30;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn-send-dismiss:hover, .btn-send-text:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.08);
+}
+
+.btn-send-dismiss:active, .btn-send-text:active {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0.92);
+}
+
+.btn-send-dismiss i, .btn-send-text i {
+  pointer-events: none;
+}
+
+.btn-send-main {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #64748B;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-send-main:hover {
+  background: #0284C7;
+  transform: scale(1.05);
+}
+
+.btn-send-main.gold {
+  background: #881337;
+  box-shadow: 0 4px 16px rgba(136, 19, 55, 0.6);
+}
+
+/* Hàng chọn bạn bè (Ảnh 1 & 4) */
+.send-friends-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 2px 8px;
+}
+
+.friend-item-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.friend-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  border: 1.5px solid transparent;
+}
+
+.friend-item-chip.active .friend-avatar-circle {
+  background: #38BDF8;
+  color: #03213a;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+.friend-avatar-circle.private-circle {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.vip-mode .friend-item-chip.active .friend-avatar-circle.all-circle,
+.vip-mode .friend-item-chip.active .friend-avatar-circle.private-circle {
+  background: #ff2d55;
+  box-shadow: 0 0 12px rgba(255, 45, 85, 0.75);
+  color: #fff;
+}
+
+.vip-mode .friend-item-chip.active span {
+  color: #ff2d55;
+}
+
+.friend-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-item-chip span {
+  font-size: 10px;
+  color: #CBD5E1;
+  font-weight: 700;
+}
+
+/* iOS Home Bar */
+.ios-home-bar {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  z-index: 30;
+}
+
+/* ==================== 5. VIP DRAWERS (CHÚ THÍCH & TẠO DIỆN MẠO) ==================== */
+.locket-sheet-backdrop {
+  position: absolute;
+  inset: 8px;
+  border-radius: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 55;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.locket-sheet-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.locket-sheet-drawer {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  height: 82%;
+  background: #12151b;
+  border-top-left-radius: 36px;
+  border-top-right-radius: 36px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  padding: 12px 14px 18px;
+  box-sizing: border-box;
+  z-index: 60;
+  box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(105%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), visibility 0.35s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.locket-sheet-drawer.open {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 10px;
+  cursor: pointer;
+}
+
+/* ==================== DRAWER 3: TAB CHỌN ẢNH & VIDEO iOS (ẢNH 2 USER) ==================== */
+.ios-picker-drawer {
+  height: 90% !important;
+  background: #000000 !important;
+  border-top-left-radius: 36px !important;
+  border-top-right-radius: 36px !important;
+  padding: 10px 10px 14px !important;
+}
+
+.ios-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.ios-picker-cancel-btn {
+  background: none;
+  border: none;
+  color: #0a84ff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: opacity 0.15s ease;
+}
+.ios-picker-cancel-btn:hover {
+  opacity: 0.8;
+}
+
+.ios-picker-segmented {
+  display: inline-flex;
+  align-items: center;
+  background: #1c1c1e;
+  border-radius: 999px;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ios-seg-btn {
+  background: none;
+  border: none;
+  color: #98989d;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ios-seg-btn.active {
+  background: #636366;
+  color: #ffffff;
+}
+
+.ios-picker-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c1c1e;
+  border-radius: 10px;
+  padding: 7px 12px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ios-picker-search-bar i {
+  color: #8e8e93;
+  font-size: 13px;
+}
+
+.ios-picker-search-bar input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  cursor: default;
+}
+.ios-picker-search-bar input::placeholder {
+  color: #8e8e93;
+}
+
+.ios-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 12px;
+}
+.ios-picker-grid::-webkit-scrollbar {
+  width: 4px;
+}
+.ios-picker-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.ios-grid-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #1c1c1e;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.ios-grid-item:hover {
+  filter: brightness(1.15);
+  transform: scale(0.98);
+}
+
+.ios-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ios-grid-item.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #1c1c1e;
+  border: 1.5px dashed rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px;
+}
+.ios-grid-item.upload-box i {
+  font-size: 20px;
+}
+
+.ios-video-duration {
+  position: absolute;
+  bottom: 4px;
+  right: 5px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  letter-spacing: 0.3px;
+}
+
+/* Ở bản thường: Ẩn các video trong picker drawer */
+#locket-viewport:not(.vip-mode) .picker-vip-item {
+  display: none !important;
+}
+#locket-viewport.vip-mode .picker-vip-item {
+  display: block !important;
+}
+
+/* Chú Thích Sheet (Ảnh 5) */
+.caption-sheet-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.caption-sheet-header h4 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+
+.caption-pills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 350px;
+  padding: 4px 6px 16px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+  user-select: none;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+.caption-pills-list.dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+.caption-pills-list::-webkit-scrollbar {
+  width: 5px;
+}
+.caption-pills-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.caption-pills-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+}
+
+.caption-group-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  margin: 12px 0 6px 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.caption-group-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+
+.caption-group-title.standard-title {
+  color: #8e8e93;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.caption-vip-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  padding: 8px 12px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.group-vip-tag {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 900;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.vip-cap-pill {
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vip-cap-pill:hover {
+  transform: scale(1.04);
+  filter: brightness(1.1);
+}
+
+/* Category: General (Chuẩn Locket Trong Ảnh Người Dùng) */
+.pill-dark { background: #2c2c2e; color: #fff; }
+.pill-halloween { background: linear-gradient(135deg, #c2410c 0%, #7c2d12 100%); }
+.pill-xmas-green { background: #166534; }
+.pill-xmas-red { background: #991b1b; }
+.pill-2027-gold { background: linear-gradient(90deg, #fef08a 0%, #fde047 100%); color: #000 !important; font-weight: 800; }
+.pill-2027-purple { background: linear-gradient(90deg, #6366f1 0%, #9333ea 100%); }
+.pill-2027-red { background: linear-gradient(90deg, #ea580c 0%, #ef4444 100%); }
+.pill-weather { background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%); }
+.pill-streak { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); color: #000 !important; font-weight: 800; }
+.pill-zodiac { background: linear-gradient(90deg, #fbcfe8 0%, #f472b6 100%); color: #831843 !important; }
+.pill-vote { background: #3b82f6; }
+
+/* Category: Decorative (Ảnh 2) */
+.pill-party { background: linear-gradient(90deg, #bef264 0%, #a3e635 100%); color: #1a2e05 !important; }
+.pill-morning { background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%); }
+.pill-night { background: linear-gradient(90deg, #4f46e5 0%, #4338ca 100%); }
+.pill-ootd { background: #ffffff; color: #000000 !important; }
+.pill-missyou { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }
+
+/* Category: In Love (Ảnh 2 & 3) */
+.pill-pout { background: linear-gradient(90deg, #fb923c 0%, #f87171 100%); }
+.pill-crush { background: linear-gradient(90deg, #38bdf8 0%, #0369a1 100%); }
+.pill-rep { background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%); }
+.pill-snark { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }
+.pill-hug { background: linear-gradient(90deg, #f472b6 0%, #fb7185 100%); }
+.pill-miss { background: linear-gradient(90deg, #c084fc 0%, #a855f7 100%); }
+.pill-jealous { background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%); }
+.pill-sweetdream { background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 100%); }
+
+/* Category: Gen Z Life (Ảnh 3 & 4) */
+.pill-hero { background: linear-gradient(90deg, #94a3b8 0%, #f472b6 100%); }
+.pill-cold-sick { background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 100%); color: #083344 !important; }
+.pill-helpless { background: linear-gradient(90deg, #64748b 0%, #475569 100%); }
+.pill-sorry { background: linear-gradient(90deg, #fbbf24 0%, #fb923c 100%); color: #000 !important; }
+.pill-cry { background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%); }
+.pill-fall { background: linear-gradient(90deg, #6366f1 0%, #d946ef 100%); }
+.pill-dizzy { background: linear-gradient(90deg, #7c3aed 0%, #4c1d95 100%); }
+.pill-dislike { background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%); }
+.pill-pretty { background: linear-gradient(90deg, #ec4899 0%, #db2777 100%); }
+.pill-clown { background: linear-gradient(90deg, #f59e0b 0%, #b45309 100%); }
+
+/* Category: Wordsmith (Ảnh 4 & 5) */
+.pill-pink { background: linear-gradient(90deg, #ff2d55 0%, #fb7185 100%); }
+.pill-blue { background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%); }
+.pill-rain { background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%); }
+.pill-autumn { background: linear-gradient(90deg, #c2410c 0%, #fb923c 100%); }
+.pill-pig { background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%); color: #000 !important; }
+.pill-ear { background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); }
+.pill-angry { background: linear-gradient(90deg, #991b1b 0%, #ef4444 100%); }
+.pill-salad { background: linear-gradient(90deg, #059669 0%, #34d399 100%); color: #000 !important; }
+.pill-giggle { background: linear-gradient(90deg, #eab308 0%, #facc15 100%); color: #000 !important; }
+.pill-phone { background: linear-gradient(90deg, #9333ea 0%, #c084fc 100%); }
+.pill-leaf { background: linear-gradient(90deg, #0d9488 0%, #2dd4bf 100%); color: #000 !important; }
+.pill-cold { background: linear-gradient(90deg, #0891b2 0%, #38bdf8 100%); }
+.pill-thatsthat { background: linear-gradient(90deg, #ea580c 0%, #f59e0b 100%); }
+.pill-handsome { background: linear-gradient(90deg, #ea580c 0%, #f97316 100%); }
+
+/* ==================== 25 CAPTION LOCKET VIP MỚI CHUẨN IPHONE ==================== */
+.pill-nho-anh { background: linear-gradient(90deg, #f43f5e 0%, #fb923c 100%); }
+.pill-bien-oi { background: linear-gradient(90deg, #1d4ed8 0%, #38bdf8 100%); }
+.pill-yeu-me { background: #e11d48; }
+.pill-nho-ngy { background: linear-gradient(90deg, #ec4899 0%, #f43f5e 100%); }
+.pill-oan-ta { background: linear-gradient(90deg, #9333ea 0%, #c084fc 100%); }
+.pill-kha-nang { background: linear-gradient(90deg, #cbd5e1 0%, #e2e8f0 100%); color: #0f172a !important; }
+.pill-qua-kieu { background: linear-gradient(90deg, #f97316 0%, #fb7185 100%); }
+.pill-lanh-nho-ai { background: linear-gradient(90deg, #7dd3fc 0%, #bae6fd 100%); color: #0369a1 !important; }
+.pill-nhang-nhit { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+.pill-toi-buon { background: linear-gradient(90deg, #1e293b 0%, #334155 100%); }
+.pill-gap-nhau { background: linear-gradient(90deg, #eab308 0%, #facc15 100%); color: #713f12 !important; }
+.pill-ank-iu { background: linear-gradient(90deg, #a855f7 0%, #ec4899 100%); }
+.pill-sen { background: linear-gradient(90deg, #fbcfe8 0%, #f472b6 100%); color: #831843 !important; }
+.pill-dam-nhau { background: linear-gradient(90deg, #ea580c 0%, #ef4444 100%); }
+.pill-ba-khi { background: linear-gradient(90deg, #f43f5e 0%, #e11d48 100%); }
+.pill-du-an-ma { background: linear-gradient(90deg, #134e4a 0%, #1e293b 100%); }
+.pill-so-tk { background: linear-gradient(90deg, #06b6d4 0%, #0284c7 100%); }
+.pill-ai-so { background: linear-gradient(90deg, #881337 0%, #b91c1c 100%); }
+.pill-cai-nit { background: linear-gradient(90deg, #b45309 0%, #ca8a04 100%); }
+.pill-canh-bao { background: linear-gradient(90deg, #c026d3 0%, #9333ea 100%); }
+.pill-than-chua { background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); }
+.pill-ai-muon { background: linear-gradient(90deg, #ea580c 0%, #dc2626 100%); }
+.pill-hay-ra-de { background: linear-gradient(90deg, #99f6e4 0%, #bae6fd 100%); color: #0f172a !important; }
+.pill-giam-sm { background: linear-gradient(90deg, #06b6d4 0%, #10b981 100%); color: #022c22 !important; }
+.pill-mac-co { background: linear-gradient(90deg, #fb7185 0%, #f43f5e 100%); }
+
+/* Aa Văn bản Inline Input Pill */
+.vip-cap-pill.aa-text-pill {
+  padding: 6px 14px;
+  cursor: text;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2c2c2e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+.vip-cap-pill.aa-text-pill:hover,
+.vip-cap-pill.aa-text-pill:focus-within {
+  border-color: #38bdf8;
+  background: #1c1c1e;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+  transform: scale(1.02);
+}
+.aa-prefix {
+  font-weight: 800;
+  color: #fff;
+  font-size: 13px;
+  user-select: none;
+}
+.aa-pill-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  width: 60px;
+  transition: width 0.2s ease;
+  font-family: inherit;
+  padding: 0;
+}
+.aa-pill-input:focus {
+  width: 120px;
+}
+.aa-pill-input::placeholder {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+/* Tạo Diện Mạo Sheet (Ảnh 2) */
+.effects-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+.effects-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+.effects-section {
+  margin-bottom: 12px;
+}
+.effects-section h5 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 8px 4px;
+}
+
+.effects-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 4px;
+}
+.effects-row::-webkit-scrollbar {
+  display: none;
+}
+
+.effect-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 54px;
+}
+.effect-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 0.2s ease, background 0.2s ease;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+.effect-item:hover .effect-icon-circle, .effect-item.active .effect-icon-circle {
+  transform: scale(1.08);
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
+}
+.effect-item span {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.btn-create-look {
+  width: 100%;
+  padding: 10px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #000;
+  font-size: 13px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.4);
+  transition: transform 0.2s ease;
+  margin-top: 6px;
+}
+.btn-create-look:hover {
+  transform: scale(1.02);
+}
+
+/* Góc dưới trong khung Camera (VIP mode) */
+.box-corner-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 15;
+}
+
+.box-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.box-icon-btn:hover {
+  transform: scale(1.15);
+}
+
+.box-mic-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==================== CONTROLS COLUMN ==================== */
+.controls-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.interactive-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 14px 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.interactive-card:hover {
+  border-color: rgba(255, 122, 0, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ic-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ic-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.ic-icon.gold-aura {
+  background: rgba(251, 191, 36, 0.15);
+  color: #F59E0B;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+}
+
+.ic-icon.red-aura {
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.3);
+}
+
+.ic-icon.purple-aura {
+  background: rgba(168, 85, 247, 0.15);
+  color: #A855F7;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+}
+
+.ic-icon.cyan-aura {
+  background: rgba(6, 182, 212, 0.15);
+  color: #06B6D4;
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.3);
+}
+
+.ic-header h4 {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+
+.ic-header p {
+  font-size: 11.5px;
+  color: #94A3B8;
+  margin: 2px 0 0;
+}
+
+/* Gold Toggle Switch */
+.gold-toggle-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gt-option {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gt-option.active {
+  background: linear-gradient(135deg, #FF9933 0%, #FF6600 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255, 102, 0, 0.45);
+  transform: scale(1.02);
+}
+
+/* Video Test Actions */
+.video-test-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-action-test {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1.5px solid rgba(239, 68, 68, 0.45);
+  color: #FCA5A5;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-action-test:hover, .btn-action-test.active {
+  background: #EF4444;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
+}
+
+.time-badge {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #FFB000;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* Caption Chips Grid */
+.caption-chips-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .caption-chips-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.caption-chip {
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #E2E8F0;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caption-chip:hover {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.45);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.caption-chip.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(217, 70, 239, 0.3) 100%);
+  border-color: #C084FC;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+}
+
+/* Photo Selector Row */
+.photo-selector-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.photo-thumb-card {
+  position: relative;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.photo-thumb-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.photo-thumb-card span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 6px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-thumb-card:hover img {
+  transform: scale(1.1);
+}
+
+.photo-thumb-card.active {
+  border-color: #06B6D4;
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+  transform: translateY(-2px);
+}
+
+/* ==================== VIP LOCK STATES & MEDIA SELECTOR ==================== */
+.interactive-card.free-locked {
+  position: relative;
+  opacity: 0.72;
+  transition: all 0.3s ease;
+  border-color: rgba(239, 68, 68, 0.28);
+  background: rgba(239, 68, 68, 0.025);
+}
+
+.interactive-card.free-locked:hover {
+  opacity: 0.9;
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.vip-lock-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-left: auto;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+  white-space: nowrap;
+}
+
+.vip-lock-tag.unlocked {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+}
+
+.interactive-card.free-locked .btn-action-test {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.interactive-card.free-locked .caption-chip {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.interactive-card.free-locked .caption-chip:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  transform: none;
+}
+
+.photo-thumb-card.vip-item {
+  position: relative;
+}
+
+.photo-thumb-card.vip-item .vip-badge-tag {
+  display: none !important;
+}
+
+.photo-thumb-card.vip-item.free-locked {
+  cursor: pointer;
+  opacity: 1;
+  filter: none;
+}
+
+.photo-thumb-card.vip-item.free-locked:hover {
+  transform: translateY(-2px);
+}
+
+.photo-thumb-card.upload-trigger {
+  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #cbd5e1;
+}
+
+.photo-thumb-card.upload-trigger i {
+  font-size: 18px;
+  color: #38bdf8;
+}
+
+.photo-thumb-card.upload-trigger span {
+  position: static;
+  background: transparent;
+  padding: 0;
+  font-size: 9px;
+  color: #94a3b8;
+}
+
+.photo-thumb-card.upload-trigger:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  color: #fff;
+}
+
+/* Scrollable Gallery for Videos & Uploads */
+.video-gallery-scroll {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-height: 148px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 4px 4px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 158, 11, 0.45) rgba(255, 255, 255, 0.05);
+}
+
+.video-gallery-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.video-gallery-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+}
+
+.video-gallery-scroll::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.45);
+  border-radius: 4px;
+}
+
+.video-gallery-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.85);
+}
+
+.photo-thumb-card.uploaded-item {
+  position: relative;
+}
+
+.photo-thumb-card .uploaded-card-delete {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 17px;
+  height: 17px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.photo-thumb-card .uploaded-card-delete:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  transform: scale(1.15);
+}
+
+/* Video Folder Box Note */
+.video-folder-box {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.vfb-header {
+  font-size: 11px;
+  font-weight: 800;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.vfb-path {
+  font-size: 11.5px;
+  color: #e2e8f0;
+}
+
+.vfb-path code {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 7px;
+  border-radius: 6px;
+  color: #38bdf8;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 11.5px;
+}
+
+.section-micro-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.section-micro-title.text-gold {
+  color: #f59e0b;
+}
+
+.section-micro-title.text-muted {
+  color: #94a3b8;
+}
+
+/* Shake locked animation */
+@keyframes shakeLocked {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.shake-locked {
+  animation: shakeLocked 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* VIP Alert Toast */
+.vip-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #181c24;
+  border: 1.5px solid #ef4444;
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.vip-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.vip-toast i {
+  color: #ef4444;
+  font-size: 16px;
+}
+
+/* ==================== COMMITMENTS / TRUST SECTION ==================== */
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .trust-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+.trust-item {
+  background: linear-gradient(165deg, rgba(22, 26, 40, 0.85) 0%, rgba(12, 14, 24, 0.95) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 16px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.08),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(14px);
+  transition: all 0.25s ease;
+}
+
+.trust-item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 122, 0, 0.4);
+}
+
+.trust-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(145deg, #FED7AA, #EA580C);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  color: #431407;
+  flex-shrink: 0;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    0 4px 12px rgba(234, 88, 12, 0.4);
+}
+
+.trust-text h4 {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.trust-text p {
+  font-size: 11.5px;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+/* ==================== FOOTER ==================== */
+.footer-sec {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.footer-support-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.support-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: linear-gradient(165deg, rgba(28, 32, 48, 0.9) 0%, rgba(13, 16, 26, 0.95) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  color: #E2E8F0;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.support-chip:hover {
+  border-color: #FF7A00;
+  color: #FFA033;
+  transform: translateY(-2px);
+}
+
+.footer-copy {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+/* ==================== FLOATING CONTACT BUTTON & MODAL ==================== */
+.contact-float-btn {
+  position: fixed;
+  right: 22px;
+  bottom: 26px;
+  z-index: 999;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFA033, #EA580C);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 8px 26px rgba(234, 88, 12, 0.45), 0 0 0 0 rgba(255, 122, 0, 0.5);
+  animation: pulseContact 2.2s infinite;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.contact-float-btn:hover {
+  transform: scale(1.1) rotate(6deg);
+  box-shadow: 0 12px 32px rgba(234, 88, 12, 0.65);
+}
+
+@keyframes pulseContact {
+  0% { box-shadow: 0 8px 24px rgba(234, 88, 12, 0.4), 0 0 0 0 rgba(255, 122, 0, 0.6); }
+  70% { box-shadow: 0 8px 24px rgba(234, 88, 12, 0.4), 0 0 0 14px rgba(255, 122, 0, 0); }
+  100% { box-shadow: 0 8px 24px rgba(234, 88, 12, 0.4), 0 0 0 0 rgba(234, 88, 12, 0); }
+}
+
+.contact-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.contact-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.contact-modal-card {
+  background: #0d101a;
+  border: 1px solid rgba(255, 122, 0, 0.4);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 380px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.contact-modal-overlay.active .contact-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.contact-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.contact-item-row:hover {
+  background: rgba(255, 122, 0, 0.12);
+  border-color: #FF7A00;
+  transform: translateX(4px);
+}
+
+.contact-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+/* ==================== 5. FEED / TIMELINE VIEW (LƯỚT XEM BÀI ĐĂNG BẠN BÈ & BẢN THÂN) ==================== */
+.locket-feed-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 4px;
+  box-sizing: border-box;
+  animation: feedSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes feedSlideIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.locket-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  z-index: 20;
+}
+
+.locket-feed-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.locket-feed-filter-pill:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.03);
+}
+
+.feed-post-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: auto 0;
+  cursor: grab;
+  user-select: none;
+}
+.feed-post-container:active {
+  cursor: grabbing;
+}
+
+.feed-media-box {
+  position: relative;
+  width: 252px;
+  height: 252px;
+  border-radius: 44px;
+  background: #000;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+}
+
+.feed-media-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.3s ease;
+}
+
+.feed-media-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-sound-toggle-btn {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Bản thường: Ẩn hoàn toàn 100% icon loa, chỉ xuất hiện ở bản VIP */
+.locket-viewport:not(.vip-mode) .feed-sound-toggle-btn,
+.locket-viewport:not(.vip-mode) #feed-sound-btn,
+.locket-viewport:not(.vip-mode) #btn-mic.speaker-mode,
+#locket-viewport:not(.vip-mode) .feed-sound-toggle-btn,
+#locket-viewport:not(.vip-mode) #feed-sound-btn,
+#locket-viewport:not(.vip-mode) #btn-mic.speaker-mode {
+  display: none !important;
+}
+
+.feed-caption-pill {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 88%;
+  pointer-events: auto;
+}
+.feed-caption-pill span {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.feed-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  margin-top: 2px;
+}
+
+.feed-uploading-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 700;
+  animation: pulseUploading 1.5s infinite ease-in-out;
+}
+@keyframes pulseUploading {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.feed-author-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.feed-author-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+}
+
+.feed-author-name {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.feed-post-time {
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.feed-activity-row {
+  width: 252px;
+  display: flex;
+  justify-content: center;
+}
+
+.feed-no-activity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 7px 18px;
+  border-radius: 999px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.feed-reaction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reaction-placeholder {
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.reaction-emojis {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.reaction-emojis span {
+  transition: transform 0.15s ease;
+}
+.reaction-emojis span:hover {
+  transform: scale(1.35);
+}
+
+.locket-feed-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  margin-top: 4px;
+}
+
+.feed-camera-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid #ff2d55;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 12px rgba(255, 45, 85, 0.4);
+}
+.feed-camera-btn:hover {
+  transform: scale(1.1);
+}
+.feed-camera-inner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: block;
+}
+
+/* iOS Action Sheet: Lưu • Xóa • Chia sẻ (Khi bấm nút Share ở Feed Dock) */
+.feed-action-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 85;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.feed-sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: feedFadeIn 0.18s ease;
+}
+
+@keyframes feedFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.feed-sheet-content {
+  position: relative;
+  z-index: 2;
+  margin: 0 10px 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: feedSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes feedSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.feed-sheet-actions-group,
+.feed-sheet-cancel-group {
+  background: rgba(28, 30, 36, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+}
+
+.feed-sheet-btn {
+  width: 100%;
+  padding: 13px 18px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.feed-sheet-btn + .feed-sheet-btn {
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.feed-sheet-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.feed-sheet-btn:active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.feed-sheet-btn i {
+  font-size: 16px;
+  color: #94a3b8;
+  order: 2;
+}
+
+.feed-sheet-btn span {
+  order: 1;
+}
+
+.feed-sheet-btn.text-danger {
+  color: #ff453a !important;
+}
+
+.feed-sheet-btn.text-danger i {
+  color: #ff453a !important;
+}
+
+.feed-sheet-btn.cancel-btn {
+  justify-content: center;
+  font-weight: 700;
+  color: #38bdf8;
+  text-align: center;
+}
+
+@keyframes slideUpToast {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
