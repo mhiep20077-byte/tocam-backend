@@ -1105,32 +1105,31 @@
 }
 
 /* =======================================================
- * 📱 TỐI ƯU GIAO DIỆN BƯỚC 1 TRÊN ĐIỆN THOẠI (COMPACT SELECTOR)
+ * 📱 TỐI ƯU GIAO DIỆN BƯỚC 1 TRÊN GOLD.HTML (COMPACT SELECTOR)
  * ======================================================= */
 @media (max-width: 680px) {
-  .plans-grid {
+  #step-1 .plans-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
     margin-bottom: 16px !important;
   }
 
-  .plan-card {
+  #step-1 .plan-card {
     padding: 12px 14px 12px 50px !important;
     border-radius: 16px !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
     transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease !important;
   }
 
-  .plan-card:hover {
+  #step-1 .plan-card:hover {
     transform: none !important;
   }
 
-  .plan-card.active {
+  #step-1 .plan-card.active {
     transform: scale(1.01) !important;
   }
 
-  /* Vòng tròn checkmark nằm giữa bên trái, hoàn toàn không đè lên chữ */
-  .plan-select-indicator {
+  #step-1 .plan-select-indicator {
     top: 50% !important;
     left: 14px !important;
     transform: translateY(-50%) !important;
@@ -1142,7 +1141,7 @@
     color: transparent !important;
   }
 
-  .plan-card.active .plan-select-indicator {
+  #step-1 .plan-card.active .plan-select-indicator {
     border-color: #FF7A00 !important;
     background: linear-gradient(135deg, #FF9933 0%, #FF6600 100%) !important;
     color: #fff !important;
@@ -1150,8 +1149,7 @@
     transform: translateY(-50%) scale(1.1) !important;
   }
 
-  /* Huy hiệu badge nằm góc phải trên */
-  .plan-badge {
+  #step-1 .plan-badge {
     top: 10px !important;
     right: 12px !important;
     font-size: 9.5px !important;
@@ -1159,8 +1157,7 @@
     gap: 4px !important;
   }
 
-  /* Tiêu đề gói */
-  .plan-header {
+  #step-1 .plan-header {
     font-size: 15px !important;
     margin-top: 0 !important;
     margin-bottom: 2px !important;
@@ -1168,79 +1165,187 @@
     line-height: 1.2 !important;
   }
 
-  /* Giá gói */
-  .plan-price {
+  #step-1 .plan-price {
     font-size: 20px !important;
     margin-bottom: 3px !important;
     gap: 4px !important;
     line-height: 1.2 !important;
   }
 
-  .plan-price small {
+  #step-1 .plan-price small {
     font-size: 11px !important;
   }
 
-  /* Thu gọn danh sách tính năng bên trong mỗi card trên mobile */
-  .plan-features-mini {
+  #step-1 .plan-features-mini {
     margin-top: 2px !important;
     gap: 0 !important;
     font-size: 11.5px !important;
   }
 
-  .plan-features-mini li {
+  #step-1 .plan-features-mini li {
     gap: 6px !important;
     line-height: 1.3 !important;
   }
 
-  .plan-features-mini li i {
-    font-size: 10px !important;
-  }
-
-  /* Ẩn các tính năng lặp lại 1-9 trên điện thoại để thẻ siêu gọn gàng */
-  .plan-features-mini li:not(:last-child) {
+  #step-1 .plan-features-mini li:not(:last-child) {
     display: none !important;
   }
 
-  /* Làm nổi bật dòng thời hạn (dòng cuối cùng) */
-  .plan-features-mini li:last-child {
+  #step-1 .plan-features-mini li:last-child {
     font-size: 11.5px !important;
     color: #E2E8F0 !important;
   }
 
-  /* Thẻ trên trang chủ index.html có đoạn mô tả và nút bấm */
-  .plan-card p {
-    font-size: 11.5px !important;
-    margin-bottom: 6px !important;
-    line-height: 1.3 !important;
-  }
-
-  .plan-card .btn-card-action {
-    padding: 9px 14px !important;
-    font-size: 13.5px !important;
-    margin-top: 8px !important;
-    border-radius: 11px !important;
-  }
-
-  /* Bảng 9 đặc quyền VIP bên dưới bước 1 cũng tối ưu gọn trên màn hình nhỏ */
-  .features-full-list {
+  #step-1 .features-full-list {
     padding: 10px 12px !important;
     margin-bottom: 16px !important;
     border-radius: 14px !important;
   }
 
-  .features-full-list h4 {
+  #step-1 .features-full-list h4 {
     font-size: 12px !important;
     margin-bottom: 8px !important;
   }
 
-  .features-full-list ul {
+  #step-1 .features-full-list ul {
     grid-template-columns: 1fr 1fr !important;
     gap: 6px 8px !important;
   }
 
-  .features-full-list li {
+  #step-1 .features-full-list li {
     font-size: 11px !important;
     gap: 5px !important;
+  }
+}
+
+/* =======================================================
+ * 📱 TRANG CHỦ (INDEX.HTML): BẢNG GIÁ ĐẦY ĐỦ TÍNH NĂNG
+ * Khi ở máy tính: 3 cột to rộng, thoáng đãng
+ * Khi về điện thoại: Chữ và khung nhỏ dần, giữ nguyên 100% tính năng, lướt ngang mượt mà!
+ * ======================================================= */
+.mobile-plans-hint {
+  display: none;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFA033;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .mobile-plans-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .index-plans-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 12px !important;
+    padding: 8px 16px 18px 16px !important;
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    scrollbar-width: none !important;
+  }
+
+  .index-plans-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Khung thẻ trên điện thoại: nhỏ dần, chiếm 78% màn hình để lộ mép thẻ tiếp theo */
+  .index-plans-grid .plan-card {
+    flex: 0 0 78% !important;
+    max-width: 290px !important;
+    min-width: 260px !important;
+    scroll-snap-align: center !important;
+    padding: 16px 14px 16px 14px !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .index-plans-grid .plan-card.active {
+    border-color: #FF7A00 !important;
+    box-shadow: 0 0 0 1.5px #FF7A00, 0 10px 28px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  .index-plans-grid .plan-select-indicator {
+    top: 14px !important;
+    left: 14px !important;
+    transform: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+  }
+
+  .index-plans-grid .plan-card.active .plan-select-indicator {
+    transform: scale(1.1) !important;
+  }
+
+  .index-plans-grid .plan-badge {
+    top: 12px !important;
+    right: 12px !important;
+    font-size: 9px !important;
+    padding: 2.5px 8px !important;
+  }
+
+  /* Chữ nhỏ dần trên điện thoại */
+  .index-plans-grid .plan-header {
+    font-size: 15px !important;
+    margin-top: 14px !important;
+    margin-bottom: 2px !important;
+    padding-right: 0 !important;
+  }
+
+  .index-plans-grid .plan-price {
+    font-size: 22px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .index-plans-grid .plan-price small {
+    font-size: 11px !important;
+  }
+
+  .index-plans-grid .plan-card p {
+    font-size: 11px !important;
+    margin-bottom: 10px !important;
+    line-height: 1.35 !important;
+    color: #94A3B8 !important;
+  }
+
+  /* GIỮ NGUYÊN ĐẦY ĐỦ 100% CÁC DÒNG TÍNH NĂNG - CHỮ VÀ ICON NHỎ GỌN TINH TẾ */
+  .index-plans-grid .plan-features-mini {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .index-plans-grid .plan-features-mini li {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+    color: #CBD5E1 !important;
+  }
+
+  .index-plans-grid .plan-features-mini li i {
+    font-size: 10px !important;
+    min-width: 14px !important;
+    margin-top: 2px !important;
+    color: #10B981 !important;
+  }
+
+  .index-plans-grid .plan-card .btn-card-action {
+    padding: 9px 12px !important;
+    font-size: 12.5px !important;
+    border-radius: 11px !important;
+    margin-top: 6px !important;
   }
 }
 
