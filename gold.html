@@ -98,17 +98,17 @@
         1. Chọn Gói Nâng Cấp Phù Hợp
       </h2>
 
-      <!-- Bảng giá 5k / 39k / 69k / 119k -->
+      <!-- Bảng giá 9k / 39k / 69k / 119k -->
       <div class="plans-grid">
-        <!-- Gói Test Dùng Thử - 5k -->
+        <!-- Gói Test Dùng Thử - 9k -->
         <div class="plan-card" id="plan-card-test"
-          onclick="selectPlan(this, 'Gói Test (1 Ngày)', 5000, '5.000đ', 'TEST')">
+          onclick="selectPlan(this, 'Gói Test (1 Ngày)', 9000, '9.000đ', 'TEST')">
           <div class="plan-select-indicator"><i class="fa-solid fa-check"></i></div>
           <div class="plan-badge badge-test">
             <i class="fa-solid fa-flask"></i> DÙNG THỬ
           </div>
           <div class="plan-header">Gói Test (1 Ngày)</div>
-          <div class="plan-price">5.000đ <small>/1 ngày</small></div>
+          <div class="plan-price">9.000đ <small>/1 ngày</small></div>
           <ul class="plan-features-mini">
             <li><i class="fa-solid fa-check"></i> Mở khoá Locket Gold chính chủ</li>
             <li><i class="fa-solid fa-check"></i> Không quảng cáo làm phiền</li>
@@ -214,7 +214,7 @@
           try {
             var params = new URLSearchParams(window.location.search);
             var p = (params.get('plan') || params.get('package') || params.get('goi') || params.get('p') || localStorage.getItem('tocam_selected_plan') || '').toLowerCase();
-            var isTest = p.indexOf('test') !== -1 || p.indexOf('5000') !== -1 || p.indexOf('5k') !== -1 || p.indexOf('dungthu') !== -1;
+            var isTest = p.indexOf('test') !== -1 || p.indexOf('9000') !== -1 || p.indexOf('9k') !== -1 || p.indexOf('5000') !== -1 || p.indexOf('5k') !== -1 || p.indexOf('dungthu') !== -1;
             var is6Month = p.indexOf('39') !== -1 || p.indexOf('6m') !== -1 || p.indexOf('6thang') !== -1 || p.indexOf('6month') !== -1 || p.indexOf('phobien') !== -1;
             var isYearly = p.indexOf('69') !== -1 || p.indexOf('year') !== -1 || p.indexOf('nam') !== -1 || p.indexOf('tietkiem') !== -1;
             var tCard = document.getElementById('plan-card-test');
@@ -229,8 +229,8 @@
               if (mCard) mCard.classList.remove('active');
               if (yCard) yCard.classList.remove('active');
               if (lCard) lCard.classList.remove('active');
-              if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 5.000đ</span> <i class="fa-solid fa-flask"></i>';
-              if (payAmt) payAmt.innerText = '5.000đ';
+              if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 9.000đ</span> <i class="fa-solid fa-flask"></i>';
+              if (payAmt) payAmt.innerText = '9.000đ';
             } else if (is6Month) {
               if (mCard) mCard.classList.add('active');
               if (tCard) tCard.classList.remove('active');
@@ -705,7 +705,7 @@
                   </div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-size:14px; font-weight:800; color:#10B981;">5.000đ</div>
+                  <div style="font-size:14px; font-weight:800; color:#10B981;">9.000đ</div>
                   <span style="font-size:10px; color:#A855F7; font-weight:700;">Gia hạn &rarr;</span>
                 </div>
               </button>

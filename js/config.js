@@ -33,8 +33,8 @@ const TO_CAM_CONFIG = {
     TEST: {
       id: "test",
       name: "Gói Test",
-      price: 5000,
-      formattedPrice: "5.000đ",
+      price: 9000,
+      formattedPrice: "9.000đ",
       unit: "/1 ngày",
       badge: "DÙNG THỬ"
     },

@@ -55,7 +55,7 @@ const CONFIG = {
 
   // Giá các gói (đơn vị: VNĐ)
   PLAN_PRICES: {
-    TEST: 5000,
+    TEST: 9000,
     MONTH6: 39000,
     '6MONTH': 39000,
     YEARLY: 69000,
@@ -63,7 +63,7 @@ const CONFIG = {
   },
 
   // Mã gói tương ứng trên hệ thống Locket API (Cụ Cam)
-  // LKGT3D: Gói Test (1 coin) - Tương ứng gói 5.000đ
+  // LKGT3D: Gói Test (1 coin) - Tương ứng gói 9.000đ
   // LKG6M: Gói 6 Tháng (8 coin) - Tương ứng gói 39.000đ
   // LKG1Y: Gói 1 Năm (15 coin) - Tương ứng gói 69.000đ
   // LKGVV: Gói Vĩnh Viễn (31 coin) - Tương ứng gói 119.000đ
@@ -1251,7 +1251,7 @@ app.post('/api/user/lookup', async (req, res) => {
             history: [{
               txId: `cam_${d.uid || u}`,
               plan: matchedPlan,
-              amount: CONFIG.PLAN_PRICES[matchedPlan] || 5000,
+              amount: CONFIG.PLAN_PRICES[matchedPlan] || 9000,
               time: new Date().toISOString(),
               status: 'success'
             }]
@@ -1342,7 +1342,7 @@ app.post('/api/user/lookup', async (req, res) => {
   const formattedHistory = (user.history && user.history.length > 0)
     ? user.history.map(item => {
         const itemPlan = item.plan || finalPlan;
-        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 119000 : (itemPlan === 'YEARLY' ? 69000 : ((itemPlan === 'MONTH6' || itemPlan === '6MONTH') ? 39000 : 5000)));
+        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 119000 : (itemPlan === 'YEARLY' ? 69000 : ((itemPlan === 'MONTH6' || itemPlan === '6MONTH') ? 39000 : 9000)));
         return {
           ...item,
           plan: itemPlan,
@@ -1354,7 +1354,7 @@ app.post('/api/user/lookup', async (req, res) => {
         {
           txId: `tx_${user.uid || user.username}`,
           plan: finalPlan,
-          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 119000 : (finalPlan === 'YEARLY' ? 69000 : ((finalPlan === 'MONTH6' || finalPlan === '6MONTH') ? 39000 : 5000))),
+          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 119000 : (finalPlan === 'YEARLY' ? 69000 : ((finalPlan === 'MONTH6' || finalPlan === '6MONTH') ? 39000 : 9000))),
           time: user.lastRenewedAt || user.createdAt || new Date().toISOString(),
           status: 'success'
         }

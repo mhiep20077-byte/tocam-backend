@@ -980,7 +980,7 @@ async function loadRecentTransactions() {
       const isMonth6 = tx.plan === 'MONTH6' || tx.plan === '6MONTH';
       const planName = isLifetime ? 'Gói Vĩnh Viễn' : (isTest ? 'Gói Test 1 Ngày' : (isMonth6 ? 'Gói 6 Tháng' : 'Gói 1 Năm'));
       const planColor = isLifetime ? '#FFA033' : (isTest ? '#C084FC' : (isMonth6 ? '#10B981' : '#38BDF8'));
-      const formattedAmount = Number(tx.amount || (isLifetime ? 119000 : (isTest ? 5000 : (isMonth6 ? 39000 : 69000)))).toLocaleString('vi-VN') + 'đ';
+      const formattedAmount = Number(tx.amount || (isLifetime ? 119000 : (isTest ? 9000 : (isMonth6 ? 39000 : 69000)))).toLocaleString('vi-VN') + 'đ';
       const timeStr = tx.time ? new Date(tx.time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
       
       // Che 2 ký tự giữa của username để bảo mật thông tin khách hàng thật
@@ -1021,11 +1021,11 @@ async function loadRecentTransactions() {
   }
 }
 
-// Kiểm tra xem chuỗi có đại diện cho gói Test 5k không
+// Kiểm tra xem chuỗi có đại diện cho gói Test 9k không
 function isTestPlan(str) {
   if (!str) return false;
   const s = String(str).toLowerCase().trim();
-  return s.includes('test') || s.includes('5000') || s.includes('5k') || s.includes('dungthu');
+  return s.includes('test') || s.includes('9000') || s.includes('9k') || s.includes('5000') || s.includes('5k') || s.includes('dungthu');
 }
 
 // Kiểm tra xem chuỗi có đại diện cho gói 39k / 6 tháng không
@@ -1049,7 +1049,7 @@ function checkUrlPlanParam() {
 
   if (isTestPlan(rawParam)) {
     const card = document.getElementById('plan-card-test') || document.querySelector('.plan-card[onclick*="TEST"]');
-    selectPlan(card, 'Gói Test (1 Ngày)', 5000, '5.000đ', 'TEST');
+    selectPlan(card, 'Gói Test (1 Ngày)', 9000, '9.000đ', 'TEST');
   } else if (is6MonthPlan(rawParam)) {
     const card = document.getElementById('plan-card-6month') || document.querySelector('.plan-card[onclick*="MONTH6"]');
     selectPlan(card, 'Gói 6 Tháng', 39000, '39.000đ', 'MONTH6');
@@ -1338,7 +1338,7 @@ function renderLookupResult(user) {
         } else if (item.plan === 'TEST') {
           planText = 'Gói Test (1 Ngày)';
           planColor = '#C084FC';
-          amountText = '5.000đ';
+          amountText = '9.000đ';
         } else {
           amountText = item.amount ? Number(item.amount).toLocaleString('vi-VN') + 'đ' : '69.000đ';
         }
@@ -1353,7 +1353,7 @@ function renderLookupResult(user) {
       }).join('');
     } else {
       const defaultPlanText = isLifetime ? 'Gói Vĩnh Viễn' : (user.currentPlan === 'TEST' ? 'Gói Test (1 Ngày)' : 'Gói 1 Năm');
-      const defaultAmount = isLifetime ? '119.000đ' : (user.currentPlan === 'TEST' ? '5.000đ' : '69.000đ');
+      const defaultAmount = isLifetime ? '119.000đ' : (user.currentPlan === 'TEST' ? '9.000đ' : '69.000đ');
       tbody.innerHTML = `
         <tr>
           <td style="color:#94A3B8;">Gần đây</td>
@@ -1420,7 +1420,7 @@ function executeRenewPlan(planCode) {
 
   // 2. Chọn đúng gói gia hạn mà khách đã bấm
   if (planCode === 'TEST') {
-    selectPlan(null, 'Gói Test (1 Ngày)', 5000, '5.000đ', 'TEST');
+    selectPlan(null, 'Gói Test (1 Ngày)', 9000, '9.000đ', 'TEST');
   } else if (planCode === 'MONTH6' || planCode === '6MONTH') {
     selectPlan(null, 'Gói 6 Tháng', 39000, '39.000đ', 'MONTH6');
   } else if (planCode === 'YEARLY') {

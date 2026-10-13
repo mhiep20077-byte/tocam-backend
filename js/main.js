@@ -2930,7 +2930,7 @@ function selectIndexPlan(card, plan) {
   const planUrl = `gold.html?plan=${encodeURIComponent(targetPlan)}`;
 
   if (targetPlan === 'test') {
-    planLabel = 'Gói Test Dùng Thử (5K)';
+    planLabel = 'Gói Test Dùng Thử (9K)';
   } else if (targetPlan === '6month') {
     planLabel = 'Gói 6 Tháng (39K)';
   } else if (targetPlan === 'yearly') {
