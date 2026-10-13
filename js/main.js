@@ -2907,6 +2907,7 @@ function selectIndexPlan(card, plan) {
   let targetPlan = plan;
   if (!targetPlan && card && card.id) {
     if (card.id.includes('test')) targetPlan = 'test';
+    else if (card.id.includes('6month')) targetPlan = '6month';
     else if (card.id.includes('yearly')) targetPlan = 'yearly';
     else targetPlan = 'lifetime';
   }
@@ -2930,6 +2931,8 @@ function selectIndexPlan(card, plan) {
 
   if (targetPlan === 'test') {
     planLabel = 'Gói Test Dùng Thử (5K)';
+  } else if (targetPlan === '6month') {
+    planLabel = 'Gói 6 Tháng (39K)';
   } else if (targetPlan === 'yearly') {
     planLabel = 'Gói 1 Năm (69K)';
   } else {
@@ -2945,6 +2948,10 @@ function selectIndexPlan(card, plan) {
       btnProceed.className = 'btn-card-action';
       btnProceed.style.background = 'linear-gradient(135deg, #9333EA 0%, #A855F7 100%)';
       btnProceed.style.boxShadow = '0 8px 24px rgba(168, 85, 247, 0.4)';
+    } else if (targetPlan === '6month') {
+      btnProceed.className = 'btn-card-action btn-card-6month';
+      btnProceed.style.background = '';
+      btnProceed.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.35)';
     } else if (targetPlan === 'yearly') {
       btnProceed.className = 'btn-card-action btn-card-yearly';
       btnProceed.style.background = '';
@@ -2977,6 +2984,7 @@ function goToCurrentSelectedPlan(e) {
   let chosen = 'lifetime';
   if (activeCard && activeCard.id) {
     if (activeCard.id.includes('test')) chosen = 'test';
+    else if (activeCard.id.includes('6month')) chosen = '6month';
     else if (activeCard.id.includes('yearly')) chosen = 'yearly';
     else if (activeCard.id.includes('lifetime')) chosen = 'lifetime';
   } else {

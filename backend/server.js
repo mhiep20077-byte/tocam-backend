@@ -56,16 +56,21 @@ const CONFIG = {
   // Giá các gói (đơn vị: VNĐ)
   PLAN_PRICES: {
     TEST: 5000,
+    MONTH6: 39000,
+    '6MONTH': 39000,
     YEARLY: 69000,
     LIFETIME: 119000
   },
 
   // Mã gói tương ứng trên hệ thống Locket API (Cụ Cam)
   // LKGT3D: Gói Test (1 coin) - Tương ứng gói 5.000đ
+  // LKG6M: Gói 6 Tháng (8 coin) - Tương ứng gói 39.000đ
   // LKG1Y: Gói 1 Năm (15 coin) - Tương ứng gói 69.000đ
   // LKGVV: Gói Vĩnh Viễn (31 coin) - Tương ứng gói 119.000đ
   LOCKET_PACKAGE_CODES: {
     TEST: process.env.LOCKET_PACKAGE_TEST || 'LKGT3D',
+    MONTH6: process.env.LOCKET_PACKAGE_6MONTH || process.env.LOCKET_PACKAGE_MONTH6 || 'LKG6M',
+    '6MONTH': process.env.LOCKET_PACKAGE_6MONTH || process.env.LOCKET_PACKAGE_MONTH6 || 'LKG6M',
     YEARLY: process.env.LOCKET_PACKAGE_YEARLY || 'LKG1Y',
     LIFETIME: process.env.LOCKET_PACKAGE_LIFETIME || 'LKGVV'
   },
@@ -107,11 +112,11 @@ const KNOWN_AVATARS = {
 
 const DEFAULT_TRANSACTIONS = [
   { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
+  { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: new Date(Date.now() - 240000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hi_embe'] },
   { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 420000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['ljaj'] },
   { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 900000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['daothanh'] },
   { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['yn.nt'] },
   { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
-  { username: 'hi_embe', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2800000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hi_embe'] },
   { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hieon0'] },
   { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['mhhiep'] }
 ];
@@ -566,6 +571,8 @@ async function processTransaction(tx) {
     plan = 'LIFETIME';
   } else if (amount >= CONFIG.PLAN_PRICES.YEARLY) {
     plan = 'YEARLY';
+  } else if (amount >= CONFIG.PLAN_PRICES.MONTH6) {
+    plan = 'MONTH6';
   } else if (amount >= CONFIG.PLAN_PRICES.TEST) {
     plan = 'TEST';
   } else {
@@ -653,6 +660,8 @@ async function processTransaction(tx) {
       calculatedExpiresAt = 'Vĩnh Viễn';
     } else if (record.plan === 'YEARLY') {
       calculatedExpiresAt = new Date(now + 365 * 86400000).toISOString();
+    } else if (record.plan === 'MONTH6' || record.plan === '6MONTH') {
+      calculatedExpiresAt = new Date(now + 180 * 86400000).toISOString();
     } else if (record.plan === 'TEST') {
       calculatedExpiresAt = new Date(now + 24 * 3600000).toISOString();
     }
@@ -677,7 +686,8 @@ async function processTransaction(tx) {
   }
 
   if (!finalAvatar) {
-    finalAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=${record.plan === 'LIFETIME' ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+    const bgCol = record.plan === 'LIFETIME' ? 'FFA033' : ((record.plan === 'MONTH6' || record.plan === '6MONTH') ? '10B981' : '38BDF8');
+    finalAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=${bgCol}&color=fff&size=128&bold=true`;
   }
 
   // Tự động cập nhật hồ sơ người dùng trong users.json sang trạng thái ACTIVE và hạn dùng mới
@@ -1019,8 +1029,9 @@ app.post('/api/activate', async (req, res) => {
     });
   }
 
-  const targetPlan = plan && CONFIG.LOCKET_PACKAGE_CODES[plan.toUpperCase()]
-    ? plan.toUpperCase()
+  const normPlan = plan ? (String(plan).toUpperCase().trim() === '6MONTH' ? 'MONTH6' : String(plan).toUpperCase().trim()) : null;
+  const targetPlan = normPlan && CONFIG.LOCKET_PACKAGE_CODES[normPlan]
+    ? normPlan
     : (stored.plan || 'LIFETIME');
   const packageCode = CONFIG.LOCKET_PACKAGE_CODES[targetPlan] || 'LKGVV';
 
@@ -1217,6 +1228,8 @@ app.post('/api/user/lookup', async (req, res) => {
             matchedPlan = 'LIFETIME';
           } else if (pkgCode === 'LKG1Y' || pkgName.includes('1 năm') || pkgName.includes('năm')) {
             matchedPlan = 'YEARLY';
+          } else if (pkgCode === 'LKG6M' || pkgName.includes('6 tháng') || pkgName.includes('6m') || pkgName.includes('6 month')) {
+            matchedPlan = 'MONTH6';
           } else if (pkgCode === 'LKGT3D' || pkgName.includes('test')) {
             matchedPlan = 'TEST';
           } else if (d.expiresAt === 'Vĩnh Viễn') {
@@ -1308,6 +1321,7 @@ app.post('/api/user/lookup', async (req, res) => {
   // QUY TẮC HIỂN THỊ GÓI VÀ HẠN DÙNG CHUẨN 1:1
   const isLifetime = (user.currentPlan === 'LIFETIME' || user.expiresAt === 'Vĩnh Viễn' || (user.expiresAt && new Date(user.expiresAt).getFullYear() >= 2050));
   const isYearly = (user.currentPlan === 'YEARLY');
+  const isMonth6 = (user.currentPlan === 'MONTH6' || user.currentPlan === '6MONTH');
   const isTest = (user.currentPlan === 'TEST');
 
   let isExpired = false;
@@ -1318,16 +1332,17 @@ app.post('/api/user/lookup', async (req, res) => {
     }
   }
 
-  const finalPlan = isLifetime ? 'LIFETIME' : (isYearly ? 'YEARLY' : (isTest ? 'TEST' : (user.currentPlan || 'YEARLY')));
+  const finalPlan = isLifetime ? 'LIFETIME' : (isYearly ? 'YEARLY' : (isMonth6 ? 'MONTH6' : (isTest ? 'TEST' : (user.currentPlan || 'YEARLY'))));
   const finalStatus = isExpired ? 'EXPIRED' : (user.status || 'ACTIVE');
   const finalExpiresAt = isLifetime ? 'Vĩnh Viễn' : user.expiresAt;
-  const avatarUrl = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=${isLifetime ? 'FFA033' : '38BDF8'}&color=fff&size=128&bold=true`;
+  const avatarBg = isLifetime ? 'FFA033' : (isMonth6 ? '10B981' : '38BDF8');
+  const avatarUrl = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=${avatarBg}&color=fff&size=128&bold=true`;
 
   // Chuẩn hóa lịch sử hiển thị
   const formattedHistory = (user.history && user.history.length > 0)
     ? user.history.map(item => {
         const itemPlan = item.plan || finalPlan;
-        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 119000 : (itemPlan === 'YEARLY' ? 69000 : 5000));
+        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 119000 : (itemPlan === 'YEARLY' ? 69000 : ((itemPlan === 'MONTH6' || itemPlan === '6MONTH') ? 39000 : 5000)));
         return {
           ...item,
           plan: itemPlan,
@@ -1339,7 +1354,7 @@ app.post('/api/user/lookup', async (req, res) => {
         {
           txId: `tx_${user.uid || user.username}`,
           plan: finalPlan,
-          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 119000 : (finalPlan === 'YEARLY' ? 69000 : 5000)),
+          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 119000 : (finalPlan === 'YEARLY' ? 69000 : ((finalPlan === 'MONTH6' || finalPlan === '6MONTH') ? 39000 : 5000))),
           time: user.lastRenewedAt || user.createdAt || new Date().toISOString(),
           status: 'success'
         }
@@ -1425,9 +1440,11 @@ app.all('/manual-confirm', async (req, res) => {
   if (!u) return res.status(400).json({ error: 'Thiếu username' });
 
   let p = (plan || 'TEST').toUpperCase();
+  if (p === '6MONTH' || p === '6M') p = 'MONTH6';
   let amount = CONFIG.PLAN_PRICES.TEST;
   if (p === 'LIFETIME') amount = CONFIG.PLAN_PRICES.LIFETIME;
   else if (p === 'YEARLY') amount = CONFIG.PLAN_PRICES.YEARLY;
+  else if (p === 'MONTH6') amount = CONFIG.PLAN_PRICES.MONTH6;
 
   // Giả lập transaction để đi qua đúng luồng (bao gồm gọi Locket API)
   const fakeTx = {
@@ -1461,8 +1478,9 @@ app.listen(CONFIG.PORT, () => {
      CASSO_SECRET=...
      LOCKET_SECRET_KEY=sk_...
      LOCKET_API_BASE=https://locket.2707226.xyz
-     LOCKET_PACKAGE_YEARLY=GOLD30
-     LOCKET_PACKAGE_LIFETIME=GOLD30
+     LOCKET_PACKAGE_6MONTH=LKG6M
+     LOCKET_PACKAGE_YEARLY=LKG1Y
+     LOCKET_PACKAGE_LIFETIME=LKGVV
 ====================================
   `);
 });

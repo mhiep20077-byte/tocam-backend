@@ -174,9 +174,15 @@
 /* Plans Grid */
 .plans-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 22px;
+}
+
+@media (max-width: 960px) {
+  .plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .plan-card {
@@ -294,6 +300,12 @@
   transform: scale(1.05);
 }
 
+.plan-badge.badge-6month {
+  background: linear-gradient(180deg, #A7F3D0 0%, #059669 100%);
+  color: #064E3B;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
+}
+
 .plan-badge.badge-yearly {
   background: linear-gradient(180deg, #BAE6FD 0%, #0284C7 100%);
   color: #082F49;
@@ -394,6 +406,21 @@
   z-index: 2;
   cursor: pointer;
   box-sizing: border-box;
+}
+
+.btn-card-action.btn-card-6month {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #34D399;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
+}
+
+.btn-card-action.btn-card-6month:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #fff;
+  border-color: #34D399;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(5, 150, 105, 0.5);
 }
 
 .btn-card-action.btn-card-yearly {

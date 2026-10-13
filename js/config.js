@@ -38,6 +38,14 @@ const TO_CAM_CONFIG = {
       unit: "/1 ngày",
       badge: "DÙNG THỬ"
     },
+    MONTH6: {
+      id: "6month",
+      name: "Gói 6 Tháng",
+      price: 39000,
+      formattedPrice: "39.000đ",
+      unit: "/6 tháng",
+      badge: "PHỔ BIẾN"
+    },
     YEARLY: {
       id: "yearly",
       name: "Gói 1 Năm",

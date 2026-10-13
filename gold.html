@@ -98,7 +98,7 @@
         1. Chọn Gói Nâng Cấp Phù Hợp
       </h2>
 
-      <!-- Bảng giá 5k / 69k / 119k -->
+      <!-- Bảng giá 5k / 39k / 69k / 119k -->
       <div class="plans-grid">
         <!-- Gói Test Dùng Thử - 5k -->
         <div class="plan-card" id="plan-card-test"
@@ -123,6 +123,33 @@
             <li><i class="fa-solid fa-check"></i> <span style="color:#C084FC; font-weight:700;">Mở khoá bộ lọc Filter
                 màu độc quyền</span></li>
             <li><i class="fa-solid fa-clock" style="color:#FFA033;"></i> <b>Thời hạn sử dụng 1 ngày (24 giờ)</b></li>
+          </ul>
+        </div>
+
+        <!-- Gói 6 Tháng - 39k -->
+        <div class="plan-card" id="plan-card-6month"
+          onclick="selectPlan(this, 'Gói 6 Tháng', 39000, '39.000đ', 'MONTH6')">
+          <div class="plan-select-indicator"><i class="fa-solid fa-check"></i></div>
+          <div class="plan-badge badge-6month">
+            <i class="fa-solid fa-fire"></i> PHỔ BIẾN
+          </div>
+          <div class="plan-header">Gói 6 Tháng</div>
+          <div class="plan-price">39.000đ <small>/6 tháng</small></div>
+          <ul class="plan-features-mini">
+            <li><i class="fa-solid fa-check"></i> Mở khoá Locket Gold chính chủ</li>
+            <li><i class="fa-solid fa-check"></i> Không quảng cáo làm phiền</li>
+            <li><i class="fa-solid fa-check"></i> Upload ảnh / video từ thư viện (không viền)</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-video">Quay video Locket 30 giây</span>
+            </li>
+            <li><i class="fa-solid fa-check"></i> Thay đổi icon Locket độc quyền</li>
+            <li><i class="fa-solid fa-check"></i> <span class="text-highlight-caption">Thêm nhiều caption hot trend, thú
+                vị</span></li>
+            <li><i class="fa-solid fa-check"></i> Mở khoá giới hạn bạn bè</li>
+            <li><i class="fa-solid fa-check"></i> Thêm âm thanh khi quay video</li>
+            <li><i class="fa-solid fa-check"></i> <span style="color:#C084FC; font-weight:700;">Mở khoá bộ lọc Filter
+                màu độc quyền</span></li>
+            <li><i class="fa-solid fa-calendar-check" style="color:#10B981;"></i> <b>Sử dụng trọn vẹn 180 ngày (6
+                Tháng)</b></li>
           </ul>
         </div>
 
@@ -188,8 +215,10 @@
             var params = new URLSearchParams(window.location.search);
             var p = (params.get('plan') || params.get('package') || params.get('goi') || params.get('p') || localStorage.getItem('tocam_selected_plan') || '').toLowerCase();
             var isTest = p.indexOf('test') !== -1 || p.indexOf('5000') !== -1 || p.indexOf('5k') !== -1 || p.indexOf('dungthu') !== -1;
+            var is6Month = p.indexOf('39') !== -1 || p.indexOf('6m') !== -1 || p.indexOf('6thang') !== -1 || p.indexOf('6month') !== -1 || p.indexOf('phobien') !== -1;
             var isYearly = p.indexOf('69') !== -1 || p.indexOf('year') !== -1 || p.indexOf('nam') !== -1 || p.indexOf('tietkiem') !== -1;
             var tCard = document.getElementById('plan-card-test');
+            var mCard = document.getElementById('plan-card-6month');
             var yCard = document.getElementById('plan-card-yearly');
             var lCard = document.getElementById('plan-card-lifetime');
             var btn = document.getElementById('btn-continue-step1');
@@ -197,19 +226,29 @@
 
             if (isTest) {
               if (tCard) tCard.classList.add('active');
+              if (mCard) mCard.classList.remove('active');
               if (yCard) yCard.classList.remove('active');
               if (lCard) lCard.classList.remove('active');
               if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 5.000đ</span> <i class="fa-solid fa-flask"></i>';
               if (payAmt) payAmt.innerText = '5.000đ';
+            } else if (is6Month) {
+              if (mCard) mCard.classList.add('active');
+              if (tCard) tCard.classList.remove('active');
+              if (yCard) yCard.classList.remove('active');
+              if (lCard) lCard.classList.remove('active');
+              if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 39.000đ</span> <i class="fa-solid fa-fire"></i>';
+              if (payAmt) payAmt.innerText = '39.000đ';
             } else if (isYearly) {
               if (yCard) yCard.classList.add('active');
               if (tCard) tCard.classList.remove('active');
+              if (mCard) mCard.classList.remove('active');
               if (lCard) lCard.classList.remove('active');
               if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 69.000đ</span> <i class="fa-solid fa-arrow-right"></i>';
               if (payAmt) payAmt.innerText = '69.000đ';
             } else {
               if (lCard) lCard.classList.add('active');
               if (tCard) tCard.classList.remove('active');
+              if (mCard) mCard.classList.remove('active');
               if (yCard) yCard.classList.remove('active');
               if (btn) btn.innerHTML = '<span>Nâng Cấp/Gia Hạn Gói 119.000đ</span> <i class="fa-solid fa-crown"></i>';
             }
@@ -668,6 +707,24 @@
                 <div style="text-align:right;">
                   <div style="font-size:14px; font-weight:800; color:#10B981;">5.000đ</div>
                   <span style="font-size:10px; color:#A855F7; font-weight:700;">Gia hạn &rarr;</span>
+                </div>
+              </button>
+
+              <!-- Gói 6 Tháng -->
+              <button type="button" onclick="executeRenewPlan('MONTH6')"
+                style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:rgba(16,185,129,0.12); border:1.5px solid rgba(16,185,129,0.4); color:#fff; cursor:pointer; text-align:left; transition:all 0.2s;"
+                onmouseover="this.style.borderColor='#10B981'; this.style.background='rgba(16,185,129,0.2)';"
+                onmouseout="this.style.borderColor='rgba(16,185,129,0.4)'; this.style.background='rgba(16,185,129,0.12)';">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:20px;">🔥</span>
+                  <div>
+                    <div style="font-size:13px; font-weight:800; color:#10B981;">Gói 6 Tháng (Phổ biến)</div>
+                    <div style="font-size:11px; color:#94A3B8;">Sử dụng trọn vẹn 180 ngày</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:14px; font-weight:800; color:#10B981;">39.000đ</div>
+                  <span style="font-size:10px; color:#10B981; font-weight:700;">Gia hạn &rarr;</span>
                 </div>
               </button>
 
