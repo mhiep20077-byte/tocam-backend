@@ -100,16 +100,21 @@ const TX_FILE = path.join(__dirname, 'transactions.json');
 const USERS_FILE = path.join(__dirname, 'users.json');
 
 const KNOWN_AVATARS = {
-  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
   'ney_ihnn': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd',
-  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
+  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
+  'hna.gnoud_l': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FPnqkZk51svW7NPzpCnSLy0nCAoz2%2Fpublic%2Fprofile_pic.webp?alt=media&token=e7d7986f-5b13-4c06-99fb-2b716dcb4750',
+  'xtien287': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2s6uO8UpjmhKvHLlbjUsYrFaXqu1%2Fpublic%2Fprofile_pic.webp?alt=media&token=d7da47c5-a379-46f9-8c22-ffc0874a4f6b',
+  'nth05': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Fzs4QAybLYGeCojbRg7ZYNeS1g9b2%2Fpublic%2Fprofile_pic.webp?alt=media&token=5ffdaa57-d5ac-4e06-8f7d-974a45d4aea8',
+  'gnlg': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FyuHUd1EGnVd6uBMlVfBnP9tvvv53%2Fpublic%2Fprofile_pic.webp?alt=media&token=acf18496-9650-41c3-bfca-0428839cc525',
+  'dwyhiu_23': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FcsOqOngrMXNauFZonP5lozhJDpG3%2Fpublic%2Fprofile_pic.webp?alt=media&token=733ef88f-11bf-4956-940d-7181a3aa7fd0',
   'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
   'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
   'yn.nt': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FGrYho8R7FDPeEmQgy5aKMEYx9gl2%2Fpublic%2Fprofile_pic.webp?alt=media&token=4f447328-95e6-46fc-b19c-97dedd3c70ce',
   'trunhmoi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Feg66l51dTvhc7zREzqTVVKIvABh2%2Fpublic%2Fprofile_pic.webp?alt=media&token=a09e7abc-0bb3-4e86-8167-7781e644d256',
   'hi_embe': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FzKit3JlPVhdXK3ppE2PDRflNjP32%2Fpublic%2Fprofile_pic.webp?alt=media&token=477e2d02-3e84-48c6-a4bb-a78548ccf589',
   'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
-  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3229122d-0f4c-4223-8805-888f8170d36d'
+  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=c3fc74fd-8200-4123-af8e-f7ff1934fa8c',
+  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3'
 };
 
 // Chuẩn hóa locket username (hỗ trợ cả dán link profile https://locket.cam/username hoặc alias ngân hàng httpslocketcam...)
@@ -132,14 +137,21 @@ function isValidLocketUsername(str) {
 }
 
 const DEFAULT_TRANSACTIONS = [
-  { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
-  { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: new Date(Date.now() - 240000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hi_embe'] },
-  { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 420000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['ljaj'] },
-  { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 900000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['daothanh'] },
-  { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['yn.nt'] },
-  { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
-  { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['hieon0'] },
-  { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['mhhiep'] }
+  { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T11:02:00.000Z", txId: "89790277", status: 'success', avatarUrl: KNOWN_AVATARS['ney_ihnn'] },
+  { username: 'kienviet', plan: 'TEST', amount: 9000, time: "2026-10-14T10:39:58.000Z", txId: 89862435, status: 'success', avatarUrl: KNOWN_AVATARS['kienviet'] },
+  { username: 'hna.gnoud_l', plan: 'MONTH6', amount: 39000, time: "2026-10-14T08:46:05.000Z", txId: "cam_PnqkZk51svW7NPzpCnSLy0nCAoz2", status: 'success', avatarUrl: KNOWN_AVATARS['hna.gnoud_l'] },
+  { username: 'xtien287', plan: 'LIFETIME', amount: 119000, time: "2026-10-14T06:49:47.000Z", txId: "cam_2s6uO8UpjmhKvHLlbjUsYrFaXqu1", status: 'success', avatarUrl: KNOWN_AVATARS['xtien287'] },
+  { username: 'nth05', plan: 'TEST', amount: 9000, time: "2026-10-14T02:02:39.000Z", txId: "cam_zs4QAybLYGeCojbRg7ZYNeS1g9b2", status: 'success', avatarUrl: KNOWN_AVATARS['nth05'] },
+  { username: 'gnlg', plan: 'TEST', amount: 9000, time: "2026-10-14T00:24:34.000Z", txId: "cam_yuHUd1EGnVd6uBMlVfBnP9tvvv53", status: 'success', avatarUrl: KNOWN_AVATARS['gnlg'] },
+  { username: 'dwyhiu_23', plan: 'TEST', amount: 9000, time: "2026-10-13T23:42:48.000Z", txId: "cam_csOqOngrMXNauFZonP5lozhJDpG3", status: 'success', avatarUrl: KNOWN_AVATARS['dwyhiu_23'] },
+  { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: "2026-10-13T20:30:21.000Z", txId: "cam_qJ76CYeThgaDnQYipUGPsC5XeVt2", status: 'success', avatarUrl: KNOWN_AVATARS['ljaj'] },
+  { username: 'mhhieuz', plan: 'LIFETIME', amount: 119000, time: "2026-10-13T13:55:35.000Z", txId: "cam_FuOKHoW1rxUvuGYB0bZ7xl3WckU2", status: 'success', avatarUrl: "https://ui-avatars.com/api/?name=mhhieuz&background=FFA033&color=fff&size=128&bold=true" },
+  { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:57:26.000Z", txId: "cam_5p59vkOpQxWV8w1hItgiJh27Fyo1", status: 'success', avatarUrl: KNOWN_AVATARS['daothanh'] },
+  { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:46:00.000Z", txId: "cam_GrYho8R7FDPeEmQgy5aKMEYx9gl2", status: 'success', avatarUrl: KNOWN_AVATARS['yn.nt'] },
+  { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:16:02.000Z", txId: "cam_eg66l51dTvhc7zREzqTVVKIvABh2", status: 'success', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
+  { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: "2026-10-12T12:36:07.000Z", txId: "cam_zKit3JlPVhdXK3ppE2PDRflNjP32", status: 'success', avatarUrl: KNOWN_AVATARS['hi_embe'] },
+  { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: "2026-10-12T11:37:18.000Z", txId: "cam_Vt6ceg2WlBcOGDrWMlMnPOJQuc93", status: 'success', avatarUrl: KNOWN_AVATARS['hieon0'] },
+  { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: "2026-10-12T10:53:46.000Z", txId: "cam_2c7dlQuxUQULKnrwGPcqsqLW0sK2", status: 'success', avatarUrl: KNOWN_AVATARS['mhhiep'] }
 ];
 
 function loadSavedTransactions() {
@@ -264,6 +276,17 @@ function saveTransactionToHistory(txItem) {
 // Tự động liên kết danh sách khách hàng từ Cụ Cam (Locket Gold)
 // =============================================
 const DEFAULT_USERS = {
+  "ney_ihnn": {
+    "username": "ney_ihnn",
+    "uid": "TmSHu7R3CnYENbOk4roifJlWdD12",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd",
+    "expiresAt": "2026-10-15T11:02:00.197Z",
+    "createdAt": "2026-10-14T05:43:00.000Z",
+    "lastRenewedAt": "2026-10-14T11:02:00.000Z",
+    "history": [{ "txId": "89790277", "plan": "TEST", "amount": 9000, "time": "2026-10-14T11:02:00.000Z", "status": "success" }]
+  },
   "kienviet": {
     "username": "kienviet",
     "uid": "t9iNECEtx2dJE9n36VvYb9xoMxy2",
@@ -274,6 +297,61 @@ const DEFAULT_USERS = {
     "createdAt": "2026-10-14T10:33:00.000Z",
     "lastRenewedAt": "2026-10-14T10:39:58.000Z",
     "history": [{ "txId": 89862435, "plan": "TEST", "amount": 9000, "time": "2026-10-14T10:33:00.000Z", "status": "success" }]
+  },
+  "hna.gnoud_l": {
+    "username": "hna.gnoud_l",
+    "uid": "PnqkZk51svW7NPzpCnSLy0nCAoz2",
+    "currentPlan": "MONTH6",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FPnqkZk51svW7NPzpCnSLy0nCAoz2%2Fpublic%2Fprofile_pic.webp?alt=media&token=e7d7986f-5b13-4c06-99fb-2b716dcb4750",
+    "expiresAt": "2027-04-12T08:46:05.824Z",
+    "createdAt": "2026-10-14T08:46:05.000Z",
+    "lastRenewedAt": "2026-10-14T08:46:05.000Z",
+    "history": [{ "txId": "cam_PnqkZk51svW7NPzpCnSLy0nCAoz2", "plan": "MONTH6", "amount": 39000, "time": "2026-10-14T08:46:05.000Z", "status": "success" }]
+  },
+  "xtien287": {
+    "username": "xtien287",
+    "uid": "2s6uO8UpjmhKvHLlbjUsYrFaXqu1",
+    "currentPlan": "LIFETIME",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2s6uO8UpjmhKvHLlbjUsYrFaXqu1%2Fpublic%2Fprofile_pic.webp?alt=media&token=d7da47c5-a379-46f9-8c22-ffc0874a4f6b",
+    "expiresAt": "Vĩnh Viễn",
+    "createdAt": "2026-10-14T06:49:47.000Z",
+    "lastRenewedAt": "2026-10-14T06:49:47.000Z",
+    "history": [{ "txId": "cam_2s6uO8UpjmhKvHLlbjUsYrFaXqu1", "plan": "LIFETIME", "amount": 119000, "time": "2026-10-14T06:49:47.000Z", "status": "success" }]
+  },
+  "nth05": {
+    "username": "nth05",
+    "uid": "zs4QAybLYGeCojbRg7ZYNeS1g9b2",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Fzs4QAybLYGeCojbRg7ZYNeS1g9b2%2Fpublic%2Fprofile_pic.webp?alt=media&token=5ffdaa57-d5ac-4e06-8f7d-974a45d4aea8",
+    "expiresAt": "2026-10-15T02:02:39.000Z",
+    "createdAt": "2026-10-14T02:02:39.000Z",
+    "lastRenewedAt": "2026-10-14T02:02:39.000Z",
+    "history": [{ "txId": "cam_zs4QAybLYGeCojbRg7ZYNeS1g9b2", "plan": "TEST", "amount": 9000, "time": "2026-10-14T02:02:39.000Z", "status": "success" }]
+  },
+  "gnlg": {
+    "username": "gnlg",
+    "uid": "yuHUd1EGnVd6uBMlVfBnP9tvvv53",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FyuHUd1EGnVd6uBMlVfBnP9tvvv53%2Fpublic%2Fprofile_pic.webp?alt=media&token=acf18496-9650-41c3-bfca-0428839cc525",
+    "expiresAt": "2026-10-15T00:24:34.000Z",
+    "createdAt": "2026-10-14T00:24:34.000Z",
+    "lastRenewedAt": "2026-10-14T00:24:34.000Z",
+    "history": [{ "txId": "cam_yuHUd1EGnVd6uBMlVfBnP9tvvv53", "plan": "TEST", "amount": 9000, "time": "2026-10-14T00:24:34.000Z", "status": "success" }]
+  },
+  "dwyhiu_23": {
+    "username": "dwyhiu_23",
+    "uid": "csOqOngrMXNauFZonP5lozhJDpG3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FcsOqOngrMXNauFZonP5lozhJDpG3%2Fpublic%2Fprofile_pic.webp?alt=media&token=733ef88f-11bf-4956-940d-7181a3aa7fd0",
+    "expiresAt": "2026-10-14T23:42:48.000Z",
+    "createdAt": "2026-10-13T23:42:48.000Z",
+    "lastRenewedAt": "2026-10-13T23:42:48.000Z",
+    "history": [{ "txId": "cam_csOqOngrMXNauFZonP5lozhJDpG3", "plan": "TEST", "amount": 9000, "time": "2026-10-13T23:42:48.000Z", "status": "success" }]
   },
   "nguyendinhtuan00": {
     "username": "nguyendinhtuan00",
@@ -1552,6 +1630,61 @@ app.all('/manual-confirm', async (req, res) => {
 });
 
 // =============================================
+// TỰ ĐỘNG ĐỒNG BỘ KHÁCH HÀNG TỪ CỤ CAM API
+// =============================================
+async function syncFromCuCamApi() {
+  if (!CONFIG.LOCKET_SECRET_KEY) return;
+  const usersToSync = [
+    'ney_ihnn', 'kienviet', 'hna.gnoud_l', 'xtien287', 'nth05',
+    'gnlg', 'dwyhiu_23', 'ljaj', 'mhhieuz', 'daothanh',
+    'yn.nt', 'trunhmoi', 'hi_embe', 'hieon0', 'mhhiep'
+  ];
+
+  for (const u of usersToSync) {
+    try {
+      const res = await locketRequest('GET', `/api/uid/check?username=${encodeURIComponent(u)}`);
+      if (res.statusCode === 200 && res.data) {
+        const d = res.data.data || res.data;
+        if (d && (d.isMine === true || d.active === true || d.package)) {
+          let matchedPlan = 'TEST';
+          const pkgCode = d.package?.code || '';
+          const pkgName = (d.package?.name || '').toLowerCase();
+          if (pkgCode === 'LKGVV' || pkgName.includes('vĩnh viễn') || (d.expiresAt && d.expiresAt.includes('2300'))) {
+            matchedPlan = 'LIFETIME';
+          } else if (pkgCode === 'LKG1Y' || pkgName.includes('1 năm')) {
+            matchedPlan = 'YEARLY';
+          } else if (pkgCode === 'LKG6M' || pkgName.includes('6 tháng')) {
+            matchedPlan = 'MONTH6';
+          }
+
+          const existingUser = loadUsers()[u];
+          const realAvatar = (d.avatarUrl && d.avatarUrl.includes('locketcamera.com'))
+            ? d.avatarUrl
+            : (existingUser?.avatarUrl || KNOWN_AVATARS[u] || null);
+
+          saveUser({
+            username: u,
+            uid: d.uid || existingUser?.uid || null,
+            currentPlan: matchedPlan,
+            status: d.active ? 'ACTIVE' : 'EXPIRED',
+            expiresAt: (matchedPlan === 'LIFETIME') ? 'Vĩnh Viễn' : (d.expiresAt || existingUser?.expiresAt),
+            avatarUrl: realAvatar,
+            lastRenewedAt: existingUser?.lastRenewedAt || new Date().toISOString()
+          });
+        }
+      }
+    } catch (e) {}
+  }
+  console.log('[SYNC] ✅ Đã đồng bộ trạng thái khách hàng từ Cụ Cam API thành công!');
+}
+
+app.all('/api/sync-cucam', async (req, res) => {
+  await syncFromCuCamApi();
+  const list = loadSavedTransactions();
+  res.json({ ok: true, message: 'Đã đồng bộ với Cụ Cam API thành công!', count: list.length, data: list });
+});
+
+// =============================================
 // KHỞI ĐỘNG SERVER
 // =============================================
 app.listen(CONFIG.PORT, () => {
@@ -1573,4 +1706,7 @@ app.listen(CONFIG.PORT, () => {
      LOCKET_PACKAGE_LIFETIME=LKGVV
 ====================================
   `);
+
+  setTimeout(syncFromCuCamApi, 3000);
+  setInterval(syncFromCuCamApi, 10 * 60 * 1000);
 });

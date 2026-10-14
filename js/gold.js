@@ -30,16 +30,21 @@ const BACKEND_URL = (function() {
 
 // BẢNG ẢNH ĐẠI DIỆN LOCKET THẬT TỪ HỆ THỐNG
 const KNOWN_AVATARS = {
-  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
   'ney_ihnn': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd',
-  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
+  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
+  'hna.gnoud_l': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FPnqkZk51svW7NPzpCnSLy0nCAoz2%2Fpublic%2Fprofile_pic.webp?alt=media&token=e7d7986f-5b13-4c06-99fb-2b716dcb4750',
+  'xtien287': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2s6uO8UpjmhKvHLlbjUsYrFaXqu1%2Fpublic%2Fprofile_pic.webp?alt=media&token=d7da47c5-a379-46f9-8c22-ffc0874a4f6b',
+  'nth05': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Fzs4QAybLYGeCojbRg7ZYNeS1g9b2%2Fpublic%2Fprofile_pic.webp?alt=media&token=5ffdaa57-d5ac-4e06-8f7d-974a45d4aea8',
+  'gnlg': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FyuHUd1EGnVd6uBMlVfBnP9tvvv53%2Fpublic%2Fprofile_pic.webp?alt=media&token=acf18496-9650-41c3-bfca-0428839cc525',
+  'dwyhiu_23': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FcsOqOngrMXNauFZonP5lozhJDpG3%2Fpublic%2Fprofile_pic.webp?alt=media&token=733ef88f-11bf-4956-940d-7181a3aa7fd0',
   'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
   'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
   'yn.nt': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FGrYho8R7FDPeEmQgy5aKMEYx9gl2%2Fpublic%2Fprofile_pic.webp?alt=media&token=4f447328-95e6-46fc-b19c-97dedd3c70ce',
   'trunhmoi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Feg66l51dTvhc7zREzqTVVKIvABh2%2Fpublic%2Fprofile_pic.webp?alt=media&token=a09e7abc-0bb3-4e86-8167-7781e644d256',
   'hi_embe': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FzKit3JlPVhdXK3ppE2PDRflNjP32%2Fpublic%2Fprofile_pic.webp?alt=media&token=477e2d02-3e84-48c6-a4bb-a78548ccf589',
   'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
-  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3229122d-0f4c-4223-8805-888f8170d36d'
+  'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=c3fc74fd-8200-4123-af8e-f7ff1934fa8c',
+  'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3'
 };
 
 // Tạo Avatar chữ SVG dự phòng siêu nhẹ không phụ thuộc bất kỳ API bên ngoài nào
@@ -1202,16 +1207,21 @@ async function loadRecentTransactions() {
     } catch (e) {}
 
     const defaultSeedList = [
-      { username: 'kienviet', plan: 'TEST', amount: 9000, time: "2026-10-14T10:33:00.000Z", txId: 89862435, avatarUrl: "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21" },
-      { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T05:43:00.000Z", txId: "89790277", avatarUrl: "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd" },
-      { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: '2026-10-12T17:48:24.000Z', txId: 'cam_2kIObn7acAfhBLuovv4xeg5EChE3', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
-      { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: '2026-10-12T12:36:07.000Z', txId: 'cam_zKit3JlPVhdXK3ppE2PDRflNjp32', avatarUrl: KNOWN_AVATARS['hi_embe'] },
-      { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: '2026-10-12T14:15:21.000Z', txId: 'cam_qJ76CYeThgaDnQYipUGPsC5XeVt2', avatarUrl: KNOWN_AVATARS['ljaj'] },
-      { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:57:26.000Z', txId: 'cam_5p59vkOpQxWV8w1hItgiJh27Fyo1', avatarUrl: KNOWN_AVATARS['daothanh'] },
-      { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:46:00.000Z', txId: 'cam_GrYho8R7FDPeEmQgy5aKMEYx9gl2', avatarUrl: KNOWN_AVATARS['yn.nt'] },
-      { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:16:02.000Z', txId: 'cam_eg66151dTvhc7zREzqTWVKiVABh2', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
-      { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: '2026-10-12T11:37:18.000Z', txId: 'cam_Vt6ceg2WlBcOGDrkM1MnPOJQuc93', avatarUrl: KNOWN_AVATARS['hieon0'] },
-      { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: '2026-10-12T10:53:46.000Z', txId: 'cam_2c7d1QuxUQUlKNrwGPcqsqLW0sK2', avatarUrl: KNOWN_AVATARS['mhhiep'] }
+      { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T11:02:00.000Z", txId: "89790277", avatarUrl: KNOWN_AVATARS['ney_ihnn'] },
+      { username: 'kienviet', plan: 'TEST', amount: 9000, time: "2026-10-14T10:39:58.000Z", txId: 89862435, avatarUrl: KNOWN_AVATARS['kienviet'] },
+      { username: 'hna.gnoud_l', plan: 'MONTH6', amount: 39000, time: "2026-10-14T08:46:05.000Z", txId: "cam_PnqkZk51svW7NPzpCnSLy0nCAoz2", avatarUrl: KNOWN_AVATARS['hna.gnoud_l'] },
+      { username: 'xtien287', plan: 'LIFETIME', amount: 119000, time: "2026-10-14T06:49:47.000Z", txId: "cam_2s6uO8UpjmhKvHLlbjUsYrFaXqu1", avatarUrl: KNOWN_AVATARS['xtien287'] },
+      { username: 'nth05', plan: 'TEST', amount: 9000, time: "2026-10-14T02:02:39.000Z", txId: "cam_zs4QAybLYGeCojbRg7ZYNeS1g9b2", avatarUrl: KNOWN_AVATARS['nth05'] },
+      { username: 'gnlg', plan: 'TEST', amount: 9000, time: "2026-10-14T00:24:34.000Z", txId: "cam_yuHUd1EGnVd6uBMlVfBnP9tvvv53", avatarUrl: KNOWN_AVATARS['gnlg'] },
+      { username: 'dwyhiu_23', plan: 'TEST', amount: 9000, time: "2026-10-13T23:42:48.000Z", txId: "cam_csOqOngrMXNauFZonP5lozhJDpG3", avatarUrl: KNOWN_AVATARS['dwyhiu_23'] },
+      { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: "2026-10-13T20:30:21.000Z", txId: "cam_qJ76CYeThgaDnQYipUGPsC5XeVt2", avatarUrl: KNOWN_AVATARS['ljaj'] },
+      { username: 'mhhieuz', plan: 'LIFETIME', amount: 119000, time: "2026-10-13T13:55:35.000Z", txId: "cam_FuOKHoW1rxUvuGYB0bZ7xl3WckU2", avatarUrl: "https://ui-avatars.com/api/?name=mhhieuz&background=FFA033&color=fff&size=128&bold=true" },
+      { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:57:26.000Z", txId: "cam_5p59vkOpQxWV8w1hItgiJh27Fyo1", avatarUrl: KNOWN_AVATARS['daothanh'] },
+      { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:46:00.000Z", txId: "cam_GrYho8R7FDPeEmQgy5aKMEYx9gl2", avatarUrl: KNOWN_AVATARS['yn.nt'] },
+      { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: "2026-10-12T13:16:02.000Z", txId: "cam_eg66l51dTvhc7zREzqTVVKIvABh2", avatarUrl: KNOWN_AVATARS['trunhmoi'] },
+      { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: "2026-10-12T12:36:07.000Z", txId: "cam_zKit3JlPVhdXK3ppE2PDRflNjP32", avatarUrl: KNOWN_AVATARS['hi_embe'] },
+      { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: "2026-10-12T11:37:18.000Z", txId: "cam_Vt6ceg2WlBcOGDrWMlMnPOJQuc93", avatarUrl: KNOWN_AVATARS['hieon0'] },
+      { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: "2026-10-12T10:53:46.000Z", txId: "cam_2c7dlQuxUQULKnrwGPcqsqLW0sK2", avatarUrl: KNOWN_AVATARS['mhhiep'] }
     ];
 
     // Hợp nhất: localList, serverList, seed, và chuẩn hóa khử hoàn toàn trùng lặp theo normalize username
