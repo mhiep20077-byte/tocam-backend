@@ -306,6 +306,20 @@ function goToStep(step) {
     loadRecentTransactions();
     startPaymentTimer();
     startPaymentPolling(); // ← Bắt đầu polling tự động!
+
+    // Tự động kiểm tra trước với Cụ Cam ngầm nếu người dùng chưa bấm nút "Kiểm Tra" ở Bước 1
+    if (!currentUID && cleaned) {
+      fetch(`${BACKEND_URL}/api/locket/uid/check?username=${encodeURIComponent(cleaned)}`)
+        .then(res => res.json())
+        .then(json => {
+          if (json.ok && json.data) {
+            if (json.data.uid) currentUID = json.data.uid;
+            if (json.data.avatarUrl) currentAvatarUrl = json.data.avatarUrl;
+            isAccountGoldActive = (json.data.active === true || json.data.status === 'ACTIVE');
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   // Dừng polling khi rời khỏi bước 2
@@ -390,11 +404,12 @@ async function proceedToStep3() {
   goToStep(3);
 }
 
-// Chuẩn hoá nội dung chuyển khoản: giữ nguyên chữ, số, dấu chấm (.), gạch dưới (_), gạch ngang (-)
-// VietQR Napas247 và 100% app ngân hàng đều hỗ trợ đầy đủ các ký tự này trong trường nội dung
+// Chuẩn hoá nội dung chuyển khoản an toàn: chỉ gồm chữ cái và số (loại bỏ dấu chấm, gạch)
+// Giúp 100% app ngân hàng (Vietcombank, MB, Techcombank, BIDV, Agribank, VPBank...) KHÔNG bao giờ báo lỗi ký tự đặc biệt
+// Hệ thống đã lưu trữ username gốc từ Bước 1 nên khi nhận tiền sẽ tự động kích hoạt đúng nick có dấu _, . bên Cụ Cam!
 function getSafePaymentMemo(u) {
-  if (!u) return 'TOCAM VIP';
-  const clean = cleanLocketUsername(u).toUpperCase().replace(/\s+/g, '');
+  const raw = cleanLocketUsername(u) || 'VIP';
+  const clean = raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   return `TOCAM ${clean || 'VIP'}`;
 }
 

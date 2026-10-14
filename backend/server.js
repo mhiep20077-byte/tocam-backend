@@ -1075,8 +1075,18 @@ app.get('/api/locket/uid/check', async (req, res) => {
   }
 
   const cleanUser = username.toLowerCase();
+  const cleanNorm = normalizeUsername(username);
   const users = loadUsers();
-  const existingUser = cleanUser ? (users[cleanUser] || (cleanUser.includes('kienviet') ? users['kienviet'] : null)) : null;
+  const existingUser = cleanUser ? (users[cleanUser] || (cleanNorm ? users[cleanNorm] : null) || (cleanUser.includes('kienviet') ? users['kienviet'] : null)) : null;
+
+  // Đăng ký phiên nhận diện ngay từ Bước 1
+  if (cleanNorm && username) {
+    pendingUsersMap.set(cleanNorm, {
+      username: username,
+      uid: existingUser?.uid || null,
+      timestamp: Date.now()
+    });
+  }
 
   // 1. Nếu tài khoản đã có trong hệ thống TỔ CAM và đã có ảnh thật từ Locket CDN
   if (existingUser && existingUser.avatarUrl && existingUser.avatarUrl.includes('locketcamera.com')) {
@@ -1103,6 +1113,27 @@ app.get('/api/locket/uid/check', async (req, res) => {
 
       if (result.statusCode === 200 && result.data) {
         const d = result.data.data || result.data;
+        const verifiedUid = d?.uid?.uidString || d?.uid || null;
+        const verifiedUser = d?.username || username;
+
+        // Lưu ngay vào pendingUsersMap để webhook ngân hàng lấy đúng nick đã kiểm tra ở Bước 1
+        if (cleanNorm) {
+          pendingUsersMap.set(cleanNorm, {
+            username: verifiedUser,
+            uid: verifiedUid,
+            avatarUrl: d?.avatarUrl || null,
+            timestamp: Date.now()
+          });
+        }
+        if (verifiedUser && verifiedUid) {
+          saveUser({
+            username: verifiedUser,
+            uid: verifiedUid,
+            avatarUrl: d?.avatarUrl || undefined,
+            status: (d?.active === true || d?.status === 'ACTIVE') ? 'ACTIVE' : 'INACTIVE'
+          });
+        }
+
         if (!d.avatarUrl && existingUser && existingUser.avatarUrl) {
           d.avatarUrl = existingUser.avatarUrl;
         } else if (!d.avatarUrl) {
