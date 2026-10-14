@@ -279,7 +279,8 @@
       <div class="input-group">
         <label class="input-label">Nhập Username Locket của bạn:</label>
         <div class="input-field-wrap">
-          <input type="text" id="username-input" class="username-input" placeholder="Ví dụ: kienviet (không cần @)" autocomplete="off" spellcheck="false">
+          <input type="text" id="username-input" class="username-input" placeholder="Ví dụ: kienviet (không cần @)"
+            autocomplete="off" spellcheck="false">
           <button type="button" class="btn-lookup" onclick="lookupUsername()">
             <i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra
           </button>
@@ -297,14 +298,16 @@
             <i class="fa-solid fa-circle-info"></i>
             <span>Cách lấy Username từ link chia sẻ profile Locket:</span>
           </div>
-          <div class="guide-hint-example" onclick="fillSampleUsername('kienviet')" title="Nhấn để thử mẫu kienviet" style="cursor: pointer;">
+          <div class="guide-hint-example" onclick="fillSampleUsername('kienviet')" title="Nhấn để thử mẫu kienviet"
+            style="cursor: pointer;">
             <span class="hint-url-prefix">https://locket.cam/</span><span class="highlight-user">kienviet</span>
             <span class="guide-hint-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             <span>Username là: <b class="highlight-user">kienviet</b></span>
             <span class="badge-try-sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Thử mẫu</span>
           </div>
           <div class="guide-hint-note">
-            👉 <b>Các chữ sau dấu / ở cuối</b> chính là Username của bạn (bạn cũng có thể dán thẳng cả link <code>https://locket.cam/...</code> vào ô trên).
+            👉 <b>Các chữ sau dấu / ở cuối</b> chính là Username của bạn (bạn không thể dán thẳng cả link
+            <code>https://locket.cam/...</code> vào ô trên, chỉ nhập username).
           </div>
         </div>
 
@@ -395,16 +398,19 @@
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="live-dot-pulse" id="step2-pending-pulse" style="background:#38BDF8;"></span>
-            <span id="step2-pending-title" style="font-size:12px; font-weight:800; color:#38BDF8; text-transform:uppercase; letter-spacing:0.5px;">
+            <span id="step2-pending-title"
+              style="font-size:12px; font-weight:800; color:#38BDF8; text-transform:uppercase; letter-spacing:0.5px;">
               Đơn Hàng Của Bạn (Đang Chờ Quét)
             </span>
           </div>
-          <span id="step2-pending-tag" style="background:rgba(56,189,248,0.15); color:#38BDF8; border:1px solid rgba(56,189,248,0.3); font-size:11px; font-weight:700; padding:2px 8px; border-radius:99px;">
+          <span id="step2-pending-tag"
+            style="background:rgba(56,189,248,0.15); color:#38BDF8; border:1px solid rgba(56,189,248,0.3); font-size:11px; font-weight:700; padding:2px 8px; border-radius:99px;">
             Đang quét 24/7
           </span>
         </div>
 
-        <div class="step2-tx-row pending" id="step2-current-tx-row" style="background:rgba(0,0,0,0.3); border:1px solid rgba(56,189,248,0.25);">
+        <div class="step2-tx-row pending" id="step2-current-tx-row"
+          style="background:rgba(0,0,0,0.3); border:1px solid rgba(56,189,248,0.25);">
           <div class="step2-tx-left">
             <div class="step2-tx-icon pending" id="step2-current-tx-icon">
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -711,11 +717,14 @@
           <!-- Box chọn gói gia hạn trực quan -->
           <div id="lookup-renew-box"
             style="display:none; margin-top:12px; padding:12px; background:rgba(255,160,51,0.08); border:1px solid rgba(255,160,51,0.3); border-radius:14px;">
-            <div style="color:#FFA033; font-size:12px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
-              <span><i class="fa-solid fa-cart-shopping"></i> Chọn gói muốn gia hạn cho @<b id="renew-plan-target-user" style="color:#fff;">username</b>:</span>
-              <button type="button" onclick="toggleRenewBox()" style="background:none; border:none; color:#94A3B8; font-size:16px; cursor:pointer; line-height:1;">&times;</button>
+            <div
+              style="color:#FFA033; font-size:12px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+              <span><i class="fa-solid fa-cart-shopping"></i> Chọn gói muốn gia hạn cho @<b id="renew-plan-target-user"
+                  style="color:#fff;">username</b>:</span>
+              <button type="button" onclick="toggleRenewBox()"
+                style="background:none; border:none; color:#94A3B8; font-size:16px; cursor:pointer; line-height:1;">&times;</button>
             </div>
-            
+
             <div style="display:flex; flex-direction:column; gap:8px;">
               <!-- Gói Test 1 Ngày -->
               <button type="button" onclick="executeRenewPlan('TEST')"

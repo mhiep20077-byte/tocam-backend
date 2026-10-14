@@ -16,7 +16,7 @@ let currentAvatarUrl = null; // Ảnh đại diện thật từ Locket CDN khi t
 // CẤU HÌNH BACKEND URL
 // Tự động nhận diện localhost:3000 hoặc Railway production
 // ============================================
-const BACKEND_URL = (function() {
+const BACKEND_URL = (function () {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000';
@@ -90,7 +90,7 @@ function selectPlan(element, name, price, formattedPrice, code) {
   const planStorageKey = (code === 'TEST') ? 'test' : ((code === 'MONTH6' || code === '6MONTH') ? '6month' : ((code === 'YEARLY') ? 'yearly' : 'lifetime'));
   try {
     localStorage.setItem('tocam_selected_plan', planStorageKey);
-  } catch(e) {}
+  } catch (e) { }
 
   // Cập nhật text nút bấm ở Bước 1
   const btn1 = document.getElementById('btn-continue-step1');
@@ -111,13 +111,13 @@ function selectPlan(element, name, price, formattedPrice, code) {
     const url = new URL(window.location.href);
     url.searchParams.set('plan', planStorageKey);
     window.history.replaceState({}, '', url.toString());
-  } catch (e) {}
+  } catch (e) { }
 
   updatePaymentInfo();
 
   // Phản hồi rung nhẹ xúc giác trên điện thoại
   if (navigator.vibrate) {
-    try { navigator.vibrate(25); } catch(e) {}
+    try { navigator.vibrate(25); } catch (e) { }
   }
 }
 
@@ -214,7 +214,7 @@ function lookupUsername() {
   preview.style.display = 'flex';
   nameEl.innerText = rawUsername;
   userTag.innerText = '@' + rawUsername;
-  
+
   const initialAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(rawUsername)}&background=FFA033&color=fff&size=128&bold=true`;
   avatarEl.innerHTML = `<img src="${initialAvatarUrl}" alt="${rawUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerText='${rawUsername.charAt(0).toUpperCase()}';">`;
   avatarEl.style.padding = '0';
@@ -565,7 +565,7 @@ function markPaymentSuccessAndProceed(data) {
     saved.unshift(completedItem);
     if (saved.length > 100) saved.pop();
     localStorage.setItem('tocam_recent_transactions', JSON.stringify(saved));
-  } catch (e) {}
+  } catch (e) { }
 
   // Đưa về trang 1 để người mua mới lập tức xuất hiện ở đầu bảng,
   // nếu hàng đầy thì các hàng cũ hơn sẽ tự động đẩy sang các trang sau!
@@ -588,7 +588,7 @@ function markPaymentSuccessAndProceed(data) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(completedItem)
           });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   };
@@ -673,9 +673,9 @@ async function confirmPaymentAndProceed() {
 
   const memo = getSafePaymentMemo(currentUsername);
   alert(`⚠️ Hệ thống chưa nhận được thanh toán từ ngân hàng!\n\n` +
-        `• Số tiền cần chuyển: ${selectedPlan.formattedPrice}\n` +
-        `• Đúng nội dung chuyển: ${memo}\n\n` +
-        `Nếu bạn vừa chuyển khoản, vui lòng đợi 10 - 30 giây để ngân hàng đồng bộ dữ liệu. Hệ thống sẽ tự động chuyển sang bước 3 ngay khi nhận được tiền!`);
+    `• Số tiền cần chuyển: ${selectedPlan.formattedPrice}\n` +
+    `• Đúng nội dung chuyển: ${memo}\n\n` +
+    `Nếu bạn vừa chuyển khoản, vui lòng đợi 10 - 30 giây để ngân hàng đồng bộ dữ liệu. Hệ thống sẽ tự động chuyển sang bước 3 ngay khi nhận được tiền!`);
 }
 
 // Animation chúc mừng khi thanh toán thành công
@@ -765,9 +765,9 @@ async function checkActivation() {
   if (!terminal) return;
 
   terminal.innerHTML = '';
-  if (btn) { 
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xử lý cấu hình...</span>'; 
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xử lý cấu hình...</span>';
   }
 
   termLog(terminal, '[HỆ THỐNG] Đang chuẩn bị cấu hình Locket Gold...', 'info');
@@ -778,9 +778,9 @@ async function checkActivation() {
   if (!username && !currentUID) {
     terminal.innerHTML = '';
     termLog(terminal, '[LỖI] Chưa có thông tin tài khoản. Vui lòng quay lại bước 1!', 'info');
-    if (btn) { 
-      btn.disabled = false; 
-      btn.innerHTML = '<i class="fa-solid fa-bolt"></i> <span>Kích Hoạt Gold &amp; Nhận Cấu Hình DNS</span>'; 
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-bolt"></i> <span>Kích Hoạt Gold &amp; Nhận Cấu Hình DNS</span>';
     }
     return;
   }
@@ -857,7 +857,7 @@ async function checkActivation() {
     if (profileRes.ok) {
       const blob = await profileRes.blob();
       const url = URL.createObjectURL(blob);
-      const directDownloadLink = uid 
+      const directDownloadLink = uid
         ? `${BACKEND_URL}/api/locket/profile/download?uid=${encodeURIComponent(uid)}`
         : `${BACKEND_URL}/api/locket/profile/download?username=${encodeURIComponent(username)}`;
 
@@ -926,9 +926,9 @@ async function checkActivation() {
     if (readyDns) readyDns.style.display = 'flex';
   }
 
-  if (btn) { 
-    btn.disabled = false; 
-    btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Đã Kích Hoạt Thành Công & Nhận DNS</span>'; 
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Đã Kích Hoạt Thành Công & Nhận DNS</span>';
   }
 }
 
@@ -984,7 +984,7 @@ async function downloadProfileDNS() {
 // ============================================
 function copyDNSDownloadLink() {
   const targetUid = currentUID || '';
-  const directLink = targetUid 
+  const directLink = targetUid
     ? `${BACKEND_URL}/api/locket/profile/download?uid=${encodeURIComponent(targetUid)}`
     : `${BACKEND_URL}/api/locket/profile/download?username=${encodeURIComponent(currentUsername || 'khach_hang')}`;
   copyText(directLink, 'Đã sao chép link tải file cấu hình DNS (.mobileconfig)! Mở trên Safari iPhone để cài đặt.');
@@ -1001,7 +1001,7 @@ function formatRelativeOrAbsoluteTime(timeInput) {
   if (!timeInput) return 'Vừa xong';
   const d = new Date(timeInput);
   if (isNaN(d.getTime())) return 'Gần đây';
-  
+
   const diffSec = Math.floor((Date.now() - d.getTime()) / 1000);
   if (diffSec < 60) return 'Vừa xong';
   if (diffSec < 3600) return `${Math.floor(diffSec / 60)} phút trước`;
@@ -1075,7 +1075,7 @@ function renderRecentTxPage() {
     const planColor = isLifetime ? '#FFA033' : (isTest ? '#C084FC' : (isMonth6 ? '#10B981' : '#38BDF8'));
     const formattedAmount = Number(tx.amount || (isLifetime ? 119000 : (isTest ? 9000 : (isMonth6 ? 39000 : 69000)))).toLocaleString('vi-VN') + 'đ';
     const timeStr = formatRelativeOrAbsoluteTime(tx.time);
-    
+
     // Che 2 ký tự giữa của username để bảo mật thông tin khách hàng thật
     const u = (tx.username || 'khach_hang').toLowerCase();
     let masked = u;
@@ -1132,7 +1132,7 @@ function renderRecentTxPage() {
       paginationEl.style.display = 'none';
     } else {
       paginationEl.style.display = 'flex';
-      
+
       let pageButtonsHtml = '';
       for (let p = 1; p <= totalPages; p++) {
         if (totalPages > 5 && Math.abs(p - currentTxPage) > 1 && p !== 1 && p !== totalPages) {
@@ -1198,7 +1198,7 @@ async function loadRecentTransactions() {
           serverList = json.data;
         }
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // Fallback sang Railway nếu serverList rỗng và BACKEND_URL là localhost
     if (serverList.length === 0 && (BACKEND_URL.includes('localhost') || BACKEND_URL.includes('127.0.0.1'))) {
@@ -1210,13 +1210,13 @@ async function loadRecentTransactions() {
             serverList = json.data;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     let localList = [];
     try {
       localList = JSON.parse(localStorage.getItem('tocam_recent_transactions') || '[]');
-    } catch (e) {}
+    } catch (e) { }
 
     const defaultSeedList = [
       { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T11:02:00.000Z", txId: "89790277", avatarUrl: KNOWN_AVATARS['ney_ihnn'] },
@@ -1291,7 +1291,7 @@ async function loadRecentTransactions() {
     // Lưu lại danh sách vào localStorage để luôn duy trì danh sách sạch không trùng
     try {
       localStorage.setItem('tocam_recent_transactions', JSON.stringify(uniqueTxList.slice(0, 60)));
-    } catch (e) {}
+    } catch (e) { }
 
     renderRecentTxPage();
   } catch (err) {
@@ -1558,7 +1558,7 @@ function renderLookupResult(user) {
     avatarImg.style.display = 'block';
     if (avatarFallback) avatarFallback.style.display = 'none';
 
-    avatarImg.onerror = function() {
+    avatarImg.onerror = function () {
       if (this.src !== initialAvatarUrl) {
         this.src = initialAvatarUrl;
       } else {
@@ -1582,7 +1582,7 @@ function renderLookupResult(user) {
           user.avatarUrl = json.data.avatarUrl;
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   let isExpired = false;
@@ -1592,7 +1592,7 @@ function renderLookupResult(user) {
       isExpired = true;
     }
   }
-  
+
   if (badgeEl) {
     if (isExpired) {
       badgeEl.innerText = 'ĐÃ HẾT HẠN';
