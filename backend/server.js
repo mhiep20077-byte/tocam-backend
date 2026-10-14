@@ -117,6 +117,25 @@ const KNOWN_AVATARS = {
   'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3'
 };
 
+// Chuẩn hoá username bỏ ký tự đặc biệt để so khớp với ngân hàng
+function normalizeUsername(str) {
+  return (str || '').toLowerCase().trim().replace('@', '').replace(/[^a-z0-9]/gi, '');
+}
+
+// Ánh xạ bí danh ngân hàng (khi app ngân hàng tự bỏ ký tự hoặc khách gõ link)
+const KNOWN_CANONICAL_ALIASES = {
+  'neyihnn': 'ney_ihnn',
+  'hnagnoudl': 'hna.gnoud_l',
+  'ynnt': 'yn.nt',
+  'dwyhiu23': 'dwyhiu_23',
+  'hiembe': 'hi_embe',
+  'httpslocketcamkienviet': 'kienviet',
+  'locketcamkienviet': 'kienviet'
+};
+
+// Map lưu người dùng đang ở bước 2 chờ thanh toán
+const pendingUsersMap = new Map(); // cleanNorm -> { username, timestamp }
+
 // Chuẩn hóa locket username (hỗ trợ cả dán link profile https://locket.cam/username hoặc alias ngân hàng httpslocketcam...)
 function cleanLocketUsername(str) {
   if (!str) return '';
@@ -126,7 +145,44 @@ function cleanLocketUsername(str) {
   } else if (u.includes('locketcam')) {
     u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
   }
-  return u.trim();
+  u = u.trim();
+  return KNOWN_CANONICAL_ALIASES[u] || u;
+}
+
+// Phân giải ngược username chuẩn xác từ ngân hàng (kể cả khi ngân hàng tự ý bỏ dấu _, .)
+function resolveCanonicalUsername(rawUser) {
+  if (!rawUser) return '';
+  const cleaned = cleanLocketUsername(rawUser);
+  const norm = normalizeUsername(cleaned);
+
+  // 1. Kiểm tra danh sách khách hàng đang chờ ở Bước 2
+  if (pendingUsersMap.has(norm)) {
+    const pending = pendingUsersMap.get(norm);
+    if (pending && (Date.now() - pending.timestamp < 60 * 60 * 1000)) {
+      return pending.username;
+    }
+  }
+
+  // 2. Tra cứu bí danh chuẩn hóa đã biết
+  if (KNOWN_CANONICAL_ALIASES[norm]) {
+    return KNOWN_CANONICAL_ALIASES[norm];
+  }
+  if (KNOWN_CANONICAL_ALIASES[cleaned]) {
+    return KNOWN_CANONICAL_ALIASES[cleaned];
+  }
+
+  // 3. Tra cứu trong users.json nếu có username chứa ký tự đặc biệt (_ hoặc .) khớp norm
+  try {
+    const users = loadUsers();
+    if (users[cleaned]) return users[cleaned].username || cleaned;
+    for (const [k, v] of Object.entries(users)) {
+      if (normalizeUsername(k) === norm) {
+        return v.username || k;
+      }
+    }
+  } catch (e) {}
+
+  return cleaned;
 }
 
 function isValidLocketUsername(str) {
@@ -682,10 +738,7 @@ app.post('/webhook/sepay', async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-// Chuẩn hoá username bỏ ký tự đặc biệt để so khớp với ngân hàng
-function normalizeUsername(str) {
-  return (str || '').toLowerCase().trim().replace('@', '').replace(/[^a-z0-9]/gi, '');
-}
+// (normalizeUsername đã được định nghĩa ở đầu server.js)
 
 /**
  * Xử lý từng giao dịch từ Casso.
@@ -720,7 +773,8 @@ async function processTransaction(tx) {
     }
   }
 
-  const username = cleanLocketUsername(rawUser);
+  const rawClean = cleanLocketUsername(rawUser);
+  const username = resolveCanonicalUsername(rawClean) || rawClean;
   const cleanNormUser = normalizeUsername(username);
 
   if (!username && !cleanNormUser) {
@@ -913,7 +967,8 @@ app.post('/api/record-transaction', (req, res) => {
   const { username, plan, amount, time, txId, avatarUrl } = req.body || {};
   if (!username) return res.status(400).json({ ok: false, message: 'Thiếu username' });
 
-  const cleanUser = String(username).toLowerCase().trim().replace('@', '');
+  const raw = String(username).toLowerCase().trim().replace('@', '');
+  const cleanUser = resolveCanonicalUsername(raw) || cleanLocketUsername(raw);
   const updatedList = saveTransactionToHistory({
     username: cleanUser,
     plan: plan || 'LIFETIME',
@@ -943,7 +998,8 @@ app.post('/api/record-transaction', (req, res) => {
 // Trả thêm: locketStatus, uid, expiresAt, consumed
 // =============================================
 app.get('/check-payment', (req, res) => {
-  const username = (req.query.username || '').toLowerCase().trim().replace('@', '');
+  const raw = (req.query.username || '').toLowerCase().trim().replace('@', '');
+  const username = resolveCanonicalUsername(raw) || cleanLocketUsername(raw);
   const cleanNorm = normalizeUsername(username);
   const since = req.query.since ? Number(req.query.since) : null;
 
@@ -951,7 +1007,13 @@ app.get('/check-payment', (req, res) => {
     return res.status(400).json({ error: 'Thiếu username' });
   }
 
-  const record = paymentStore.get(username) || paymentStore.get(cleanNorm);
+  // Đăng ký phiên đang chờ thanh toán ở bước 2 để webhook ngân hàng luôn map về đúng username
+  pendingUsersMap.set(cleanNorm, { username, timestamp: Date.now() });
+  if (raw && raw !== cleanNorm) {
+    pendingUsersMap.set(normalizeUsername(raw), { username, timestamp: Date.now() });
+  }
+
+  const record = paymentStore.get(username) || paymentStore.get(cleanNorm) || (raw ? paymentStore.get(raw) : null);
 
   // 1. Kiểm tra nếu giao dịch đã tiêu thụ (đã kích hoạt DNS ở Bước 3 xong)
   if (record && record.consumed) {
@@ -1005,7 +1067,7 @@ app.get('/check-payment', (req, res) => {
 // =============================================
 app.get('/api/locket/uid/check', async (req, res) => {
   const rawUser = (req.query.username || '').trim().replace('@', '');
-  const username = cleanLocketUsername(rawUser);
+  const username = resolveCanonicalUsername(rawUser) || cleanLocketUsername(rawUser);
   const uid = (req.query.uid || '').trim();
 
   if (!username && !uid) {
@@ -1094,10 +1156,11 @@ app.all('/api/locket/profile/download', async (req, res) => {
     return res.status(400).json({ ok: false, message: 'Thiếu uid hoặc username' });
   }
 
-  const cleanUsername = username ? cleanLocketUsername(username) : '';
+  const cleanUsername = username ? (resolveCanonicalUsername(username) || cleanLocketUsername(username)) : '';
+  const cleanNorm = normalizeUsername(cleanUsername);
   const users = loadUsers();
-  const existingUser = cleanUsername ? (users[cleanUsername] || (cleanUsername.includes('kienviet') ? users['kienviet'] : null)) : null;
-  const stored = cleanUsername ? (paymentStore.get(cleanUsername) || (cleanUsername.includes('kienviet') ? paymentStore.get('kienviet') : null)) : null;
+  const existingUser = cleanUsername ? (users[cleanUsername] || (cleanNorm ? users[cleanNorm] : null) || (cleanUsername.includes('kienviet') ? users['kienviet'] : null)) : null;
+  const stored = cleanUsername ? (paymentStore.get(cleanUsername) || (cleanNorm ? paymentStore.get(cleanNorm) : null) || (cleanUsername.includes('kienviet') ? paymentStore.get('kienviet') : null)) : null;
 
   // KIỂM TRA BẢO MẬT: Bắt buộc tài khoản phải hoàn tất thanh toán hoặc đã là thành viên trong users.json
   if (cleanUsername) {
@@ -1167,7 +1230,8 @@ app.all('/api/locket/profile/download', async (req, res) => {
 // =============================================
 app.post('/api/activate', async (req, res) => {
   const { username, plan } = req.body || {};
-  const u = (username || '').toLowerCase().trim().replace('@', '');
+  const rawU = (username || '').toLowerCase().trim().replace('@', '');
+  const u = resolveCanonicalUsername(rawU) || cleanLocketUsername(rawU);
 
   if (!u) {
     return res.status(400).json({ ok: false, message: 'Thiếu username' });
@@ -1175,7 +1239,7 @@ app.post('/api/activate', async (req, res) => {
 
   const cleanNorm = normalizeUsername(u);
   // KIỂM TRA BẢO MẬT: Bắt buộc phải có thanh toán thành công
-  const stored = paymentStore.get(u) || paymentStore.get(cleanNorm);
+  const stored = paymentStore.get(u) || paymentStore.get(cleanNorm) || (rawU ? paymentStore.get(rawU) : null);
   if (!stored || !stored.paid) {
     console.warn(`[ACTIVATE REJECTED] @${u} chưa thanh toán mà yêu cầu kích hoạt!`);
     return res.status(403).json({
@@ -1323,7 +1387,7 @@ app.post('/api/activate', async (req, res) => {
 app.post('/api/user/lookup', async (req, res) => {
   const { username, pin } = req.body || {};
   const rawU = (username || '').trim().replace('@', '');
-  const u = cleanLocketUsername(rawU);
+  const u = resolveCanonicalUsername(rawU) || cleanLocketUsername(rawU);
 
   if (!u) {
     return res.status(400).json({ ok: false, message: 'Vui lòng nhập Username Locket!' });

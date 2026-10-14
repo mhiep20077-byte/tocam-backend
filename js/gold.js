@@ -121,6 +121,17 @@ function selectPlan(element, name, price, formattedPrice, code) {
   }
 }
 
+// Ánh xạ bí danh ngân hàng (khi ngân hàng tự động bỏ ký tự hoặc dán link)
+const KNOWN_CANONICAL_ALIASES = {
+  'neyihnn': 'ney_ihnn',
+  'hnagnoudl': 'hna.gnoud_l',
+  'ynnt': 'yn.nt',
+  'dwyhiu23': 'dwyhiu_23',
+  'hiembe': 'hi_embe',
+  'httpslocketcamkienviet': 'kienviet',
+  'locketcamkienviet': 'kienviet'
+};
+
 // Chuẩn hóa locket username (hỗ trợ cả dán link profile https://locket.cam/username hoặc alias ngân hàng httpslocketcam...)
 function cleanLocketUsername(str) {
   if (!str) return '';
@@ -131,7 +142,7 @@ function cleanLocketUsername(str) {
     u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
   }
   u = u.replace(/^@+/, '').trim();
-  return u;
+  return KNOWN_CANONICAL_ALIASES[u] || u;
 }
 
 // Kiểm tra username hợp lệ: chỉ chữ (a-z, A-Z), số (0-9), dấu chấm (.), gạch dưới (_), gạch ngang (-)
@@ -379,10 +390,11 @@ async function proceedToStep3() {
   goToStep(3);
 }
 
-// Chuẩn hoá nội dung chuyển khoản an toàn: chỉ gồm chữ cái và số (loại bỏ dấu chấm, gạch)
-// Giúp 100% app ngân hàng (Vietcombank, MB, Techcombank, BIDV, VPBank...) KHÔNG bao giờ báo lỗi
+// Chuẩn hoá nội dung chuyển khoản: giữ nguyên chữ, số, dấu chấm (.), gạch dưới (_), gạch ngang (-)
+// VietQR Napas247 và 100% app ngân hàng đều hỗ trợ đầy đủ các ký tự này trong trường nội dung
 function getSafePaymentMemo(u) {
-  const clean = (u || 'VIP').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  if (!u) return 'TOCAM VIP';
+  const clean = cleanLocketUsername(u).toUpperCase().replace(/\s+/g, '');
   return `TOCAM ${clean || 'VIP'}`;
 }
 
@@ -659,7 +671,7 @@ async function confirmPaymentAndProceed() {
     btn.innerHTML = '<i class="fa-solid fa-bolt"></i> <span>Tôi Đã Chuyển Khoản — Nâng Cấp Ngay</span>';
   }
 
-  const memo = `TOCAM ${currentUsername || 'VIP'}`.toUpperCase();
+  const memo = getSafePaymentMemo(currentUsername);
   alert(`⚠️ Hệ thống chưa nhận được thanh toán từ ngân hàng!\n\n` +
         `• Số tiền cần chuyển: ${selectedPlan.formattedPrice}\n` +
         `• Đúng nội dung chuyển: ${memo}\n\n` +
