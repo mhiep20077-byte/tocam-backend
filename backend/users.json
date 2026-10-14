@@ -1,4 +1,23 @@
 {
+  "kienviet": {
+    "username": "kienviet",
+    "uid": "t9iNECEtx2dJE9n36VvYb9xoMxy2",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21",
+    "expiresAt": "2026-10-15T10:39:58.472Z",
+    "createdAt": "2026-10-14T10:33:00.000Z",
+    "lastRenewedAt": "2026-10-14T10:39:58.000Z",
+    "history": [
+      {
+        "txId": 89862435,
+        "plan": "TEST",
+        "amount": 9000,
+        "time": "2026-10-14T10:33:00.000Z",
+        "status": "success"
+      }
+    ]
+  },
   "ljaj": {
     "username": "ljaj",
     "uid": "qJ76CYeThgaDnQYipUGPsC5XeVt2",

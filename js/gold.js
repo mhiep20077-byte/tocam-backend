@@ -30,6 +30,8 @@ const BACKEND_URL = (function() {
 
 // BẢNG ẢNH ĐẠI DIỆN LOCKET THẬT TỪ HỆ THỐNG
 const KNOWN_AVATARS = {
+  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
+  'ney_ihnn': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd',
   'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
   'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
   'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
@@ -114,6 +116,56 @@ function selectPlan(element, name, price, formattedPrice, code) {
   }
 }
 
+// Chuẩn hóa locket username (hỗ trợ cả dán link profile https://locket.cam/username hoặc alias ngân hàng httpslocketcam...)
+function cleanLocketUsername(str) {
+  if (!str) return '';
+  let u = String(str).toLowerCase().trim();
+  if (u.includes('locket.cam/')) {
+    u = u.split('locket.cam/')[1].split(/[/?#]/)[0];
+  } else if (u.includes('locketcam')) {
+    u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
+  }
+  u = u.replace(/^@+/, '').trim();
+  return u;
+}
+
+// Kiểm tra username hợp lệ: chỉ chữ (a-z, A-Z), số (0-9), dấu chấm (.), gạch dưới (_), gạch ngang (-)
+function isValidLocketUsername(str) {
+  if (!str || typeof str !== 'string') return false;
+  const clean = cleanLocketUsername(str);
+  if (!clean) return false;
+  return /^[a-zA-Z0-9._-]+$/.test(clean);
+}
+
+function setUsernameError(show, message) {
+  const errEl = document.getElementById('username-error-msg');
+  const inputEl = document.getElementById('username-input');
+  if (errEl) {
+    if (message) {
+      const span = errEl.querySelector('span');
+      if (span) span.innerText = message;
+    }
+    errEl.style.display = show ? 'flex' : 'none';
+  }
+  if (inputEl) {
+    if (show) {
+      inputEl.classList.add('input-invalid');
+    } else {
+      inputEl.classList.remove('input-invalid');
+    }
+  }
+}
+
+function fillSampleUsername(val) {
+  const input = document.getElementById('username-input');
+  if (input) {
+    input.value = val || 'kienviet';
+    setUsernameError(false);
+    lookupUsername();
+  }
+}
+window.fillSampleUsername = fillSampleUsername;
+
 function lookupUsername() {
   const input = document.getElementById('username-input');
   const preview = document.getElementById('user-preview');
@@ -123,11 +175,23 @@ function lookupUsername() {
   const btn = document.querySelector('.btn-lookup');
 
   if (!input || !input.value.trim()) {
-    alert('Vui lòng nhập Username Locket của bạn!');
+    setUsernameError(true, 'Vui lòng nhập Username Locket của bạn!');
+    if (preview) preview.style.display = 'none';
+    input?.focus();
     return;
   }
 
-  const rawUsername = input.value.trim().replace('@', '');
+  const rawUsername = cleanLocketUsername(input.value);
+  if (!isValidLocketUsername(rawUsername)) {
+    setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+    if (preview) preview.style.display = 'none';
+    input?.focus();
+    return;
+  }
+
+  // Hợp lệ -> ẩn lỗi & chuẩn hóa giá trị ô nhập
+  setUsernameError(false);
+  input.value = rawUsername;
   currentUsername = rawUsername;
 
   // Hiện preview tạm thời ngay lập tức với avatar đẹp (UX tốt)
@@ -200,15 +264,25 @@ function goToStep(step) {
 
   if (step === 2) {
     const input = document.getElementById('username-input');
-    const inputVal = input ? input.value.trim().replace('@', '') : '';
-    if (!inputVal && !currentUsername) {
-      alert('Vui lòng nhập Username Locket của bạn trước khi sang bước thanh toán!');
+    const inputVal = input ? input.value.trim() : '';
+    const candidate = inputVal || currentUsername || '';
+    const cleaned = cleanLocketUsername(candidate);
+
+    if (!cleaned) {
+      setUsernameError(true, 'Vui lòng nhập Username Locket của bạn trước khi sang bước thanh toán!');
       input?.focus();
       return;
     }
-    if (inputVal) {
-      currentUsername = inputVal;
+
+    if (!isValidLocketUsername(cleaned)) {
+      setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+      input?.focus();
+      return;
     }
+
+    setUsernameError(false);
+    if (input) input.value = cleaned;
+    currentUsername = cleaned;
     isPaymentVerified = false; // Luôn yêu cầu chuyển khoản cho mỗi phiên giao dịch
     paymentSessionStartTime = Date.now(); // Khởi tạo mốc thời gian phiên thanh toán mới
     isPaymentTransitioning = false;
@@ -450,71 +524,60 @@ function markPaymentSuccessAndProceed(data) {
     currentTxSub.innerHTML = '<span style="color:#10B981; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Đã nhận tiền thành công! Đang chuyển bước 3...</span>';
   }
 
-  // 2. TỰ ĐỘNG NHẬP SANG BÊN THÀNH CÔNG
-  const recentContainer = document.getElementById('step2-recent-txs');
+  // 2. LƯU LỊCH SỬ GIAO DỊCH THÀNH CÔNG VÀO HỆ THỐNG & ĐẨY VÀO TRANG ĐẦU
   const rawU = (currentUsername || 'VIP').toLowerCase().replace('@', '');
-  const masked = rawU.length > 3 ? (rawU.slice(0, 2) + '***' + rawU.slice(-2)) : (rawU + '***');
   const planCode = selectedPlan ? selectedPlan.code : 'LIFETIME';
-  const planName = selectedPlan ? selectedPlan.name : 'Gói Vĩnh Viễn';
-  const planColor = planCode === 'LIFETIME' ? '#FFA033' : (planCode === 'TEST' ? '#C084FC' : ((planCode === 'MONTH6' || planCode === '6MONTH') ? '#10B981' : '#38BDF8'));
-  const formattedAmount = (selectedPlan ? selectedPlan.formattedPrice : '119.000đ');
-
-  if (recentContainer) {
-    const newSuccessRow = document.createElement('div');
-    newSuccessRow.className = 'step2-tx-row completed';
-    newSuccessRow.style.background = 'rgba(16, 185, 129, 0.12)';
-    newSuccessRow.style.border = '1.5px solid #10B981';
-    newSuccessRow.style.animation = 'successPop 0.5s ease-out forwards';
-    newSuccessRow.innerHTML = `
-      <div class="step2-tx-left">
-        <div class="step2-tx-icon completed" style="background:#10B981; color:#fff;">
-          <i class="fa-solid fa-check"></i>
-        </div>
-        <div class="step2-tx-info">
-          <div class="step2-tx-title">
-            @${masked} <span style="font-size: 11px; font-weight: 700; color: ${planColor}; margin-left: 4px;">${planName}</span>
-          </div>
-          <div class="step2-tx-sub">
-            <span>Vừa xong</span> &bull; <span style="color:#10B981; font-weight:700;">Vừa kích hoạt xong</span>
-          </div>
-        </div>
-      </div>
-      <div class="step2-tx-right">
-        <span class="step2-tx-amount completed">+${formattedAmount}</span>
-        <span class="step2-tx-badge completed" style="background:rgba(16,185,129,0.25); color:#10B981; border:1px solid #10B981;">
-          <i class="fa-solid fa-check"></i> Thành công
-        </span>
-      </div>
-    `;
-    recentContainer.prepend(newSuccessRow);
-  }
-
-  // 3. LƯU LỊCH SỬ GIAO DỊCH THÀNH CÔNG CHO HỆ THỐNG
+  const txId = (data && data.txId) || `tx_${Date.now()}`;
   const completedItem = {
     username: rawU,
     plan: planCode,
     amount: selectedPlan ? selectedPlan.price : 119000,
     time: new Date().toISOString(),
+    txId: txId,
     status: 'success',
-    avatarUrl: currentAvatarUrl
+    avatarUrl: currentAvatarUrl || (KNOWN_AVATARS[rawU] || null)
   };
+
+  // Thêm vào danh sách bộ nhớ và lưu vào localStorage ngay lập tức
+  allRecentTransactions = allRecentTransactions.filter(x => x && x.txId !== txId);
+  allRecentTransactions.unshift(completedItem);
 
   try {
     let saved = JSON.parse(localStorage.getItem('tocam_recent_transactions') || '[]');
+    saved = saved.filter(x => x && x.txId !== txId);
     saved.unshift(completedItem);
-    if (saved.length > 50) saved.pop();
+    if (saved.length > 100) saved.pop();
     localStorage.setItem('tocam_recent_transactions', JSON.stringify(saved));
   } catch (e) {}
 
-  try {
-    fetch(`${BACKEND_URL}/api/record-transaction`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(completedItem)
-    }).catch(() => {});
-  } catch (e) {}
+  // Đưa về trang 1 để người mua mới lập tức xuất hiện ở đầu bảng,
+  // nếu hàng đầy thì các hàng cũ hơn sẽ tự động đẩy sang các trang sau!
+  currentTxPage = 1;
+  renderRecentTxPage();
 
-  // 4. Chờ 1.2s để người dùng nhìn thấy rõ chữ "Thành công" rồi hiện animation và chuyển bước 3
+  // Đồng bộ lên backend để lưu vào file transactions.json
+  const syncToBackend = async () => {
+    try {
+      await fetch(`${BACKEND_URL}/api/record-transaction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(completedItem)
+      });
+    } catch (err) {
+      if (BACKEND_URL.includes('localhost') || BACKEND_URL.includes('127.0.0.1')) {
+        try {
+          await fetch('https://lockettocam.up.railway.app/api/record-transaction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(completedItem)
+          });
+        } catch (e) {}
+      }
+    }
+  };
+  syncToBackend();
+
+  // 3. Chờ 1.2s để người dùng nhìn thấy rõ chữ "Thành công" rồi hiện animation và chuyển bước 3
   setTimeout(() => {
     showPaymentSuccessAnimation(() => {
       goToStep(3);
@@ -911,8 +974,199 @@ function copyDNSDownloadLink() {
 }
 
 // ============================================
-// LỊCH SỬ GIAO DỊCH GẦN ĐÂY Ở BƯỚC 2
+// LỊCH SỬ GIAO DỊCH GẦN ĐÂY Ở BƯỚC 2 (PHÂN TRANG & TỰ ĐỘNG ĐẨY HÀNG)
 // ============================================
+let currentTxPage = 1;
+const TX_PAGE_SIZE = 5; // 5 đơn mỗi trang, khi đầy hàng sẽ tự động đẩy sang trang khác
+let allRecentTransactions = [];
+
+function formatRelativeOrAbsoluteTime(timeInput) {
+  if (!timeInput) return 'Vừa xong';
+  const d = new Date(timeInput);
+  if (isNaN(d.getTime())) return 'Gần đây';
+  
+  const diffSec = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (diffSec < 60) return 'Vừa xong';
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)} phút trước`;
+  if (diffSec < 86400) {
+    const hours = Math.floor(diffSec / 3600);
+    return `${hours} giờ trước`;
+  }
+  return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+}
+
+function changeTxPage(p) {
+  const total = allRecentTransactions.length;
+  const totalPages = Math.max(1, Math.ceil(total / TX_PAGE_SIZE));
+  if (p < 1 || p > totalPages || p === currentTxPage) return;
+  currentTxPage = p;
+  renderRecentTxPage();
+  const txBox = document.querySelector('.step2-tx-history-box');
+  if (txBox) {
+    txBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+window.changeTxPage = changeTxPage;
+
+function jumpToTxPage() {
+  const input = document.getElementById('step2-tx-jump-input');
+  if (!input) return;
+  const p = parseInt(input.value, 10);
+  const total = allRecentTransactions.length;
+  const totalPages = Math.max(1, Math.ceil(total / TX_PAGE_SIZE));
+  if (isNaN(p) || p < 1 || p > totalPages) {
+    input.classList.add('error');
+    input.focus();
+    setTimeout(() => { if (input) input.classList.remove('error'); }, 1200);
+    return;
+  }
+  input.value = '';
+  changeTxPage(p);
+}
+window.jumpToTxPage = jumpToTxPage;
+
+function renderRecentTxPage() {
+  const container = document.getElementById('step2-recent-txs') || document.getElementById('tx-history-list');
+  const paginationEl = document.getElementById('step2-tx-pagination');
+  if (!container) return;
+
+  const total = allRecentTransactions.length;
+  if (total === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:18px 10px; color:#64748B; font-size:12px;">
+        <i class="fa-regular fa-clock" style="font-size:18px; margin-bottom:6px; display:block;"></i>
+        Chưa có giao dịch thành công nào
+      </div>
+    `;
+    if (paginationEl) paginationEl.style.display = 'none';
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / TX_PAGE_SIZE));
+  if (currentTxPage > totalPages) currentTxPage = totalPages;
+  if (currentTxPage < 1) currentTxPage = 1;
+
+  const startIndex = (currentTxPage - 1) * TX_PAGE_SIZE;
+  const endIndex = Math.min(startIndex + TX_PAGE_SIZE, total);
+  const pageItems = allRecentTransactions.slice(startIndex, endIndex);
+
+  container.innerHTML = pageItems.map((tx) => {
+    const isLifetime = tx.plan === 'LIFETIME';
+    const isTest = tx.plan === 'TEST';
+    const isMonth6 = tx.plan === 'MONTH6' || tx.plan === '6MONTH';
+    const planName = isLifetime ? 'Gói Vĩnh Viễn' : (isTest ? 'Gói Test 1 Ngày' : (isMonth6 ? 'Gói 6 Tháng' : 'Gói 1 Năm'));
+    const planColor = isLifetime ? '#FFA033' : (isTest ? '#C084FC' : (isMonth6 ? '#10B981' : '#38BDF8'));
+    const formattedAmount = Number(tx.amount || (isLifetime ? 119000 : (isTest ? 9000 : (isMonth6 ? 39000 : 69000)))).toLocaleString('vi-VN') + 'đ';
+    const timeStr = formatRelativeOrAbsoluteTime(tx.time);
+    
+    // Che 2 ký tự giữa của username để bảo mật thông tin khách hàng thật
+    const u = (tx.username || 'khach_hang').toLowerCase();
+    let masked = u;
+    if (u.length <= 3) {
+      masked = u.charAt(0) + '**' + u.slice(-1);
+    } else {
+      masked = u.slice(0, 2) + '***' + u.slice(-2);
+    }
+
+    const avatarSrc = (tx.avatarUrl && tx.avatarUrl.includes('http'))
+      ? tx.avatarUrl
+      : (KNOWN_AVATARS[u] || null);
+
+    const isVeryRecent = tx.time && (Date.now() - new Date(tx.time).getTime() < 15000);
+    const popAnimStyle = isVeryRecent ? 'animation: successPop 0.5s ease-out forwards; border: 1.5px solid #10B981;' : '';
+
+    return `
+      <div class="step2-tx-row completed" style="${popAnimStyle}">
+        <div class="step2-tx-left">
+          ${avatarSrc ? `
+            <img src="${avatarSrc}" alt="${masked}" class="step2-tx-avatar-img"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              referrerpolicy="no-referrer">
+            <div class="step2-tx-icon completed" style="display:none;">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          ` : `
+            <div class="step2-tx-icon completed">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          `}
+          <div class="step2-tx-info">
+            <div class="step2-tx-title">
+              @${masked} <span style="font-size: 11px; font-weight: 700; color: ${planColor}; margin-left: 4px;">${planName}</span>
+            </div>
+            <div class="step2-tx-sub">
+              <span>Lúc ${timeStr}</span> &bull; <span style="color:#10B981;">Tự động kích hoạt</span>
+            </div>
+          </div>
+        </div>
+        <div class="step2-tx-right">
+          <span class="step2-tx-amount completed">+${formattedAmount}</span>
+          <span class="step2-tx-badge completed">
+            <i class="fa-solid fa-check"></i> Thành công
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Render thanh phân trang chuẩn với nút < Lùi, Trang X/Y, Tiến > và ô Nhảy đến trang
+  if (paginationEl) {
+    if (totalPages <= 1) {
+      paginationEl.style.display = 'none';
+    } else {
+      paginationEl.style.display = 'flex';
+      
+      let pageButtonsHtml = '';
+      for (let p = 1; p <= totalPages; p++) {
+        if (totalPages > 5 && Math.abs(p - currentTxPage) > 1 && p !== 1 && p !== totalPages) {
+          if (p === 2 || p === totalPages - 1) {
+            pageButtonsHtml += `<span class="step2-tx-page-dots">&hellip;</span>`;
+          }
+          continue;
+        }
+        pageButtonsHtml += `
+          <button type="button" class="step2-tx-page-btn ${p === currentTxPage ? 'active' : ''}" onclick="changeTxPage(${p})">
+            ${p}
+          </button>
+        `;
+      }
+
+      paginationEl.innerHTML = `
+        <div class="step2-tx-page-group">
+          <button type="button" class="step2-tx-btn-nav btn-prev" ${currentTxPage === 1 ? 'disabled' : ''} onclick="changeTxPage(${currentTxPage - 1})" title="Về trang trước">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>Lùi</span>
+          </button>
+
+          <div class="step2-tx-page-indicator">
+            <span>Trang <b class="page-curr">${currentTxPage}</b> / <span class="page-total">${totalPages}</span></span>
+          </div>
+
+          <button type="button" class="step2-tx-btn-nav btn-next" ${currentTxPage === totalPages ? 'disabled' : ''} onclick="changeTxPage(${currentTxPage + 1})" title="Sang trang sau">
+            <span>Tiến</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="step2-tx-page-nums">
+          ${pageButtonsHtml}
+        </div>
+
+        <div class="step2-tx-divider"></div>
+
+        <div class="step2-tx-jump-box">
+          <input type="number" class="step2-tx-jump-input" id="step2-tx-jump-input"
+            min="1" max="${totalPages}" placeholder="Nhảy đến"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();jumpToTxPage();}" />
+          <button type="button" class="step2-tx-jump-btn" onclick="jumpToTxPage()" title="Chuyển đến trang này">
+            <span>Đi</span>
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
 async function loadRecentTransactions() {
   const container = document.getElementById('step2-recent-txs') || document.getElementById('tx-history-list');
   if (!container) return;
@@ -923,10 +1177,23 @@ async function loadRecentTransactions() {
       const res = await fetch(`${BACKEND_URL}/api/recent-transactions`);
       if (res.ok) {
         const json = await res.json();
-        serverList = json.data || [];
+        if (Array.isArray(json.data) && json.data.length > 0) {
+          serverList = json.data;
+        }
       }
-    } catch (e) {
-      // Backend offline hoặc chưa phản hồi
+    } catch (e) {}
+
+    // Fallback sang Railway nếu serverList rỗng và BACKEND_URL là localhost
+    if (serverList.length === 0 && (BACKEND_URL.includes('localhost') || BACKEND_URL.includes('127.0.0.1'))) {
+      try {
+        const fbRes = await fetch('https://lockettocam.up.railway.app/api/recent-transactions');
+        if (fbRes.ok) {
+          const json = await fbRes.json();
+          if (Array.isArray(json.data) && json.data.length > 0) {
+            serverList = json.data;
+          }
+        }
+      } catch (e) {}
     }
 
     let localList = [];
@@ -934,88 +1201,77 @@ async function loadRecentTransactions() {
       localList = JSON.parse(localStorage.getItem('tocam_recent_transactions') || '[]');
     } catch (e) {}
 
-    // Hợp nhất danh sách: ƯU TIÊN serverList trước vì serverList có avatarUrl thật từ Locket CDN
-    const combined = [...serverList, ...localList];
-    const uniqueMap = new Map();
-    combined.forEach(item => {
+    const defaultSeedList = [
+      { username: 'kienviet', plan: 'TEST', amount: 9000, time: "2026-10-14T10:33:00.000Z", txId: 89862435, avatarUrl: "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21" },
+      { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T05:43:00.000Z", txId: "89790277", avatarUrl: "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd" },
+      { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: '2026-10-12T17:48:24.000Z', txId: 'cam_2kIObn7acAfhBLuovv4xeg5EChE3', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
+      { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: '2026-10-12T12:36:07.000Z', txId: 'cam_zKit3JlPVhdXK3ppE2PDRflNjp32', avatarUrl: KNOWN_AVATARS['hi_embe'] },
+      { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: '2026-10-12T14:15:21.000Z', txId: 'cam_qJ76CYeThgaDnQYipUGPsC5XeVt2', avatarUrl: KNOWN_AVATARS['ljaj'] },
+      { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:57:26.000Z', txId: 'cam_5p59vkOpQxWV8w1hItgiJh27Fyo1', avatarUrl: KNOWN_AVATARS['daothanh'] },
+      { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:46:00.000Z', txId: 'cam_GrYho8R7FDPeEmQgy5aKMEYx9gl2', avatarUrl: KNOWN_AVATARS['yn.nt'] },
+      { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: '2026-10-12T13:16:02.000Z', txId: 'cam_eg66151dTvhc7zREzqTWVKiVABh2', avatarUrl: KNOWN_AVATARS['trunhmoi'] },
+      { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: '2026-10-12T11:37:18.000Z', txId: 'cam_Vt6ceg2WlBcOGDrkM1MnPOJQuc93', avatarUrl: KNOWN_AVATARS['hieon0'] },
+      { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: '2026-10-12T10:53:46.000Z', txId: 'cam_2c7d1QuxUQUlKNrwGPcqsqLW0sK2', avatarUrl: KNOWN_AVATARS['mhhiep'] }
+    ];
+
+    // Hợp nhất: localList, serverList, seed, và chuẩn hóa khử hoàn toàn trùng lặp theo normalize username
+    const all = [...localList, ...serverList, ...defaultSeedList];
+    const normMap = new Map();
+
+    all.forEach(item => {
       if (!item || !item.username) return;
-      const cleanKey = item.username.toLowerCase();
-      const key = `${cleanKey}_${item.plan}`;
-      const existing = uniqueMap.get(key);
+      let rawU = String(item.username).toLowerCase().trim().replace('@', '');
+      if (rawU.includes('kienviet')) {
+        rawU = 'kienviet';
+      }
+      const normKey = rawU.replace(/[^a-z0-9]/gi, '');
+      // Bỏ qua tài khoản test demo
+      if (!normKey || normKey.includes('testdemo') || normKey === 'testuser') return;
+
       const realAvatar = (item.avatarUrl && item.avatarUrl.includes('locketcamera.com'))
         ? item.avatarUrl
-        : (KNOWN_AVATARS[cleanKey] || item.avatarUrl || null);
+        : (KNOWN_AVATARS[rawU] || KNOWN_AVATARS[normKey] || item.avatarUrl || null);
 
-      if (!existing) {
-        uniqueMap.set(key, { ...item, avatarUrl: realAvatar });
+      const parsedItem = {
+        ...item,
+        username: rawU,
+        time: item.time || new Date().toISOString(),
+        avatarUrl: realAvatar
+      };
+
+      if (!normMap.has(normKey)) {
+        normMap.set(normKey, parsedItem);
       } else {
-        if (!existing.avatarUrl || !existing.avatarUrl.includes('locketcamera.com')) {
-          existing.avatarUrl = realAvatar || existing.avatarUrl;
-        }
+        const prev = normMap.get(normKey);
+        // Ưu tiên username có chứa ký tự . hoặc _ (username chính xác trên Locket)
+        const betterUser = (rawU.includes('.') || rawU.includes('_')) ? rawU : prev.username;
+        // Ưu tiên avatar thật từ cdn2.locketcamera.com
+        const betterAvatar = (realAvatar && realAvatar.includes('locketcamera.com')) ? realAvatar : prev.avatarUrl;
+        // Ưu tiên txId thật của ngân hàng (không phải tx_ tự sinh)
+        const betterTxId = (item.txId && !String(item.txId).startsWith('tx_')) ? item.txId : prev.txId;
+        // Giữ thời gian mới hơn
+        const betterTime = (new Date(item.time || 0) > new Date(prev.time || 0)) ? item.time : prev.time;
+        normMap.set(normKey, {
+          ...prev,
+          ...parsedItem,
+          username: betterUser,
+          avatarUrl: betterAvatar,
+          txId: betterTxId,
+          time: betterTime
+        });
       }
     });
 
-    let list = Array.from(uniqueMap.values());
+    const uniqueTxList = Array.from(normMap.values());
+    uniqueTxList.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+    allRecentTransactions = uniqueTxList;
 
-    // Nếu chưa có giao dịch nào, hiển thị danh sách khách hàng thật từ hệ thống Cụ Cam / Tổ Cam
-    if (list.length === 0) {
-      list = [
-        { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
-        { username: 'hi_embe', plan: 'MONTH6', amount: 39000, time: new Date(Date.now() - 240000).toISOString(), avatarUrl: KNOWN_AVATARS['hi_embe'] },
-        { username: 'ljaj', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 420000).toISOString(), avatarUrl: KNOWN_AVATARS['ljaj'] },
-        { username: 'daothanh', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 900000).toISOString(), avatarUrl: KNOWN_AVATARS['daothanh'] },
-        { username: 'yn.nt', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 1500000).toISOString(), avatarUrl: KNOWN_AVATARS['yn.nt'] },
-        { username: 'trunhmoi', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 2100000).toISOString(), avatarUrl: KNOWN_AVATARS['trunhmoi'] },
-        { username: 'hieon0', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 3600000).toISOString(), avatarUrl: KNOWN_AVATARS['hieon0'] },
-        { username: 'mhhiep', plan: 'YEARLY', amount: 69000, time: new Date(Date.now() - 4500000).toISOString(), avatarUrl: KNOWN_AVATARS['mhhiep'] }
-      ];
-    }
+    // Lưu lại danh sách vào localStorage để luôn duy trì danh sách sạch không trùng
+    try {
+      localStorage.setItem('tocam_recent_transactions', JSON.stringify(uniqueTxList.slice(0, 60)));
+    } catch (e) {}
 
-    // Sắp xếp thời gian mới nhất lên đầu
-    list.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
-
-    container.innerHTML = list.slice(0, 8).map(tx => {
-      const isLifetime = tx.plan === 'LIFETIME';
-      const isTest = tx.plan === 'TEST';
-      const isMonth6 = tx.plan === 'MONTH6' || tx.plan === '6MONTH';
-      const planName = isLifetime ? 'Gói Vĩnh Viễn' : (isTest ? 'Gói Test 1 Ngày' : (isMonth6 ? 'Gói 6 Tháng' : 'Gói 1 Năm'));
-      const planColor = isLifetime ? '#FFA033' : (isTest ? '#C084FC' : (isMonth6 ? '#10B981' : '#38BDF8'));
-      const formattedAmount = Number(tx.amount || (isLifetime ? 119000 : (isTest ? 9000 : (isMonth6 ? 39000 : 69000)))).toLocaleString('vi-VN') + 'đ';
-      const timeStr = tx.time ? new Date(tx.time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
-      
-      // Che 2 ký tự giữa của username để bảo mật thông tin khách hàng thật
-      const u = (tx.username || 'khach_hang').toLowerCase();
-      let masked = u;
-      if (u.length <= 3) {
-        masked = u.charAt(0) + '**' + u.slice(-1);
-      } else {
-        masked = u.slice(0, 2) + '***' + u.slice(-2);
-      }
-
-      return `
-        <div class="step2-tx-row completed">
-          <div class="step2-tx-left">
-            <div class="step2-tx-icon completed">
-              <i class="fa-solid fa-check"></i>
-            </div>
-            <div class="step2-tx-info">
-              <div class="step2-tx-title">
-                @${masked} <span style="font-size: 11px; font-weight: 700; color: ${planColor}; margin-left: 4px;">${planName}</span>
-              </div>
-              <div class="step2-tx-sub">
-                <span>Lúc ${timeStr}</span> &bull; <span style="color:#10B981;">Tự động kích hoạt</span>
-              </div>
-            </div>
-          </div>
-          <div class="step2-tx-right">
-            <span class="step2-tx-amount completed">+${formattedAmount}</span>
-            <span class="step2-tx-badge completed">
-              <i class="fa-solid fa-check"></i> Thành công
-            </span>
-          </div>
-        </div>
-      `;
-    }).join('');
+    renderRecentTxPage();
   } catch (err) {
     console.warn('[HISTORY] Lỗi tải lịch sử:', err.message);
   }
@@ -1080,6 +1336,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const uInput = document.getElementById('username-input');
   if (uInput) {
+    // Kiểm tra trực tiếp khi người dùng gõ
+    uInput.addEventListener('input', () => {
+      const raw = uInput.value.trim();
+      if (!raw) {
+        setUsernameError(false);
+        const preview = document.getElementById('user-preview');
+        if (preview) preview.style.display = 'none';
+        return;
+      }
+      const cleaned = cleanLocketUsername(raw);
+      if (!isValidLocketUsername(cleaned)) {
+        setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+      } else {
+        setUsernameError(false);
+      }
+    });
+
+    // Khi người dùng click ra ngoài (blur): tự động làm sạch link hoặc @
+    uInput.addEventListener('blur', () => {
+      const raw = uInput.value.trim();
+      if (raw) {
+        const cleaned = cleanLocketUsername(raw);
+        if (isValidLocketUsername(cleaned)) {
+          uInput.value = cleaned;
+          setUsernameError(false);
+        } else {
+          setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+        }
+      }
+    });
+
+    // Tự động nhận diện khi dán cả link locket.cam/...
+    uInput.addEventListener('paste', () => {
+      setTimeout(() => {
+        const cleaned = cleanLocketUsername(uInput.value);
+        if (cleaned && isValidLocketUsername(cleaned)) {
+          uInput.value = cleaned;
+          setUsernameError(false);
+        }
+      }, 0);
+    });
+
     uInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1131,7 +1429,9 @@ async function submitUserLookup(e) {
   const pinField = document.getElementById('lookup-pin-field');
   const resultBox = document.getElementById('lookup-result-box');
 
-  const username = (uInput?.value || '').trim().replace('@', '');
+  const rawUser = cleanLocketUsername(uInput?.value || '');
+  if (uInput) uInput.value = rawUser;
+  const username = rawUser;
   const pin = (pinInput?.value || '').trim();
 
   if (!username) {

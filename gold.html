@@ -279,10 +279,33 @@
       <div class="input-group">
         <label class="input-label">Nhập Username Locket của bạn:</label>
         <div class="input-field-wrap">
-          <input type="text" id="username-input" class="username-input" placeholder="Ví dụ: nguyenvana(không cần @)">
+          <input type="text" id="username-input" class="username-input" placeholder="Ví dụ: kienviet (không cần @)" autocomplete="off" spellcheck="false">
           <button type="button" class="btn-lookup" onclick="lookupUsername()">
             <i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra
           </button>
+        </div>
+
+        <!-- Thông báo lỗi khi username không hợp lệ -->
+        <div class="username-error-msg" id="username-error-msg" style="display: none;">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Username không hợp lệ (chỉ chữ, số, . _ -)</span>
+        </div>
+
+        <!-- Gợi ý lấy username từ link locket.cam/kienviet -->
+        <div class="username-guide-hint">
+          <div class="guide-hint-title">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Cách lấy Username từ link chia sẻ profile Locket:</span>
+          </div>
+          <div class="guide-hint-example" onclick="fillSampleUsername('kienviet')" title="Nhấn để thử mẫu kienviet" style="cursor: pointer;">
+            <span class="hint-url-prefix">https://locket.cam/</span><span class="highlight-user">kienviet</span>
+            <span class="guide-hint-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            <span>Username là: <b class="highlight-user">kienviet</b></span>
+            <span class="badge-try-sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Thử mẫu</span>
+          </div>
+          <div class="guide-hint-note">
+            👉 <b>Các chữ sau dấu / ở cuối</b> chính là Username của bạn (bạn cũng có thể dán thẳng cả link <code>https://locket.cam/...</code> vào ô trên).
+          </div>
         </div>
 
         <!-- User Preview Card -->
@@ -421,6 +444,8 @@
         <div class="step2-tx-list" id="step2-tx-list">
           <!-- Các giao dịch người mua thật của hệ thống -->
           <div id="step2-recent-txs" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          <!-- Thanh phân trang khi danh sách giao dịch đầy hàng -->
+          <div class="step2-tx-pagination" id="step2-tx-pagination" style="display: none;"></div>
         </div>
       </div>
 

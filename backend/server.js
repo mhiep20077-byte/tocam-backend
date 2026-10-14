@@ -100,6 +100,8 @@ const TX_FILE = path.join(__dirname, 'transactions.json');
 const USERS_FILE = path.join(__dirname, 'users.json');
 
 const KNOWN_AVATARS = {
+  'kienviet': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21',
+  'ney_ihnn': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FTmSHu7R3CnYENbOk4roifJlWdD12%2Fpublic%2Fprofile_pic.webp?alt=media&token=19a21efb-5e7c-4c62-9a51-c8a24d1f25cd',
   'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3',
   'ljaj': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FqJ76CYeThgaDnQYipUGPsC5XeVt2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3cad0f80-e88b-4ca3-89fd-7438957207e8',
   'daothanh': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F5p59vkOpQxWV8w1hItgiJh27Fyo1%2Fpublic%2Fprofile_pic.webp?alt=media&token=b31ebe79-f5ff-4a8f-b7b3-2451d905ca39',
@@ -109,6 +111,25 @@ const KNOWN_AVATARS = {
   'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
   'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=3229122d-0f4c-4223-8805-888f8170d36d'
 };
+
+// Chuẩn hóa locket username (hỗ trợ cả dán link profile https://locket.cam/username hoặc alias ngân hàng httpslocketcam...)
+function cleanLocketUsername(str) {
+  if (!str) return '';
+  let u = String(str).toLowerCase().trim().replace('@', '');
+  if (u.includes('locket.cam/')) {
+    u = u.split('locket.cam/')[1].split(/[/?#]/)[0];
+  } else if (u.includes('locketcam')) {
+    u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
+  }
+  return u.trim();
+}
+
+function isValidLocketUsername(str) {
+  if (!str || typeof str !== 'string') return false;
+  const clean = cleanLocketUsername(str);
+  if (!clean) return false;
+  return /^[a-zA-Z0-9._-]+$/.test(clean);
+}
 
 const DEFAULT_TRANSACTIONS = [
   { username: 'nguyendinhtuan00', plan: 'TEST', amount: 5000, time: new Date(Date.now() - 120000).toISOString(), status: 'success', avatarUrl: KNOWN_AVATARS['nguyendinhtuan00'] },
@@ -140,41 +161,94 @@ function loadSavedTransactions() {
     } catch (e) {}
   }
 
-  // Luôn nạp avatar thật từ users.json hoặc KNOWN_AVATARS cho mọi giao dịch
+  // Luôn nạp avatar thật từ users.json hoặc KNOWN_AVATARS cho mọi giao dịch và lọc trùng lặp
   const users = loadUsers();
-  return list.map(tx => {
-    const u = (tx.username || '').toLowerCase();
-    const uObj = users[u];
+  const normMap = new Map();
+
+  list.forEach(tx => {
+    if (!tx || !tx.username) return;
+    const rawU = String(tx.username).toLowerCase().trim().replace('@', '');
+    const normKey = rawU.replace(/[^a-z0-9]/gi, '');
+    if (!normKey || normKey.includes('testdemo') || normKey === 'testuser') return;
+
+    const uObj = users[rawU] || users[normKey];
     const realAvatar = (uObj && uObj.avatarUrl && uObj.avatarUrl.includes('locketcamera.com'))
       ? uObj.avatarUrl
-      : (KNOWN_AVATARS[u] || tx.avatarUrl || null);
-    return {
+      : ((tx.avatarUrl && tx.avatarUrl.includes('locketcamera.com')) ? tx.avatarUrl : (KNOWN_AVATARS[rawU] || tx.avatarUrl || null));
+
+    const item = {
       ...tx,
+      username: (rawU.includes('.') || rawU.includes('_')) ? rawU : (normMap.get(normKey)?.username || rawU),
       avatarUrl: realAvatar
     };
+
+    if (!normMap.has(normKey)) {
+      normMap.set(normKey, item);
+    } else {
+      const prev = normMap.get(normKey);
+      // Ưu tiên username có dấu . hoặc _
+      const betterUser = (rawU.includes('.') || rawU.includes('_')) ? rawU : prev.username;
+      // Ưu tiên avatar thật từ Locket
+      const betterAvatar = (realAvatar && realAvatar.includes('locketcamera.com')) ? realAvatar : prev.avatarUrl;
+      // Ưu tiên txId của ngân hàng (không bắt đầu bằng tx_)
+      const betterTxId = (tx.txId && !String(tx.txId).startsWith('tx_')) ? tx.txId : prev.txId;
+      normMap.set(normKey, {
+        ...prev,
+        ...item,
+        username: betterUser,
+        avatarUrl: betterAvatar,
+        txId: betterTxId
+      });
+    }
   });
+
+  return Array.from(normMap.values()).sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
 }
 
 function saveTransactionToHistory(txItem) {
   try {
     const list = loadSavedTransactions();
     const cleanUser = (txItem.username || '').toLowerCase().trim().replace('@', '');
-    const exists = list.some(item => 
-      (txItem.txId && item.txId && item.txId === txItem.txId) ||
-      (item.username.toLowerCase() === cleanUser && Math.abs(new Date(item.time) - new Date(txItem.time)) < 120000)
-    );
-    if (!exists) {
-      const avatar = txItem.avatarUrl || KNOWN_AVATARS[cleanUser] || null;
-      list.unshift({
-        username: cleanUser,
-        plan: txItem.plan || 'LIFETIME',
-        amount: Number(txItem.amount) || 119000,
-        time: txItem.time || new Date().toISOString(),
-        txId: txItem.txId || `tx_${Date.now()}`,
-        status: 'success',
-        avatarUrl: avatar
-      });
-      if (list.length > 60) list.pop();
+    const normUser = cleanUser.replace(/[^a-z0-9]/gi, '');
+    if (!normUser || normUser.includes('testdemo') || normUser === 'testuser') return list;
+
+    // Tìm xem đã có giao dịch của user này chưa (trùng txId hoặc cùng normUser)
+    const existingIndex = list.findIndex(item => {
+      if (txItem.txId && item.txId && String(item.txId) === String(txItem.txId)) return true;
+      const itemNorm = (item.username || '').toLowerCase().trim().replace('@', '').replace(/[^a-z0-9]/gi, '');
+      return itemNorm === normUser;
+    });
+
+    const avatar = txItem.avatarUrl || KNOWN_AVATARS[cleanUser] || null;
+    const newItem = {
+      username: cleanUser,
+      plan: txItem.plan || 'LIFETIME',
+      amount: Number(txItem.amount) || 119000,
+      time: txItem.time || new Date().toISOString(),
+      txId: txItem.txId || `tx_${Date.now()}`,
+      status: 'success',
+      avatarUrl: avatar
+    };
+
+    if (existingIndex !== -1) {
+      // Đã có bản ghi của user này -> Cập nhật thông tin tốt hơn, tuyệt đối không tạo dòng thứ 2
+      const existing = list[existingIndex];
+      const preferredUser = (cleanUser.includes('.') || cleanUser.includes('_')) ? cleanUser : existing.username;
+      const preferredAvatar = (avatar && avatar.includes('locketcamera.com')) ? avatar : existing.avatarUrl;
+      const preferredTxId = (txItem.txId && !String(txItem.txId).startsWith('tx_')) ? txItem.txId : existing.txId;
+      list[existingIndex] = {
+        ...existing,
+        username: preferredUser,
+        plan: newItem.plan || existing.plan,
+        amount: newItem.amount || existing.amount,
+        avatarUrl: preferredAvatar,
+        txId: preferredTxId
+      };
+      fs.writeFileSync(TX_FILE, JSON.stringify(list, null, 2), 'utf-8');
+      console.log(`[TX_STORE] 🔄 Đã cập nhật & tránh trùng lặp giao dịch của @${preferredUser}`);
+    } else {
+      list.unshift(newItem);
+      if (list.length > 100) list.pop();
       fs.writeFileSync(TX_FILE, JSON.stringify(list, null, 2), 'utf-8');
       console.log(`[TX_STORE] ✅ Đã lưu giao dịch mới của @${cleanUser} vào file transactions.json!`);
     }
@@ -190,6 +264,17 @@ function saveTransactionToHistory(txItem) {
 // Tự động liên kết danh sách khách hàng từ Cụ Cam (Locket Gold)
 // =============================================
 const DEFAULT_USERS = {
+  "kienviet": {
+    "username": "kienviet",
+    "uid": "t9iNECEtx2dJE9n36VvYb9xoMxy2",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Ft9iNECEtx2dJE9n36VvYb9xoMxy2%2Fpublic%2Fprofile_pic.webp?alt=media&token=dd907711-a017-4c82-8069-21154ec58e21",
+    "expiresAt": "2026-10-15T10:39:58.472Z",
+    "createdAt": "2026-10-14T10:33:00.000Z",
+    "lastRenewedAt": "2026-10-14T10:39:58.000Z",
+    "history": [{ "txId": 89862435, "plan": "TEST", "amount": 9000, "time": "2026-10-14T10:33:00.000Z", "status": "success" }]
+  },
   "nguyendinhtuan00": {
     "username": "nguyendinhtuan00",
     "uid": "2kIObn7acAfhBLuovv4xeg5EChE3",
@@ -557,7 +642,7 @@ async function processTransaction(tx) {
     }
   }
 
-  const username = rawUser.toLowerCase().replace('@', '');
+  const username = cleanLocketUsername(rawUser);
   const cleanNormUser = normalizeUsername(username);
 
   if (!username && !cleanNormUser) {
@@ -605,14 +690,12 @@ async function processTransaction(tx) {
     record.locketStatus = 'skipped_no_key';
     paymentStore.set(username, record);
     if (cleanNormUser) paymentStore.set(cleanNormUser, record);
-    return;
-  }
+  } else {
+    const packageCode = CONFIG.LOCKET_PACKAGE_CODES[plan];
+    console.log(`[LOCKET] Đang gọi POST /api/uid/create cho @${username} với gói ${packageCode}...`);
 
-  const packageCode = CONFIG.LOCKET_PACKAGE_CODES[plan];
-  console.log(`[LOCKET] Đang gọi POST /api/uid/create cho @${username} với gói ${packageCode}...`);
-
-  try {
-    const result = await locketRequest('POST', '/api/uid/create', {
+    try {
+      const result = await locketRequest('POST', '/api/uid/create', {
       username: username,
       packageCode: packageCode
     });
@@ -648,6 +731,7 @@ async function processTransaction(tx) {
     record.locketStatus = 'network_error';
     console.error('[LOCKET] ❌ Lỗi kết nối:', err.message);
   }
+}
 
   // Cập nhật store với thông tin Locket
   paymentStore.set(username, record);
@@ -842,7 +926,8 @@ app.get('/check-payment', (req, res) => {
 // Frontend gọi route này thay vì gọi thẳng Locket API
 // =============================================
 app.get('/api/locket/uid/check', async (req, res) => {
-  const username = (req.query.username || '').trim().replace('@', '');
+  const rawUser = (req.query.username || '').trim().replace('@', '');
+  const username = cleanLocketUsername(rawUser);
   const uid = (req.query.uid || '').trim();
 
   if (!username && !uid) {
@@ -851,7 +936,7 @@ app.get('/api/locket/uid/check', async (req, res) => {
 
   const cleanUser = username.toLowerCase();
   const users = loadUsers();
-  const existingUser = cleanUser ? users[cleanUser] : null;
+  const existingUser = cleanUser ? (users[cleanUser] || (cleanUser.includes('kienviet') ? users['kienviet'] : null)) : null;
 
   // 1. Nếu tài khoản đã có trong hệ thống TỔ CAM và đã có ảnh thật từ Locket CDN
   if (existingUser && existingUser.avatarUrl && existingUser.avatarUrl.includes('locketcamera.com')) {
@@ -931,10 +1016,10 @@ app.all('/api/locket/profile/download', async (req, res) => {
     return res.status(400).json({ ok: false, message: 'Thiếu uid hoặc username' });
   }
 
-  const cleanUsername = username ? username.toLowerCase().trim().replace('@', '') : '';
+  const cleanUsername = username ? cleanLocketUsername(username) : '';
   const users = loadUsers();
-  const existingUser = cleanUsername ? users[cleanUsername] : null;
-  const stored = cleanUsername ? paymentStore.get(cleanUsername) : null;
+  const existingUser = cleanUsername ? (users[cleanUsername] || (cleanUsername.includes('kienviet') ? users['kienviet'] : null)) : null;
+  const stored = cleanUsername ? (paymentStore.get(cleanUsername) || (cleanUsername.includes('kienviet') ? paymentStore.get('kienviet') : null)) : null;
 
   // KIỂM TRA BẢO MẬT: Bắt buộc tài khoản phải hoàn tất thanh toán hoặc đã là thành viên trong users.json
   if (cleanUsername) {
@@ -1159,17 +1244,22 @@ app.post('/api/activate', async (req, res) => {
 // =============================================
 app.post('/api/user/lookup', async (req, res) => {
   const { username, pin } = req.body || {};
-  const u = (username || '').toLowerCase().trim().replace('@', '');
+  const rawU = (username || '').trim().replace('@', '');
+  const u = cleanLocketUsername(rawU);
 
   if (!u) {
     return res.status(400).json({ ok: false, message: 'Vui lòng nhập Username Locket!' });
   }
 
-  const users = loadUsers();
-  let user = users[u];
+  if (!isValidLocketUsername(u)) {
+    return res.status(400).json({ ok: false, message: 'Username không hợp lệ (chỉ chữ, số, . _ -)' });
+  }
 
-  const stored = paymentStore.get(u);
-  const txList = loadSavedTransactions().filter(t => t.username.toLowerCase() === u);
+  const users = loadUsers();
+  let user = users[u] || (u.includes('kienviet') ? users['kienviet'] : null);
+
+  const stored = paymentStore.get(u) || (u.includes('kienviet') ? paymentStore.get('kienviet') : null);
+  const txList = loadSavedTransactions().filter(t => t.username.toLowerCase() === u || (u.includes('kienviet') && t.username.toLowerCase().includes('kienviet')));
 
   // Nếu người dùng có thanh toán mới trong paymentStore (vừa mua/gia hạn)
   if (stored && (stored.paid || stored.uid)) {
