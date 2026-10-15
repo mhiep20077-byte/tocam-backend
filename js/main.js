@@ -2926,7 +2926,7 @@ function selectIndexPlan(card, plan) {
   const btnProceedText = document.getElementById('btn-index-proceed-text');
   const btnHero = document.getElementById('btn-hero-upgrade');
 
-  let planLabel = 'Gói Vĩnh Viễn (119K)';
+  let planLabel = 'Gói Vĩnh Viễn (99K)';
   const planUrl = `gold.html?plan=${encodeURIComponent(targetPlan)}`;
 
   if (targetPlan === 'test') {
@@ -2936,7 +2936,7 @@ function selectIndexPlan(card, plan) {
   } else if (targetPlan === 'yearly') {
     planLabel = 'Gói 1 Năm (69K)';
   } else {
-    planLabel = 'Gói Vĩnh Viễn (119K)';
+    planLabel = 'Gói Vĩnh Viễn (99K)';
   }
 
   if (btnProceedText) {

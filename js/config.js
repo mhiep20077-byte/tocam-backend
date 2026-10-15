@@ -57,8 +57,8 @@ const TO_CAM_CONFIG = {
     LIFETIME: {
       id: "lifetime",
       name: "Gói Vĩnh Viễn",
-      price: 119000,
-      formattedPrice: "119.000đ",
+      price: 99000,
+      formattedPrice: "99.000đ",
       unit: "/trọn đời",
       badge: "KHUYÊN DÙNG"
     }

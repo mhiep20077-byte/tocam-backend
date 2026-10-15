@@ -59,14 +59,14 @@ const CONFIG = {
     MONTH6: 39000,
     '6MONTH': 39000,
     YEARLY: 69000,
-    LIFETIME: 119000
+    LIFETIME: 99000
   },
 
   // Mã gói tương ứng trên hệ thống Locket API (Cụ Cam)
   // LKGT3D: Gói Test (1 coin) - Tương ứng gói 9.000đ
   // LKG6M: Gói 6 Tháng (8 coin) - Tương ứng gói 39.000đ
   // LKG1Y: Gói 1 Năm (15 coin) - Tương ứng gói 69.000đ
-  // LKGVV: Gói Vĩnh Viễn (31 coin) - Tương ứng gói 119.000đ
+  // LKGVV: Gói Vĩnh Viễn (31 coin) - Tương ứng gói 99.000đ
   LOCKET_PACKAGE_CODES: {
     TEST: process.env.LOCKET_PACKAGE_TEST || 'LKGT3D',
     MONTH6: process.env.LOCKET_PACKAGE_6MONTH || process.env.LOCKET_PACKAGE_MONTH6 || 'LKG6M',
@@ -305,7 +305,7 @@ function saveTransactionToHistory(txItem) {
     const newItem = {
       username: cleanUser,
       plan: txItem.plan || 'LIFETIME',
-      amount: Number(txItem.amount) || 119000,
+      amount: Number(txItem.amount) || 99000,
       time: txItem.time || new Date().toISOString(),
       txId: txItem.txId || `tx_${Date.now()}`,
       status: 'success',
@@ -992,7 +992,7 @@ app.post('/api/record-transaction', (req, res) => {
   const updatedList = saveTransactionToHistory({
     username: cleanUser,
     plan: plan || 'LIFETIME',
-    amount: Number(amount) || CONFIG.PLAN_PRICES[plan] || 119000,
+    amount: Number(amount) || CONFIG.PLAN_PRICES[plan] || 99000,
     time: time || new Date().toISOString(),
     txId: txId || `tx_${Date.now()}`,
     status: 'success',
@@ -1352,7 +1352,7 @@ app.post('/api/activate', async (req, res) => {
       newHistoryItem: {
         txId: stored.txId || `tx_${Date.now()}`,
         plan: targetPlan,
-        amount: Number(stored.amount) || CONFIG.PLAN_PRICES[targetPlan] || 119000,
+        amount: Number(stored.amount) || CONFIG.PLAN_PRICES[targetPlan] || 99000,
         time: new Date().toISOString(),
         status: 'success'
       }
@@ -1361,7 +1361,7 @@ app.post('/api/activate', async (req, res) => {
     saveTransactionToHistory({
       username: u,
       plan: targetPlan,
-      amount: Number(stored.amount) || CONFIG.PLAN_PRICES[targetPlan] || 119000,
+      amount: Number(stored.amount) || CONFIG.PLAN_PRICES[targetPlan] || 99000,
       time: new Date().toISOString(),
       txId: stored.txId || `tx_${Date.now()}`,
       status: 'success'
@@ -1639,7 +1639,7 @@ app.post('/api/user/lookup', async (req, res) => {
   const formattedHistory = (user.history && user.history.length > 0)
     ? user.history.map(item => {
         const itemPlan = item.plan || finalPlan;
-        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 119000 : (itemPlan === 'YEARLY' ? 69000 : ((itemPlan === 'MONTH6' || itemPlan === '6MONTH') ? 39000 : 9000)));
+        const itemPrice = item.amount || CONFIG.PLAN_PRICES[itemPlan] || (itemPlan === 'LIFETIME' ? 99000 : (itemPlan === 'YEARLY' ? 69000 : ((itemPlan === 'MONTH6' || itemPlan === '6MONTH') ? 39000 : 9000)));
         return {
           ...item,
           plan: itemPlan,
@@ -1651,7 +1651,7 @@ app.post('/api/user/lookup', async (req, res) => {
         {
           txId: `tx_${user.uid || user.username}`,
           plan: finalPlan,
-          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 119000 : (finalPlan === 'YEARLY' ? 69000 : ((finalPlan === 'MONTH6' || finalPlan === '6MONTH') ? 39000 : 9000))),
+          amount: CONFIG.PLAN_PRICES[finalPlan] || (finalPlan === 'LIFETIME' ? 99000 : (finalPlan === 'YEARLY' ? 69000 : ((finalPlan === 'MONTH6' || finalPlan === '6MONTH') ? 39000 : 9000))),
           time: user.lastRenewedAt || user.createdAt || new Date().toISOString(),
           status: 'success'
         }
