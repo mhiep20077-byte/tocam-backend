@@ -682,6 +682,35 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.user-preview-card.found {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1.5px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.15);
+}
+
+.user-preview-card.not-found {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1.5px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.15);
+}
+
+.user-preview-card.loading {
+  background: rgba(255, 160, 51, 0.06);
+  border: 1.5px dashed rgba(255, 160, 51, 0.45);
+}
+
+.user-avatar.avatar-not-found {
+  background: linear-gradient(135deg, #EF4444, #B91C1C) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+.user-avatar.avatar-loading {
+  background: rgba(255, 160, 51, 0.15) !important;
+  border-color: #FFA033 !important;
+  box-shadow: none !important;
 }
 
 .user-avatar {

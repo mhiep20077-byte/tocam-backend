@@ -11,6 +11,7 @@ let isAccountGoldActive = false; // Đánh dấu tài khoản đã kích hoạt 
 let isPaymentVerified = false; // Bắt buộc phải xác nhận thanh toán thành công mới sang bước 3
 let paymentSessionStartTime = Date.now(); // Timestamp phiên thanh toán hiện tại, chống bypass thanh toán
 let currentAvatarUrl = null; // Ảnh đại diện thật từ Locket CDN khi tra cứu username
+let isUsernameVerified = null; // null: chưa kiểm tra, true: hợp lệ trên Locket, false: không tồn tại
 
 // ============================================
 // CẤU HÌNH BACKEND URL
@@ -43,6 +44,8 @@ const KNOWN_AVATARS = {
   'trunhmoi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2Feg66l51dTvhc7zREzqTVVKIvABh2%2Fpublic%2Fprofile_pic.webp?alt=media&token=a09e7abc-0bb3-4e86-8167-7781e644d256',
   'hi_embe': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FzKit3JlPVhdXK3ppE2PDRflNjP32%2Fpublic%2Fprofile_pic.webp?alt=media&token=477e2d02-3e84-48c6-a4bb-a78548ccf589',
   'hieon0': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FVt6ceg2WlBcOGDrWMlMnPOJQuc93%2Fpublic%2Fprofile_pic.webp?alt=media&token=9268ad0d-9843-436e-bf34-d2e5aa19cfd9',
+  'phuogthaohihi': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FT1huBP6chDMRxkHuaKS5CSOvx2i1%2Fpublic%2Fprofile_pic.webp?alt=media&token=6ef434fb-4a9e-4706-9b75-2f98262b4ac1',
+  'khongtam04': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FdcjGudZBjgPPVLQpGwmfNeh0YNB3%2Fpublic%2Fprofile_pic.webp?alt=media&token=acee5067-4da2-44cb-803d-4b2354bf07ea',
   'mhhiep': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2c7dlQuxUQULKnrwGPcqsqLW0sK2%2Fpublic%2Fprofile_pic.webp?alt=media&token=c3fc74fd-8200-4123-af8e-f7ff1934fa8c',
   'nguyendinhtuan00': 'https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3'
 };
@@ -139,8 +142,10 @@ function cleanLocketUsername(str) {
   if (u.includes('locket.cam/')) {
     u = u.split('locket.cam/')[1].split(/[/?#]/)[0];
   } else if (u.includes('locketcam')) {
-    u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
+    u = u.replace(/.*locketcam/, '');
   }
+  // Loại bỏ hậu tố do ngân hàng (Vietcombank Napas) tự động nối thêm vào: .CT, .IBFT...
+  u = u.replace(/[\._\s-]*(ct|ibft|chuyentien).*$/i, '');
   u = u.replace(/^@+/, '').trim();
   return KNOWN_CANONICAL_ALIASES[u] || u;
 }
@@ -182,7 +187,7 @@ function fillSampleUsername(val) {
 }
 window.fillSampleUsername = fillSampleUsername;
 
-function lookupUsername() {
+function lookupUsername(onComplete) {
   const input = document.getElementById('username-input');
   const preview = document.getElementById('user-preview');
   const nameEl = document.getElementById('user-name');
@@ -193,7 +198,10 @@ function lookupUsername() {
   if (!input || !input.value.trim()) {
     setUsernameError(true, 'Vui lòng nhập Username Locket của bạn!');
     if (preview) preview.style.display = 'none';
+    isUsernameVerified = null;
+    currentUID = null;
     input?.focus();
+    if (typeof onComplete === 'function') onComplete(false);
     return;
   }
 
@@ -201,73 +209,144 @@ function lookupUsername() {
   if (!isValidLocketUsername(rawUsername)) {
     setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
     if (preview) preview.style.display = 'none';
+    isUsernameVerified = false;
+    currentUID = null;
     input?.focus();
+    if (typeof onComplete === 'function') onComplete(false);
     return;
   }
 
-  // Hợp lệ -> ẩn lỗi & chuẩn hóa giá trị ô nhập
-  setUsernameError(false);
+  // Chuẩn hóa ô nhập
   input.value = rawUsername;
   currentUsername = rawUsername;
 
-  // Hiện preview tạm thời ngay lập tức với avatar đẹp (UX tốt)
-  preview.style.display = 'flex';
-  nameEl.innerText = rawUsername;
-  userTag.innerText = '@' + rawUsername;
+  // Hiển thị trạng thái đang tra cứu
+  if (preview) {
+    preview.className = 'user-preview-card loading';
+    preview.style.display = 'flex';
+    nameEl.innerText = 'Đang kiểm tra tài khoản trên Locket...';
+    userTag.innerText = '@' + rawUsername;
+    avatarEl.className = 'user-avatar avatar-loading';
+    avatarEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:20px;color:#FFA033;"></i>';
+    const badgeWrap = preview.querySelector('div[style*="margin-left: auto"]');
+    if (badgeWrap) {
+      badgeWrap.innerHTML = `
+        <span style="background:rgba(255,160,51,0.15);color:#FFA033;padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;gap:5px;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Đang tra cứu...
+        </span>`;
+    }
+  }
 
-  const initialAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(rawUsername)}&background=FFA033&color=fff&size=128&bold=true`;
-  avatarEl.innerHTML = `<img src="${initialAvatarUrl}" alt="${rawUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerText='${rawUsername.charAt(0).toUpperCase()}';">`;
-  avatarEl.style.padding = '0';
-  avatarEl.style.overflow = 'hidden';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kiểm tra...';
+  }
 
-  // Đánh dấu nút đang loading
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kiểm tra...'; }
-
-  // Gọi backend proxy → Locket API để xác minh username thật
+  // Gọi backend proxy → Locket API Cụ Cam để xác minh chính xác tài khoản thật
   fetch(`${BACKEND_URL}/api/locket/uid/check?username=${encodeURIComponent(rawUsername)}`)
-    .then(res => res.json())
-    .then(json => {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra'; }
+    .then(async (res) => {
+      const json = await res.json().catch(() => ({}));
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra';
+      }
 
-      if (json.ok && json.data) {
+      // TRƯỜNG HỢP 1: TÀI KHOẢN TỒN TẠI TRÊN LOCKET (Có UID thật hoặc status 200)
+      if (res.ok && json.ok && json.data && (json.data.uid || json.data.found === true)) {
         const d = json.data;
-        // Cập nhật preview với thông tin thật
-        nameEl.innerText = d.username || rawUsername;
-        userTag.innerText = '@' + (d.username || rawUsername);
-
-        // Hiển thị ảnh đại diện thật từ Locket nếu có
-        const finalAvatar = d.avatarUrl || initialAvatarUrl;
-        currentAvatarUrl = finalAvatar;
-        avatarEl.innerHTML = `<img src="${finalAvatar}" alt="${d.username || rawUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerText='${(d.username || rawUsername).charAt(0).toUpperCase()}';">`;
-        avatarEl.style.padding = '0';
-        avatarEl.style.overflow = 'hidden';
-
-        // Lưu UID ngay nếu tra được
-        if (d.uid) {
-          currentUID = d.uid;
-        }
+        isUsernameVerified = true;
+        currentUsername = d.username || rawUsername;
+        currentUID = d.uid;
         isAccountGoldActive = (d.active === true || d.status === 'ACTIVE');
 
-        // Cập nhật badge trạng thái (luôn hiển thị Hợp lệ)
-        const badgeWrap = preview.querySelector('div[style*="margin-left: auto"]');
-        if (badgeWrap) {
-          badgeWrap.innerHTML = `
-            <span style="background:rgba(16,185,129,0.2);color:#10B981;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;">
-              <i class="fa-solid fa-circle-check"></i> Hợp lệ
-            </span>`;
+        if (preview) {
+          preview.className = 'user-preview-card found';
+          preview.style.display = 'flex';
+          nameEl.innerText = d.username || rawUsername;
+          userTag.innerText = '@' + (d.username || rawUsername);
+
+          const finalAvatar = d.avatarUrl || KNOWN_AVATARS[currentUsername] || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUsername)}&background=FFA033&color=fff&size=128&bold=true`;
+          currentAvatarUrl = finalAvatar;
+          avatarEl.className = 'user-avatar';
+          avatarEl.innerHTML = `<img src="${finalAvatar}" alt="${currentUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerText='${currentUsername.charAt(0).toUpperCase()}';">`;
+          avatarEl.style.padding = '0';
+          avatarEl.style.overflow = 'hidden';
+
+          const badgeWrap = preview.querySelector('div[style*="margin-left: auto"]');
+          if (badgeWrap) {
+            badgeWrap.innerHTML = `
+              <span style="background:rgba(16,185,129,0.18);color:#10B981;border:1px solid rgba(16,185,129,0.45);padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;gap:5px;">
+                <i class="fa-solid fa-circle-check"></i> Tài khoản Locket hợp lệ
+              </span>`;
+          }
         }
+        setUsernameError(false);
         updatePaymentInfo();
+        if (typeof onComplete === 'function') onComplete(true);
       } else {
-        // API trả not found hoặc lỗi nhẹ → vẫn cho tiếp tục nhưng cảnh báo
-        console.warn('[LOOKUP] Không tra được username:', json.message);
+        // TRƯỜNG HỢP 2: BÊN CỤ CAM BÁO USERNAME KHÔNG TỒN TẠI TRÊN LOCKET (404 hoặc ok: false)
+        isUsernameVerified = false;
+        currentUID = null;
+
+        if (preview) {
+          preview.className = 'user-preview-card not-found';
+          preview.style.display = 'flex';
+          nameEl.innerText = 'Không tìm thấy người dùng';
+          userTag.innerText = '@' + rawUsername;
+
+          avatarEl.className = 'user-avatar avatar-not-found';
+          avatarEl.style.padding = '';
+          avatarEl.style.overflow = '';
+          avatarEl.innerHTML = '<i class="fa-solid fa-user-xmark" style="color:#fff;font-size:20px;"></i>';
+
+          const badgeWrap = preview.querySelector('div[style*="margin-left: auto"]');
+          if (badgeWrap) {
+            badgeWrap.innerHTML = `
+              <span style="background:rgba(239,68,68,0.18);color:#EF4444;border:1px solid rgba(239,68,68,0.45);padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;gap:5px;">
+                <i class="fa-solid fa-circle-xmark"></i> Không tồn tại trên Locket
+              </span>`;
+          }
+        }
+
+        setUsernameError(true, `❌ Username "@${rawUsername}" không tồn tại trên hệ thống Locket. Vui lòng kiểm tra lại chính xác username của bạn!`);
         updatePaymentInfo();
+        if (typeof onComplete === 'function') onComplete(false);
       }
     })
-    .catch(err => {
-      // Backend offline hoặc key chưa cấu hình → fallback silent (vẫn cho tiếp tục)
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra'; }
-      console.warn('[LOOKUP] Backend không phản hồi, bỏ qua kiểm tra:', err.message);
-      updatePaymentInfo();
+    .catch((err) => {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Kiểm Tra';
+      }
+      console.warn('[LOOKUP] Lỗi kết nối kiểm tra:', err.message);
+
+      // Nếu có sẵn trong KNOWN_AVATARS thì vẫn công nhận
+      if (KNOWN_AVATARS[rawUsername]) {
+        isUsernameVerified = true;
+        currentUID = currentUID || 'cached_uid';
+        if (preview) {
+          preview.className = 'user-preview-card found';
+          preview.style.display = 'flex';
+          nameEl.innerText = rawUsername;
+          userTag.innerText = '@' + rawUsername;
+          avatarEl.className = 'user-avatar';
+          avatarEl.innerHTML = `<img src="${KNOWN_AVATARS[rawUsername]}" alt="${rawUsername}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+        }
+        setUsernameError(false);
+        if (typeof onComplete === 'function') onComplete(true);
+      } else {
+        isUsernameVerified = false;
+        if (preview) {
+          preview.className = 'user-preview-card not-found';
+          preview.style.display = 'flex';
+          nameEl.innerText = 'Lỗi kết nối kiểm tra';
+          userTag.innerText = '@' + rawUsername;
+          avatarEl.className = 'user-avatar avatar-not-found';
+          avatarEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#fff;font-size:20px;"></i>';
+        }
+        setUsernameError(true, '⚠️ Không thể kết nối đến máy chủ Locket để kiểm tra lúc này. Vui lòng thử lại!');
+        if (typeof onComplete === 'function') onComplete(false);
+      }
     });
 }
 
@@ -296,6 +375,40 @@ function goToStep(step) {
       return;
     }
 
+    // NẾU TÀI KHOẢN ĐÃ BỊ BÁO KHÔNG TỒN TẠI TRÊN LOCKET -> CHẶN KHÔNG CHO SANG BƯỚC 2!
+    if (isUsernameVerified === false) {
+      setUsernameError(true, `❌ Tài khoản "@${cleaned}" không tồn tại trên Locket. Vui lòng kiểm tra lại username!`);
+      if (input) {
+        input.classList.add('input-invalid');
+        input.focus();
+      }
+      return;
+    }
+
+    // Nếu người dùng chưa bấm nút kiểm tra (chưa xác minh) -> tự động xác minh trước khi sang bước 2
+    if (isUsernameVerified !== true) {
+      const btn = document.getElementById('btn-continue-step1');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span><i class="fa-solid fa-spinner fa-spin"></i> Đang xác thực tài khoản Locket...</span>';
+      }
+      lookupUsername((valid) => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Nâng Cấp/Gia Hạn Gói ${selectedPlan?.formattedPrice || '119.000đ'}</span> <i class="fa-solid fa-crown"></i>`;
+        }
+        if (valid) {
+          goToStep(2);
+        } else {
+          if (input) {
+            input.classList.add('input-invalid');
+            input.focus();
+          }
+        }
+      });
+      return;
+    }
+
     setUsernameError(false);
     if (input) input.value = cleaned;
     currentUsername = cleaned;
@@ -306,20 +419,6 @@ function goToStep(step) {
     loadRecentTransactions();
     startPaymentTimer();
     startPaymentPolling(); // ← Bắt đầu polling tự động!
-
-    // Tự động kiểm tra trước với Cụ Cam ngầm nếu người dùng chưa bấm nút "Kiểm Tra" ở Bước 1
-    if (!currentUID && cleaned) {
-      fetch(`${BACKEND_URL}/api/locket/uid/check?username=${encodeURIComponent(cleaned)}`)
-        .then(res => res.json())
-        .then(json => {
-          if (json.ok && json.data) {
-            if (json.data.uid) currentUID = json.data.uid;
-            if (json.data.avatarUrl) currentAvatarUrl = json.data.avatarUrl;
-            isAccountGoldActive = (json.data.active === true || json.data.status === 'ACTIVE');
-          }
-        })
-        .catch(() => {});
-    }
   }
 
   // Dừng polling khi rời khỏi bước 2
@@ -1234,6 +1333,8 @@ async function loadRecentTransactions() {
     } catch (e) { }
 
     const defaultSeedList = [
+      { username: 'phuogthaohihi', plan: 'MONTH6', amount: 39000, time: "2026-10-15 17:44:00", txId: 90174270, avatarUrl: KNOWN_AVATARS['phuogthaohihi'] },
+      { username: 'khongtam04', plan: 'TEST', amount: 9000, time: "2026-10-15 07:54:00", txId: 90006002, avatarUrl: KNOWN_AVATARS['khongtam04'] },
       { username: 'ney_ihnn', plan: 'TEST', amount: 9000, time: "2026-10-14T11:02:00.000Z", txId: "89790277", avatarUrl: KNOWN_AVATARS['ney_ihnn'] },
       { username: 'kienviet', plan: 'TEST', amount: 9000, time: "2026-10-14T10:39:58.000Z", txId: 89862435, avatarUrl: KNOWN_AVATARS['kienviet'] },
       { username: 'hna.gnoud_l', plan: 'MONTH6', amount: 39000, time: "2026-10-14T08:46:05.000Z", txId: "cam_PnqkZk51svW7NPzpCnSLy0nCAoz2", avatarUrl: KNOWN_AVATARS['hna.gnoud_l'] },
@@ -1373,11 +1474,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const uInput = document.getElementById('username-input');
   if (uInput) {
-    // Kiểm tra trực tiếp khi người dùng gõ
+    let usernameDebounceTimer = null;
+
+    // Tự động kiểm tra trực tiếp khi người dùng gõ (Debounce 500ms)
     uInput.addEventListener('input', () => {
+      clearTimeout(usernameDebounceTimer);
       const raw = uInput.value.trim();
       if (!raw) {
         setUsernameError(false);
+        isUsernameVerified = null;
+        currentUID = null;
         const preview = document.getElementById('user-preview');
         if (preview) preview.style.display = 'none';
         return;
@@ -1385,8 +1491,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const cleaned = cleanLocketUsername(raw);
       if (!isValidLocketUsername(cleaned)) {
         setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+        isUsernameVerified = false;
+        currentUID = null;
+        const preview = document.getElementById('user-preview');
+        if (preview) preview.style.display = 'none';
       } else {
         setUsernameError(false);
+        // Tự động kiểm tra với Cụ Cam sau khi người dùng dừng gõ 500ms
+        usernameDebounceTimer = setTimeout(() => {
+          if (uInput.value.trim()) {
+            lookupUsername();
+          }
+        }, 500);
       }
     });
 
@@ -1397,9 +1513,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleaned = cleanLocketUsername(raw);
         if (isValidLocketUsername(cleaned)) {
           uInput.value = cleaned;
-          setUsernameError(false);
-        } else {
-          setUsernameError(true, 'Username không hợp lệ (chỉ chữ, số, . _ -)');
+          if (isUsernameVerified === null || currentUsername !== cleaned) {
+            lookupUsername();
+          }
         }
       }
     });
@@ -1411,13 +1527,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cleaned && isValidLocketUsername(cleaned)) {
           uInput.value = cleaned;
           setUsernameError(false);
+          lookupUsername();
         }
-      }, 0);
+      }, 50);
     });
 
     uInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
+        clearTimeout(usernameDebounceTimer);
         lookupUsername();
       }
     });

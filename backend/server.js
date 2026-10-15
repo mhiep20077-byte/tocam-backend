@@ -143,40 +143,54 @@ function cleanLocketUsername(str) {
   if (u.includes('locket.cam/')) {
     u = u.split('locket.cam/')[1].split(/[/?#]/)[0];
   } else if (u.includes('locketcam')) {
-    u = u.replace(/.*locketcam/, '').replace(/\.ct.*$/, '');
+    u = u.replace(/.*locketcam/, '');
   }
+  // Loại bỏ hậu tố do ngân hàng (Vietcombank/Napas) tự động nối thêm vào đuôi: .CT, .IBFT, CT TU...
+  u = u.replace(/[\._\s-]*(ct|ibft|chuyentien).*$/i, '');
   u = u.trim();
   return KNOWN_CANONICAL_ALIASES[u] || u;
 }
 
-// Phân giải ngược username chuẩn xác từ ngân hàng (kể cả khi ngân hàng tự ý bỏ dấu _, .)
+// Phân giải ngược username chuẩn xác từ ngân hàng (kể cả khi ngân hàng tự ý bỏ dấu _, . hoặc thêm .CT)
 function resolveCanonicalUsername(rawUser) {
   if (!rawUser) return '';
   const cleaned = cleanLocketUsername(rawUser);
   const norm = normalizeUsername(cleaned);
+  const rawNorm = normalizeUsername(rawUser);
 
-  // 1. Kiểm tra danh sách khách hàng đang chờ ở Bước 2
-  if (pendingUsersMap.has(norm)) {
-    const pending = pendingUsersMap.get(norm);
-    if (pending && (Date.now() - pending.timestamp < 60 * 60 * 1000)) {
-      return pending.username;
+  // Helper kiểm tra pendingUsersMap
+  const checkPending = (key) => {
+    if (!key) return null;
+    if (pendingUsersMap.has(key)) {
+      const p = pendingUsersMap.get(key);
+      if (p && (Date.now() - p.timestamp < 60 * 60 * 1000)) return p.username;
     }
+    return null;
+  };
+
+  let found = checkPending(norm) || checkPending(rawNorm);
+  if (found) return found;
+
+  // Thử bỏ hậu tố ct/ibft nếu ngân hàng tự ghép dính liền
+  const strippedNorm = norm.replace(/(ct|ibft|chuyentien)$/i, '');
+  if (strippedNorm && strippedNorm !== norm) {
+    found = checkPending(strippedNorm);
+    if (found) return found;
   }
 
   // 2. Tra cứu bí danh chuẩn hóa đã biết
-  if (KNOWN_CANONICAL_ALIASES[norm]) {
-    return KNOWN_CANONICAL_ALIASES[norm];
-  }
-  if (KNOWN_CANONICAL_ALIASES[cleaned]) {
-    return KNOWN_CANONICAL_ALIASES[cleaned];
-  }
+  if (KNOWN_CANONICAL_ALIASES[norm]) return KNOWN_CANONICAL_ALIASES[norm];
+  if (KNOWN_CANONICAL_ALIASES[cleaned]) return KNOWN_CANONICAL_ALIASES[cleaned];
+  if (strippedNorm && KNOWN_CANONICAL_ALIASES[strippedNorm]) return KNOWN_CANONICAL_ALIASES[strippedNorm];
 
   // 3. Tra cứu trong users.json nếu có username chứa ký tự đặc biệt (_ hoặc .) khớp norm
   try {
     const users = loadUsers();
     if (users[cleaned]) return users[cleaned].username || cleaned;
+    if (strippedNorm && users[strippedNorm]) return users[strippedNorm].username || strippedNorm;
     for (const [k, v] of Object.entries(users)) {
-      if (normalizeUsername(k) === norm) {
+      const kNorm = normalizeUsername(k);
+      if (kNorm === norm || (strippedNorm && kNorm === strippedNorm)) {
         return v.username || k;
       }
     }
@@ -762,11 +776,13 @@ async function processTransaction(tx) {
 
   // Tách username linh hoạt: hỗ trợ cả có dấu chấm/gạch và không dấu ("TOCAM YN.NT", "TOCAM YNNT")
   let rawUser = '';
-  const match = memo.match(/TOCAM\s*([A-Za-z0-9_.-]+)/i);
+  // Làm sạch các hậu tố ngân hàng (Vietcombank Napas tự thêm .CT, CT TU..., .IBFT, CHUYEN TIEN...)
+  const sanitizedMemo = memo.replace(/[\._\s-]+(CT|IBFT|CHUYEN TIEN|CHUYENTIEN)(\s+TU.*)?$/i, '');
+  const match = sanitizedMemo.match(/TOCAM\s*([A-Za-z0-9_.-]+)/i) || memo.match(/TOCAM\s*([A-Za-z0-9_.-]+)/i);
   if (match && match[1]) {
     rawUser = match[1];
   } else {
-    const parts = memo.split(/\s+/);
+    const parts = sanitizedMemo.split(/\s+/);
     const tocamIdx = parts.indexOf(CONFIG.MEMO_PREFIX);
     if (tocamIdx !== -1 && parts[tocamIdx + 1]) {
       rawUser = parts[tocamIdx + 1];
@@ -813,6 +829,10 @@ async function processTransaction(tx) {
   paymentStore.set(username, record);
   if (cleanNormUser && cleanNormUser !== username) {
     paymentStore.set(cleanNormUser, record);
+  }
+  // Dự phòng lưu thêm key có đuôi ct (đề phòng frontend query lệch hoặc ngược lại)
+  if (cleanNormUser) {
+    paymentStore.set(cleanNormUser + 'ct', record);
   }
   console.log(`[SUCCESS] ✅ Xác nhận thanh toán: @${username} (norm: ${cleanNormUser}) - Gói ${plan} - ${amount}đ (consumed: false)`);
 
@@ -1088,15 +1108,15 @@ app.get('/api/locket/uid/check', async (req, res) => {
     });
   }
 
-  // 1. Nếu tài khoản đã có trong hệ thống TỔ CAM và đã có ảnh thật từ Locket CDN
-  if (existingUser && existingUser.avatarUrl && existingUser.avatarUrl.includes('locketcamera.com')) {
+  // 1. Nếu tài khoản đã có trong hệ thống TỔ CAM, ĐANG ACTIVE và đã có ảnh thật từ Locket CDN
+  if (existingUser && existingUser.status === 'ACTIVE' && existingUser.expiresAt && existingUser.avatarUrl && existingUser.avatarUrl.includes('locketcamera.com')) {
     return res.json({
       ok: true,
       data: {
         username: existingUser.username,
         uid: existingUser.uid,
-        active: existingUser.status === 'ACTIVE',
-        status: existingUser.status || 'ACTIVE',
+        active: true,
+        status: 'ACTIVE',
         avatarUrl: existingUser.avatarUrl,
         expiresAt: existingUser.expiresAt
       }
@@ -1116,60 +1136,74 @@ app.get('/api/locket/uid/check', async (req, res) => {
         const verifiedUid = d?.uid?.uidString || d?.uid || null;
         const verifiedUser = d?.username || username;
 
-        // Lưu ngay vào pendingUsersMap để webhook ngân hàng lấy đúng nick đã kiểm tra ở Bước 1
-        if (cleanNorm) {
-          pendingUsersMap.set(cleanNorm, {
-            username: verifiedUser,
-            uid: verifiedUid,
-            avatarUrl: d?.avatarUrl || null,
-            timestamp: Date.now()
-          });
-        }
-        if (verifiedUser && verifiedUid) {
+        // Nếu UID tồn tại -> Tài khoản Locket CÓ THẬT!
+        if (verifiedUid) {
+          if (cleanNorm) {
+            pendingUsersMap.set(cleanNorm, {
+              username: verifiedUser,
+              uid: verifiedUid,
+              avatarUrl: d?.avatarUrl || null,
+              timestamp: Date.now()
+            });
+          }
           saveUser({
             username: verifiedUser,
             uid: verifiedUid,
             avatarUrl: d?.avatarUrl || undefined,
             status: (d?.active === true || d?.status === 'ACTIVE') ? 'ACTIVE' : 'INACTIVE'
           });
-        }
 
-        if (!d.avatarUrl && existingUser && existingUser.avatarUrl) {
-          d.avatarUrl = existingUser.avatarUrl;
-        } else if (!d.avatarUrl) {
-          d.avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(d.username || username)}&background=FFA033&color=fff&size=128&bold=true`;
+          const finalAvatar = d.avatarUrl || (existingUser && existingUser.avatarUrl) || null;
+          return res.json({
+            ok: true,
+            found: true,
+            data: {
+              username: verifiedUser,
+              uid: verifiedUid,
+              avatarUrl: finalAvatar,
+              active: (d?.active === true || d?.status === 'ACTIVE'),
+              status: d?.status || 'INACTIVE',
+              expiresAt: d?.expiresAt || null
+            }
+          });
         }
-        return res.json(result.data);
+      }
+
+      // Nếu Cụ Cam trả 404 hoặc thông báo username không tồn tại
+      if (result.statusCode === 404 || (result.data && result.data.ok === false)) {
+        console.warn(`[PROXY uid/check] ❌ Username @${username} không tồn tại trên Locket`);
+        return res.status(404).json({
+          ok: false,
+          found: false,
+          message: 'Username không tồn tại trên hệ thống Locket. Vui lòng kiểm tra lại chính xác username của bạn!'
+        });
       }
     } catch (err) {
-      console.error('[PROXY uid/check] Lỗi:', err.message);
+      console.error('[PROXY uid/check] Lỗi kết nối Cụ Cam:', err.message);
     }
   }
 
-  // 3. Nếu Cụ Cam không có hoặc lỗi, trả về existingUser nếu có
-  if (existingUser) {
+  // 3. Nếu Cụ Cam bị lỗi mạng nhưng user đã từng mua và có UID thật trong users.json
+  if (existingUser && existingUser.uid) {
     return res.json({
       ok: true,
+      found: true,
       data: {
         username: existingUser.username,
         uid: existingUser.uid,
         active: existingUser.status === 'ACTIVE',
         status: existingUser.status || 'ACTIVE',
-        avatarUrl: existingUser.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(existingUser.username)}&background=FFA033&color=fff&size=128&bold=true`,
+        avatarUrl: existingUser.avatarUrl || null,
         expiresAt: existingUser.expiresAt
       }
     });
   }
 
-  // 4. Fallback cuối cùng
-  return res.json({
-    ok: true,
-    data: {
-      username: username,
-      uid: null,
-      active: false,
-      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=FFA033&color=fff&size=128&bold=true`
-    }
+  // 4. Không tìm thấy người dùng trên Locket
+  return res.status(404).json({
+    ok: false,
+    found: false,
+    message: 'Không tìm thấy tài khoản Locket này. Vui lòng kiểm tra lại chính xác username của bạn!'
   });
 });
 

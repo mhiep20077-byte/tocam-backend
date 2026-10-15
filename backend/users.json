@@ -1,4 +1,42 @@
 {
+  "phuogthaohihi": {
+    "username": "phuogthaohihi",
+    "uid": "T1huBP6chDMRxkHuaKS5CSOvx2i1",
+    "currentPlan": "MONTH6",
+    "status": "ACTIVE",
+    "expiresAt": "2027-10-10T10:50:11.585Z",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FT1huBP6chDMRxkHuaKS5CSOvx2i1%2Fpublic%2Fprofile_pic.webp?alt=media&token=6ef434fb-4a9e-4706-9b75-2f98262b4ac1",
+    "createdAt": "2026-10-15T10:44:00.000Z",
+    "lastRenewedAt": "2026-10-15T11:04:58.310Z",
+    "history": [
+      {
+        "txId": 90174270,
+        "plan": "MONTH6",
+        "amount": 39000,
+        "time": "2026-10-15 17:44:00",
+        "status": "success"
+      }
+    ]
+  },
+  "khongtam04": {
+    "username": "khongtam04",
+    "uid": "dcjGudZBjgPPVLQpGwmfNeh0YNB3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "expiresAt": "2026-10-16T00:54:14.932Z",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2FdcjGudZBjgPPVLQpGwmfNeh0YNB3%2Fpublic%2Fprofile_pic.webp?alt=media&token=acee5067-4da2-44cb-803d-4b2354bf07ea",
+    "createdAt": "2026-10-15T00:54:00.000Z",
+    "lastRenewedAt": "2026-10-15T00:54:00.000Z",
+    "history": [
+      {
+        "txId": 90006002,
+        "plan": "TEST",
+        "amount": 9000,
+        "time": "2026-10-15 07:54:00",
+        "status": "success"
+      }
+    ]
+  },
   "ney_ihnn": {
     "username": "ney_ihnn",
     "uid": "TmSHu7R3CnYENbOk4roifJlWdD12",
@@ -280,6 +318,44 @@
         "plan": "YEARLY",
         "amount": 69000,
         "time": "2026-10-12T10:53:46.000Z",
+        "status": "success"
+      }
+    ]
+  },
+  "nguyendinhtuan00": {
+    "username": "nguyendinhtuan00",
+    "uid": "2kIObn7acAfhBLuovv4xeg5EChE3",
+    "currentPlan": "TEST",
+    "status": "ACTIVE",
+    "avatarUrl": "https://cdn2.locketcamera.com/v0/b/locket-img/o/users%2F2kIObn7acAfhBLuovv4xeg5EChE3%2Fpublic%2Fprofile_pic.webp?alt=media&token=57ad3ef0-3423-42a7-8fd6-9ff6ed1ff3a3",
+    "expiresAt": "2026-10-13T17:48:24.751Z",
+    "createdAt": "2026-10-12T17:48:24.000Z",
+    "lastRenewedAt": "2026-10-12T17:48:24.000Z",
+    "history": [
+      {
+        "txId": "cam_2kIObn7acAfhBLuovv4xeg5EChE3",
+        "plan": "TEST",
+        "amount": 5000,
+        "time": "2026-10-12T17:48:24.000Z",
+        "status": "success"
+      }
+    ]
+  },
+  "mhhuyz": {
+    "username": "mhhuyz",
+    "uid": "7TULqjjXb0SrWQBbP3EulDIQfE3",
+    "currentPlan": "TEST",
+    "status": "EXPIRED",
+    "avatarUrl": "https://ui-avatars.com/api/?name=mhhuyz&background=EF4444&color=fff&size=128&bold=true",
+    "expiresAt": "2026-10-11T21:55:40.000Z",
+    "createdAt": "2026-10-10T14:55:40.000Z",
+    "lastRenewedAt": "2026-10-10T14:56:31.000Z",
+    "history": [
+      {
+        "txId": "cam_7TULqjjXb0SrWQBbP3EulDIQfE3",
+        "plan": "TEST",
+        "amount": 5000,
+        "time": "2026-10-10T14:56:31.000Z",
         "status": "success"
       }
     ]
