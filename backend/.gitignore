@@ -1,6 +1,12 @@
 # Secret - không commit lên Git
 .env
+*.env
 
-# Node modules
+# Local Database Store - không commit thông tin khách hàng lên Git
+users.json
+transactions.json
+
+# Node modules & Logs
 node_modules/
 npm-debug.log*
+*.log

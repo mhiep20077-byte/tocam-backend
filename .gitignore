@@ -5,11 +5,22 @@ backend/node_modules/
 # Secrets & Environment Variables
 .env
 backend/.env
+*.env
 
-# Logs
+# Local Database & User Transaction Stores (DO NOT COMMIT)
+backend/users.json
+backend/transactions.json
+users.json
+transactions.json
+
+# Logs & Dumps
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
+-w
+*.dump
+*.tmp
 
 # OS files
 .DS_Store

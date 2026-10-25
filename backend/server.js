@@ -7,7 +7,9 @@
  * ============================================================
  */
 
-// Load .env khi chạy local (Railway tự inject env, dotenv không làm gì thêm)
+// Load .env an toàn khi chạy local hoặc Railway
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 
 const express = require('express');
@@ -15,19 +17,95 @@ const cors = require('cors');
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
-const path = require('path');
 
 const app = express();
+app.disable('x-powered-by');
+
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Chống cache tĩnh trên trình duyệt điện thoại để luôn cập nhật giao diện mới nhất
+// Middleware bảo mật Header chống sniffing, clickjacking và chống cache rò rỉ dữ liệu
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   next();
 });
-app.use(express.static(path.join(__dirname, '..'), { etag: false, maxAge: 0 }));
+
+// ============================================================
+// 🛡️ TƯỜNG LỬA BẢO MẬT: CHẶN TUYỆT ĐỐI TRUY CẬP VÀO FILE NỘI BỘ
+// Chặn truy cập vào /backend, database .json, file .env, git repository
+// ============================================================
+app.use((req, res, next) => {
+  const rawPath = req.path || '';
+  let cleanPath = '';
+  try {
+    cleanPath = decodeURIComponent(rawPath).toLowerCase();
+  } catch (e) {
+    cleanPath = rawPath.toLowerCase();
+  }
+
+  if (
+    cleanPath.includes('/backend') ||
+    cleanPath.includes('/node_modules') ||
+    cleanPath.includes('/.git') ||
+    cleanPath.includes('/.env') ||
+    cleanPath.endsWith('.json') ||
+    cleanPath.endsWith('.env') ||
+    cleanPath.endsWith('.md') ||
+    cleanPath.endsWith('.lock') ||
+    cleanPath.endsWith('.yml') ||
+    cleanPath.endsWith('.yaml') ||
+    cleanPath.includes('-w')
+  ) {
+    return res.status(403).json({ ok: false, error: 'Access denied: Resource is protected' });
+  }
+  next();
+});
+
+// Phục vụ công khai CÓ CHỌN LỌC các thư mục giao diện tĩnh an toàn (KHÔNG lộ backend)
+const ROOT_DIR = path.join(__dirname, '..');
+app.use('/css', express.static(path.join(ROOT_DIR, 'css'), { etag: false, maxAge: 0 }));
+app.use('/js', express.static(path.join(ROOT_DIR, 'js'), { etag: false, maxAge: 0 }));
+app.use('/images', express.static(path.join(ROOT_DIR, 'images'), { etag: false, maxAge: 0 }));
+app.use('/videos', express.static(path.join(ROOT_DIR, 'videos'), { etag: false, maxAge: 0 }));
+
+// Các route phục vụ trang giao diện người dùng
+app.get('/', (req, res) => {
+  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    return res.json({
+      status: 'ok',
+      service: 'TỔ CAM Payment Backend',
+      locketApiConfigured: !!CONFIG.LOCKET_SECRET_KEY,
+      time: new Date().toISOString()
+    });
+  }
+  res.sendFile(path.join(ROOT_DIR, 'index.html'));
+});
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'index.html'));
+});
+
+app.get('/gold', (req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'gold.html'));
+});
+
+app.get('/gold.html', (req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'gold.html'));
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'TỔ CAM Payment Backend',
+    locketApiConfigured: !!CONFIG.LOCKET_SECRET_KEY,
+    time: new Date().toISOString()
+  });
+});
 
 // Middleware xử lý lỗi parse body nếu client gửi format đặc biệt
 app.use((err, req, res, next) => {
@@ -79,9 +157,9 @@ const CONFIG = {
   MEMO_PREFIX: 'TOCAM',
 
   // ─── LOCKET API ───────────────────────────────────────────
-  // Secret key CTV từ dashboard locket.2707226.xyz (Mã API > Secret Token)
-  // Đặt vào biến môi trường LOCKET_SECRET_KEY, KHÔNG hardcode!
-  LOCKET_SECRET_KEY: process.env.LOCKET_SECRET_KEY || 'sk_a6f8887c53d6baa3f90a7929e85b693b7dddc82bfd4ecfb233efa75dd7551df7',
+  // Secret key CTV lấy từ dashboard locket.2707226.xyz
+  // Đặt trong biến môi trường LOCKET_SECRET_KEY, TUYỆT ĐỐI KHÔNG hardcode!
+  LOCKET_SECRET_KEY: process.env.LOCKET_SECRET_KEY || '',
   LOCKET_API_BASE: process.env.LOCKET_API_BASE || 'https://locket.2707226.xyz',
 };
 
@@ -677,18 +755,6 @@ function locketRequest(method, path, body = null) {
     req.end();
   });
 }
-
-// =============================================
-// HEALTH CHECK
-// =============================================
-app.get('/', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'TỔ CAM Payment Backend',
-    locketApiConfigured: !!CONFIG.LOCKET_SECRET_KEY,
-    time: new Date().toISOString()
-  });
-});
 
 // =============================================
 // WEBHOOK CASSO - Nhận thông báo khi có tiền vào
@@ -1729,8 +1795,9 @@ app.all('/manual-confirm', async (req, res) => {
   const plan = req.body?.plan || req.query?.plan;
   const secret = req.body?.secret || req.query?.secret;
 
-  if (secret !== CONFIG.CASSO_SECRET && secret !== 'test_tocam_2026' && secret !== 'tocam123') {
-    return res.status(401).json({ error: 'Sai mật khẩu xác nhận (dùng tocam123)' });
+  const adminSecret = process.env.ADMIN_SECRET || CONFIG.CASSO_SECRET;
+  if (!adminSecret || secret !== adminSecret) {
+    return res.status(401).json({ error: 'Unauthorized: Sai mật khẩu quản trị' });
   }
 
   const u = (username || '').toLowerCase().trim().replace('@', '');

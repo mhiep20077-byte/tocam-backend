@@ -66,9 +66,8 @@ const TO_CAM_CONFIG = {
 };
 
 // ============================================================
-// 🎬 NƠI LƯU & CẤU HÌNH VIDEO VIP CỦA BẠN (Thư mục weblocket/videos/)
-// Bạn chỉ cần bỏ file video (.mp4) vào thư mục:
-// c:\Users\Admin\Downloads\weblocket\videos\
+// 🎬 NƠI LƯU & CẤU HÌNH VIDEO VIP CỦA BẠN (Thư mục videos/)
+// Bạn chỉ cần bỏ file video (.mp4) vào thư mục: videos/
 // rồi thêm hoặc đổi tên file trong danh sách dưới đây:
 // ============================================================
 const VIP_VIDEOS_CONFIG = [
