@@ -1307,7 +1307,7 @@ app.all('/api/locket/profile/download', async (req, res) => {
 
   if (!CONFIG.LOCKET_SECRET_KEY) {
     console.warn('[PROFILE] LOCKET_SECRET_KEY chưa cấu hình. Chuyển hướng tải trực tiếp file mobileconfig.');
-    return res.redirect(302, 'https://wallhack.space/gold');
+    return res.redirect(302, 'https://tocam.vip/gold');
   }
 
   // Xác định UID: ưu tiên từ param, sau đó từ users.json, sau đó từ store, sau đó tra Locket API
@@ -1330,7 +1330,7 @@ app.all('/api/locket/profile/download', async (req, res) => {
   }
 
   if (!resolvedUid) {
-    return res.redirect(302, 'https://wallhack.space/gold');
+    return res.redirect(302, 'https://tocam.vip/gold');
   }
 
   console.log(`[PROFILE] Đang tải .mobileconfig cho UID: ${resolvedUid}`);
@@ -1346,11 +1346,11 @@ app.all('/api/locket/profile/download', async (req, res) => {
       return res.status(403).json({ ok: false, message: result.data?.message || 'UID không ACTIVE hoặc không thuộc tài khoản này.' });
     } else {
       console.warn(`[PROFILE] Locket API HTTP ${result.statusCode}, chuyển hướng tới fallback...`);
-      return res.redirect(302, 'https://wallhack.space/gold');
+      return res.redirect(302, 'https://tocam.vip/gold');
     }
   } catch (err) {
     console.error('[PROFILE] Lỗi kết nối Locket, chuyển hướng tới fallback profile:', err.message);
-    return res.redirect(302, 'https://wallhack.space/gold');
+    return res.redirect(302, 'https://tocam.vip/gold');
   }
 });
 
@@ -1742,7 +1742,7 @@ app.post('/api/user/lookup', async (req, res) => {
       lastRenewedAt: user.lastRenewedAt,
       history: formattedHistory,
       dnsDownloadUrl,
-      directDnsUrl: 'https://wallhack.space/gold'
+      directDnsUrl: 'https://tocam.vip/gold'
     }
   });
 });

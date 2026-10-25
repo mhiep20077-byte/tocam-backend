@@ -26,7 +26,7 @@ const TO_CAM_CONFIG = {
 
   // --- THÔNG TIN DOH PROFILE (CÀI ĐẶT DNS BƯỚC 3) ---
   DOH_SERVER_URL: "https://doh.tocam.vip/dns-query",
-  MOBILECONFIG_DOWNLOAD_URL: "https://wallhack.space/gold",
+  MOBILECONFIG_DOWNLOAD_URL: "https://tocam.vip/gold",
 
   // --- THÔNG TIN GÓI DỊCH VỤ ---
   PLANS: {
