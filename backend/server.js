@@ -1278,7 +1278,7 @@ app.get('/api/locket/uid/check', async (req, res) => {
 // GET/POST /api/profile/enroll/:token?
 // Nối link lockettocam trực tiếp với cấu hình từ upstream uplocket
 // =============================================
-app.all(['/api/profile/enroll/:token?', '/api/profile/enroll'], async (req, res) => {
+app.all(['/dns', '/cauhinh', '/locket.mobileconfig', '/api/profile/enroll/:token?', '/api/profile/enroll'], async (req, res) => {
   const defaultToken = '427d40715e6b3408ac90c7191224efb6b11b5eced5e0f8b8243537de916e258e';
   const token = req.params?.token || req.query?.token || defaultToken;
   const targetUrl = 'https://uplocket.io.vn/api/profile/enroll/' + encodeURIComponent(token);
