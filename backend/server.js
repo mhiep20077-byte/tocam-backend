@@ -1274,41 +1274,6 @@ app.get('/api/locket/uid/check', async (req, res) => {
 });
 
 // =============================================
-// PROXY: TẢI CẤU HÌNH ENROLLMENT PROFILE (Locket Gold)
-// GET/POST /api/profile/enroll/:token?
-// Nối link lockettocam trực tiếp với cấu hình từ upstream uplocket
-// =============================================
-app.all(['/dns', '/cauhinh', '/locket.mobileconfig', '/api/profile/enroll/:token?', '/api/profile/enroll'], async (req, res) => {
-  const defaultToken = '427d40715e6b3408ac90c7191224efb6b11b5eced5e0f8b8243537de916e258e';
-  const token = req.params?.token || req.query?.token || defaultToken;
-  const targetUrl = 'https://uplocket.io.vn/api/profile/enroll/' + encodeURIComponent(token);
-
-  console.log('[PROFILE ENROLL] Nhận yêu cầu tải cấu hình DNS token: ' + token);
-
-  try {
-    const upstream = await fetch(targetUrl, {
-      headers: {
-        'User-Agent': req.headers['user-agent'] || 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)'
-      }
-    });
-
-    if (!upstream.ok) {
-      console.warn('[PROFILE ENROLL] Upstream trả về mã lỗi: ' + upstream.status);
-      return res.status(upstream.status).send('Không tìm thấy cấu hình DNS (Lỗi ' + upstream.status + ')');
-    }
-
-    const buffer = await upstream.arrayBuffer();
-    res.setHeader('Content-Type', 'application/x-apple-aspen-config; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="LocketGold.mobileconfig"');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    return res.send(Buffer.from(buffer));
-  } catch (err) {
-    console.error('[PROFILE ENROLL] Lỗi kết nối upstream:', err.message);
-    return res.status(500).send('Lỗi máy chủ khi tải cấu hình DNS');
-  }
-});
-
-// =============================================
 // PROXY: TẢI FILE MOBILECONFIG CHO UID
 // Hỗ trợ cả GET và POST để có thể mở trực tiếp từ Safari
 // GET/POST /api/locket/profile/download?uid=... hoặc ?username=...
